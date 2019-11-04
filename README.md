@@ -14,6 +14,9 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2019-11-04T09:33
+* change @updateURL to https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
+* comment code made for easier to read number of products because of https://github.com/openfoodfacts/openfoodfacts-server/issues/2474
 ### 2019-10-23T13:42
 * number of products easier to read (with separators depending on your locale); see: https://github.com/openfoodfacts/openfoodfacts-server/issues/2474
 ### 2019-09-12T16:45
