@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-11-04T09:33
+// @version     2019-11-05T11:33
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -23,7 +23,7 @@
 (function() {
     'use strict';
     const pageType = isPageType(); // test page type
-    console.log("2019-11-04T09:33 - mode: " + pageType);
+    console.log("2019-11-05T11:33 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -73,6 +73,7 @@
     //               (shift+L) ["L" for "list"]
     //               The LanguageTool Firefox extension is recommanded because it detects automatically the language of each field.
     //               https://addons.mozilla.org/en-US/firefox/addon/languagetool/
+    //     * Inline edit of ingredients in list mode
     // * FEATURES
     //   * [beta] transfer data from a language to another (use *very* carefully); keyboard shortcut (shift+T)
     //   * [beta] easily delete ingredients, by entering the list by rows mode (shift+L)
@@ -99,10 +100,8 @@
 
     // TODO
     // * FEATURES
-    //   * Inline edit of ingredients in list mode
     //   * Add automatic detection of nutriments, see: https://robotoff.openfoodfacts.org/api/v1/predict/nutrient?ocr_url=https://static.openfoodfacts.org/images/products/841/037/511/0228/nutrition_pt.12.json
     //   * Easily delete ingredients when too buggy
-    //   * list products with ingredients: allow inline editing
     //   * Add a shortcut to move a product to OBF, OPF
     //   * Add fiew informations on the confirmation page:
     //     * Nutri-Score and Nova if just calculated?
@@ -111,10 +110,18 @@
     //   * keyboard shortcut to get back to view mode (v) => target=_self + prevent leaving page if changes are not saved
     //   * On the fly quality checks in the product edit form (javascript): https://github.com/openfoodfacts/openfoodfacts-server/issues/1905
     //   * Mass edit (?) -- see https://github.com/roiKosmic/OFFMassUpdate/blob/master/js/content_script.js
+    //   * Mass edit with regexp (with preview)
+    //   * mass deletion of a tag?
+    //   * mini Hunger Game (dedicated to categories?)
+    //   * revert from an old version
     // * UI & DESIGN
+    //   * picture dates
+    //   * highlight products with old pictures (?)
     //   * add a fixed menu button as in mass-updater
     //   * hightlight empty fields?
     //   * select high resolution images on demand
+    //   * show special prompt when the nutrition photo has changed, but not the nutrition data itself: https://github.com/openfoodfacts/openfoodfacts-server/issues/1910
+    //   * Show a special prompt when the ingredient list photo has changed, but not the ingredient list itself: https://github.com/openfoodfacts/openfoodfacts-server/issues/1909
     // * BUGS
     //   * wheelzoom transform image links to: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaH..................
     //   * some access keys doesnt seem to work, due to javascript library
