@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-11-18T16:52
+// @version     2019-11-18T16:53
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -23,7 +23,7 @@
 (function() {
     'use strict';
     const pageType = isPageType(); // test page type
-    console.log("2019-11-18T16:52 - mode: " + pageType);
+    console.log("2019-11-18T16:53 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -215,7 +215,7 @@ color: #00f;
             '> <a href="/categories?translate=1">' +
             'Help category translations</a></p>'+
             '<p>'+
-            '> <a href="https://world.openfoodfacts.org/cgi/recent_changes.pl?&page=1&page_size=900">' +
+            '> <a href="/cgi/recent_changes.pl?&page=1&page_size=900">' +
             'Recent Changes</a></p>');
     }
 
