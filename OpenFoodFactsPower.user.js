@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-11-05T11:33
+// @version     2019-11-18T16:52
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -23,7 +23,7 @@
 (function() {
     'use strict';
     const pageType = isPageType(); // test page type
-    console.log("2019-11-05T11:33 - mode: " + pageType);
+    console.log("2019-11-18T16:52 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -68,6 +68,7 @@
     //   * keyboard shortcut to enter edit mode: (e) in the current window, (E) in a new window
     //     * see Add "Edit" keyboard shortcut for logged users: https://github.com/openfoodfacts/openfoodfacts-server/issues/1852
     //   * keyboard shortcuts to help modify data without a mouse: P(roduct), Q(uality), B(rands), C(ategories), L(abels), I(ngredients), (e)N(ergy), F(ibers)
+    //   * Add quick links in the sidebar: page translation, category translation, Recent Changes...
     //   * dedicated to list screens (facets, search results...):
     //     * [alpha] keyboard shortcut to list products as a table containing ingredients and options to edit or delete ingredients
     //               (shift+L) ["L" for "list"]
@@ -173,6 +174,14 @@ input.show_comparison {
 margin: 0 0 0.2rem 0 !important;
 }
 
+.pus_menu {
+font-size: 0.9rem;
+}
+
+.ui-widget-content a {
+color: #00f;
+}
+
 }`;
 
     // apply custom CSS
@@ -190,6 +199,24 @@ margin: 0 0 0.2rem 0 !important;
         console.log("API: " + apiProductURL);
         // build edit url
         var editURL = document.location.protocol + "//" + document.location.host + "/cgi/product.pl?type=edit&code=" + code;
+    }
+
+
+    // ***
+    // * Every modes, except "api"
+    // *
+    // Add quick links in the sidebar: page translation, category translation, Recent Changes...
+    if (pageType !== "api") {
+        $(".sidebar p:first").after(
+            '<p>'+
+            '> <a href="https://crowdin.com/project/openfoodfacts">' +
+            'Help page translation</a></p>'+
+            '<p>'+
+            '> <a href="/categories?translate=1">' +
+            'Help category translations</a></p>'+
+            '<p>'+
+            '> <a href="https://world.openfoodfacts.org/cgi/recent_changes.pl?&page=1&page_size=900">' +
+            'Recent Changes</a></p>');
     }
 
 
@@ -333,36 +360,45 @@ margin: 0 0 0.2rem 0 !important;
         //console.log('nutritionImgURL: ' + nutritionImgURL);
 
 
-        // Help box
-        var help = "<ul>" +
+        // Help box based on page type: api|saved-product page|edit|list|search form|product view
+        var help = "<ul class='pus_menu'>" +
             "<li>(?) or (h): this present help</li>" +
-            "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
-            "<hr>" +
-            "<li>(e): edit current product in current window</li>" +
-            "<li>(E): edit product in a new window</li>" +
-            "<li id='api_product_page'>(Alt+shift+A): API product page (json)</li>" +
-            "<li><a href='"+ sameBrandProductsURL + "'>" + sameBrandProducts + " products without a brand</a></li>" +
-            (pageType === "product view" ?
-               "<li><a href=\""+ getSimilarlyNamedProductsWithoutCategorySearchURL() + "\">Similarly named products without a category</a></li>":
-               "<li>Similarly named products without a category (view mode only)</li>") +
+            "<hr id='nav_keys'>" +
+            ((pageType === "product view"|pageType === "edit") ?
+               "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
+               "<li>(Alt+shift+key): direct access to (P)roduct name, (Q)uality, (B)rands, (C)ategories, (L)abels, (I)ngredients, e(N)ergy, (F)ibers</li>" +
+               "<hr>":
+               "") +
+            ((pageType === "product view"|pageType === "api") ?
+              "<li>(e): edit current product in current window</li>" +
+              "<li>(E): edit product in a new window</li>":
+              "") +
+            ((pageType === "product view"|pageType === "edit") ?
+              "<li id='api_product_page'>(Alt+shift+A): API product page (json)</li>":
+              "") +
             "<li><a href='https://google.com/search?&q="+ code + "'>Product code search on Google</a></li>" +
-            "<li>Google Reverse Image search: "+
-               (pageType !== "product view" ? "(view mode only)</li>" :
+            "<li>Google Reverse Image search"+
+               (pageType !== "product view" ? " (view mode only)</li>" :
+                  ": " +
                   (frontImgURL ? "<a href='"+ gReverseImageURL + frontImgURL + "'>front</a>" : "")+
                   (ingredientsImgURL ? ", <a href='"+ gReverseImageURL + ingredientsImgURL + "'>ingredients</a>" : "") +
                   (nutritionImgURL ? ", <a href='"+ gReverseImageURL + nutritionImgURL + "'>nutrition</a>" : "")) +
             "</li>" +
-            "<li>Yandex Reverse Image search: "+
-               (pageType !== "product view" ? "(view mode only)</li>" :
+            "<li>Yandex Reverse Image search"+
+               (pageType !== "product view" ? " (view mode only)</li>" :
+                  ": " +
                   (frontImgURL ? "<a href='"+ yReverseImageURL + frontImgURL + "'>front</a>" : "")+
                   (ingredientsImgURL ? ", <a href='"+ yReverseImageURL + ingredientsImgURL + "'>ingredients</a>" : "") +
                   (nutritionImgURL ? ", <a href='"+ yReverseImageURL + nutritionImgURL + "'>nutrition</a>" : "")) +
             "</li>" +
-            "<hr id='nav_keys'>" +
-            "<li>(Alt+shift+key): direct access to (P)roduct name, (Q)uality, (B)rands, (C)ategories, (L)abels, (I)ngredients, e(N)ergy, (F)ibers</li>" +
-            "<hr>" +
             "<li>(shift+T): <strong>transfer</strong> a product from a language to another, in edition mode only (use <strong>very</strong> carefully)</li>" +
-            "<li>(shift+S): <strong>flag</strong> product for later review (ask charles@openfoodfacts.org for log access)</li>" +
+            "<li>(shift+S): <strong>flag</strong> product for later review (ask <a href='mailto:charles@openfoodfacts.org'>charles@openfoodfacts.org</a> for log access)</li>" +
+            "<hr>" +
+            (pageType === "product view" ?
+               "<li><a href='"+ sameBrandProductsURL + "'>" + sameBrandProducts + " products without a brand</a></li>" +
+               "<li><a href=\""+ getSimilarlyNamedProductsWithoutCategorySearchURL() + "\">Similarly named products without a category</a></li>":
+               "<li title='(view mode only)'>" + sameBrandProducts + " products without a brand</li>" +
+               "<li title='(view mode only)'>Similarly named products without a category</li>") +
             "</ul>";
 
         // Help icon fixed
