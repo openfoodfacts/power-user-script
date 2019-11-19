@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-11-18T16:54
+// @version     2019-11-19T11:40
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -22,8 +22,9 @@
 
 (function() {
     'use strict';
+    var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2019-11-18T16:54 - mode: " + pageType);
+    console.log("2019-11-19T11:40 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -328,6 +329,12 @@ color: #00f;
         pageType === "product view"||
         pageType === "saved-product page") {
 
+
+        if(proPlatform) {
+            var publicURL = document.URL.replace(/\.pro\./gi, ".");
+            console.log("publicURL: "+publicURL);
+            $(".sidebar p:first").after('<p>> <a href="'+publicURL+'">Product public URL</a></p>');
+        }
 
         // (Find products from the same brand)
         if ($("#barcode_paragraph")) {
@@ -922,6 +929,11 @@ color: #00f;
         var regex_api = RegExp('api/v0/');
         if(regex_api.test(document.URL) === true) {
             return "api";
+        }
+        // Detect producers platform
+        var regex_pro = RegExp('\.pro\.open');
+        if(regex_pro.test(document.URL) === true) {
+            proPlatform = true;
         }
         // Detect "edit" mode.
         var regex = RegExp('product.pl');
