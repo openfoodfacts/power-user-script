@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-11-19T11:40
+// @version     2019-11-22T08:33
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -22,9 +22,10 @@
 
 (function() {
     'use strict';
+    var version_user;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2019-11-19T11:40 - mode: " + pageType);
+    console.log("2019-11-22T08:33 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -470,8 +471,8 @@ color: #00f;
                     return;
                 }
                 // (S): edit current product in a new window
-                if (event.key === 'S' && getURLParam("rev")) {
-                    flagThisVersion();
+                if (event.key === 'S') {
+                    flagThisRevision();
                     return;
                 }
                 // (T): transfer a product from a language to another
@@ -720,19 +721,40 @@ color: #00f;
     // ***
     // * Flag this version
     // *
-    function flagThisVersion() {
+    function flagThisRevision() {
+        // Extract contributor of the current version from /contributor/jaeulitt => jaeulitt
+        $('.rev_contributor').attr('href') != undefined ?
+            version_user = $('.rev_contributor').attr('href').match(/contributor\/(.*)/)[1]:
+            version_user = "";
         // Extract revision number from URL:
         // https://us.openfoodfacts.org/product/0744473477111/coconut-milk-non-dairy-frozen-dessert-vanilla-bean-so-delicious-dairy-free?rev=8
         var rev = getURLParam("rev");
+        if (rev !== null) {
+            flagRevision(rev);
+        }
+        else {
+            var _url = "/api/v0/product/" + code + ".json"
+            $.getJSON(_url, function(data) {
+                rev = data.product.rev;
+                console.log("rev: ");
+                console.log(rev);
+                version_user = data.product.last_editor;
+                console.log("version_user: "); console.log(version_user);
+                flagRevision(rev);
+            });
+        }
+    }
+
+    // ***
+    // * Flag this version
+    // *
+    function flagRevision(rev) {
         // Extract current user URL
         var user_url = $('a[href*="/cgi/user.pl?userid="]')[1];
+        console.log("user_url: "); console.log(user_url);
         // Extract current user name from URL /cgi/user.pl?userid=charlesnepote&type=edit => charlesnepote
         var user_name = $(user_url).attr('href').match(/userid=(.*)&type/)[1];
-        // Extract contributor of the current version from /contributor/jaeulitt => jaeulitt
-        var version_user = $('.rev_contributor').attr('href').match(/contributor\/(.*)/)[1];
-        console.log("user_url: "); console.log(user_url);
         console.log("user_name: "); console.log(user_name);
-        console.log("version_user: "); console.log(version_user);
         //var session = $.cookie("session");
         //console.log("session: "+session);
         // https://script.google.com/macros/s/AKfycbwi9tIOPc7zh2NggDuq8geTSZqdZ470unBWUi4KV4AwYzCTNO8/exec?code=123&issue=fhkshf
@@ -747,18 +769,22 @@ color: #00f;
             '<form name="flag_form">' +
             '<label>Issue:</label>' +
             '<select id="flag_issue" name="issue">' +
-            '<option value="ask_for_help">ask_for_help</option>' +
             '<option value="bug">bug</option>' +
-            '<option value="copyright_(images...)">copyright_(images...)</option>' +
-            '<option value="emblematic_product">emblematic_product</option>' +
+            '<option value="copyright_issue(images...)">copyright_issue(images...)</option>' +
             '<option value="error_to_explain">error_to_explain</option>' +
-            '<option value="pro_account">pro_account</option>' +
+            '<option value="spam">spam</option>' +
+            '<option value="vandalism">vandalism</option>' +
+            '<option disabled="disabled">----</option>'+
             '<option value="to_be_completed">to_be_completed</option>' +
             '<option value="to_be_controlled">to_be_controlled</option>' +
             '<option value="to_be_finished">to_be_finished</option>' +
-            '<option value="spam">spam</option>' +
+            '<option value="ask_for_help">ask_for_help</option>' +
+            '<option disabled="disabled">----</option>'+
+            '<option value="emblematic_product">emblematic_product</option>' +
+            '<option value="product_improvement">product_improvement</option>' +
+            '<option disabled="disabled">----</option>'+
             '<option value="user_to_be_contacted">user_to_be_contacted</option>' +
-            '<option value="vandalism">vandalism</option>' +
+            '<option value="pro_account">pro_account</option>' +
             '</select>' +
             '<label>Comments (optionnal):</label>' +
             '<input name="comments" type="text" value="">' +
@@ -869,13 +895,13 @@ color: #00f;
         var url = getSimilarlyNamedProductsWithoutCategorySearchURL();
         console.log("url: " + url);
         $.getJSON(url + "&json=1", function(data) {
-                var nbOfSimilarNamedProductsWithoutACategory = data.count;
-                console.log("nbOfSimilarNamedProductsWithoutACategory: " + nbOfSimilarNamedProductsWithoutACategory);
-                $("#going-further").append('<li><span><a href="' +
-                                     url +
-                                     '">' + nbOfSimilarNamedProductsWithoutACategory +
-                                     ' products with a similar name but without a category</a></span>' +
-                                     '</li>');
+            var nbOfSimilarNamedProductsWithoutACategory = data.count;
+            console.log("nbOfSimilarNamedProductsWithoutACategory: " + nbOfSimilarNamedProductsWithoutACategory);
+            $("#going-further").append('<li><span><a href="' +
+                                       url +
+                                       '">' + nbOfSimilarNamedProductsWithoutACategory +
+                                       ' products with a similar name but without a category</a></span>' +
+                                       '</li>');
         });
     }
 
