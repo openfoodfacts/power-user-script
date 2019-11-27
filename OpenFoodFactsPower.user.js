@@ -786,7 +786,7 @@ color: #00f;
             '<option value="user_to_be_contacted">user_to_be_contacted</option>' +
             '<option value="pro_account">pro_account</option>' +
             '</select>' +
-            '<label>Comments (optionnal):</label>' +
+            '<label>Comments (optional):</label>' +
             '<input name="comments" type="text" value="">' +
             //'<label>Description:</label>' +
             //'<input id="flag_desc" name="description" type="text">' +
