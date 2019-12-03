@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-11-22T08:33
+// @version     2019-12-03T14:15
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -25,7 +25,7 @@
     var version_user;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2019-11-22T08:33 - mode: " + pageType);
+    console.log("2019-12-03T14:15 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -192,6 +192,26 @@ color: #00f;
     s.innerHTML = css;
     document.documentElement.appendChild(s);
 
+
+
+    // ***
+    // * Image zoom
+    // *
+    // Test image zoom with mouse wheel
+    // Don't forget to add: // @require     https://cdn.jsdelivr.net/npm/wheelzoom
+    if(zoomOption) { wheelzoom(document.querySelectorAll('img')); } // doesn't work in edit mode
+
+    // Test image zoom with jquery-zoom
+    // Don't forget to add: // @require     https://cdn.jsdelivr.net/npm/jquery-zoom
+    // $('img').zoom({ on:'grab' }); // add zoom // doesn't work
+    // $('img').trigger('zoom.destroy'); // remove zoom
+
+
+
+    // ***
+    // * Every modes, except "list"
+    // *
+    // Build variables
     if(pageType !== "list") {
         var code, barcode;
         code = getURLParam("code")||$('span[property="food:code"]').html();
@@ -202,6 +222,7 @@ color: #00f;
         // build edit url
         var editURL = document.location.protocol + "//" + document.location.host + "/cgi/product.pl?type=edit&code=" + code;
     }
+
 
 
     // ***
@@ -226,101 +247,6 @@ color: #00f;
             'Recent Changes</a></p>');
     }
 
-
-    // ***
-    // * Image zoom
-    // *
-    // Test image zoom with mouse wheel
-    // Don't forget to add: // @require     https://cdn.jsdelivr.net/npm/wheelzoom
-    if(zoomOption) { wheelzoom(document.querySelectorAll('img')); } // doesn't work in edit mode
-
-    // Test image zoom with jquery-zoom
-    // Don't forget to add: // @require     https://cdn.jsdelivr.net/npm/jquery-zoom
-    // $('img').zoom({ on:'grab' }); // add zoom // doesn't work
-    // $('img').trigger('zoom.destroy'); // remove zoom
-
-
-    // ***
-    // * Edit mode
-    // *
-    // Accesskeys ; see https://stackoverflow.com/questions/5061353/how-to-create-a-keyboard-shortcut-for-an-input-button
-    //    "P" could be for "Product characteristic" section (view mode: <h2>Product characteristics</h2> => <h2 id="product_characteristic">Product characteristics</h2> (not very useful) ; edit mode: <legend>Product characteristics</legend> => add the id)
-    //    "P" could also be for the "product name" field (edit mode: id="product_name_fr" when fr)
-    //    "Q" for "quantity"
-    //    "B" for "brands"
-    //    "C" for "categories" (very important field)
-    //    "L" for "labels"
-    //    "I" could be for "Ingredients" section (view mode: <h2>Ingredients</h2> => <h2 id="ingredients_section">Ingredients</h2> ; edit mode: <legend>Ingredients</legend> => add the id)
-    //    "I" could also be for the "Ingredients" field (edit mode: id="ingredients_text_fr" when fr)
-    //    "N" could be for "Nutrition facts" section (view mode: <h2>Nutrition facts</h2> => <h2 id="nutrition_facts_section">Nutrition facts</h2> ; edit mode: <legend>Nutrition facts</legend> => add the id)
-    //    "N" could also be for the "Energy" field in edit mode (id="nutriment_energy")
-    //    "F" for "Dietary fiber" (often not completed for historical reasons)
-    if (pageType === "edit") {
-        $("#product_name_fr").attr("accesskey","P");
-        $("#quantity").attr("accesskey","Q");
-        $("#brands_tagsinput").attr("accesskey","B");
-        $("#categories_tagsinput").attr("accesskey","C");
-        $("#labels_tagsinput").attr("accesskey","L");
-        $("#ingredients_text_fr").attr("accesskey","I");
-        $("#nutriment_energy").attr("accesskey","N");
-        $("#nutriment_fiber").attr("accesskey","F");
-
-        // TODO: add ingredients picture aside ingredients text area
-        var ingredientsImage = $("#display_ingredients_es img");
-        console.log("ingredientsImage: "+ ingredientsImage);
-        $("#ingredients_text_es").after(ingredientsImage);
-        $("#ingredients_text_es").css({
-            "width": "50%",
-            "float": "left",
-        });
-        // //$("#display_ingredients_es img").clone().after("#ingredients_text_es");
-    }
-
-
-
-    // ***
-    // * View mode
-    // *
-    // Test if we are in a product view.
-    if (pageType === "product view") {
-
-        // If ingredients are allready entered, show results of the OCR
-        if($("#editingredients")[0]) {
-            // Looking for ingredients language
-            var regex1 = new RegExp(/\((..)\)/);
-            var ingredientsButton = $("#editingredients").html();
-            //console.log($("#editingredients").html());
-            var lc = regex1.exec(ingredientsButton)[1];
-            console.log("Ingredients language: "+lc);
-
-            // Show results of the OCR
-            $('body').on('DOMNodeInserted', '#ingredients_list', function(e) {
-                $(e.target).before( "<p>OCR results (not saved):</p>" );
-                $(e.target).before( "<textarea id=\"ingredientFromGCV\"></textarea>" );
-                getIngredientsFromGCV(code,lc);
-                $(e.target).before( "<p>Text to be saved:</p>" );
-            });
-        }
-
-    }
-
-
-    // ***
-    // * Saved product page
-    // *
-    var nbOfSameBrandProducts;
-    if(pageType === "saved-product page") {
-        $("#main_column").append('<p id="furthermore"><strong>Going further:</strong></p>' +
-                                 '<ul id="going-further">' +
-                                 '</ul>');
-        $("#furthermore").before('<p id="product_issues"><strong>Product issues:</strong></p>' +
-                                 '<ul id="issues" style="margin-bottom: 0.2rem">' +
-                                 '</ul>');
-        $("#issues").after('<p>→ <a href="'+editURL+'">Re-edit current product</a></p>');
-        isNbOfSimilarNamedProductsWithoutACategory();
-        addQualityTags();
-        addStateTags();
-    }
 
 
     // ***
@@ -364,14 +290,12 @@ color: #00f;
         }
 
 
-        // TODO: compute Google and Yandex reverse image search
+        // Compute Google and Yandex reverse image search
         var gReverseImageURL = "https://images.google.com/searchbyimage?image_url=";
         var yReverseImageURL = "https://yandex.com/images/search?source=collections&url=";
         var frontImgURL = $('meta[name="twitter:image"]').attr("content");
         var ingredientsImgURL = ($('#image_box_ingredients a img').attr('srcset') ? $('#image_box_ingredients a img').attr('srcset').match(/(.*) (.*)/)[1] : "");
         var nutritionImgURL = ($('#image_box_nutrition a img').attr('srcset') ? $('#image_box_nutrition a img').attr('srcset').match(/(.*) (.*)/)[1] : "");
-        //console.log('nutritionImgURL: ' + nutritionImgURL);
-
 
         // Help box based on page type: api|saved-product page|edit|list|search form|product view
         var help = "<ul class='pus_menu'>" +
@@ -465,12 +389,13 @@ color: #00f;
                     window.open(viewURL, "_blank"); // open a new window
                     return;
                 }
-                // (?): edit current product in a new window
+                // (?): open help box
                 if (event.key === '?' || event.key === 'h') {
                     showPowerUserInfo(help); // open a new window
                     return;
                 }
-                // (S): edit current product in a new window
+                // (S): Flag a product
+                // See "Add a flag button/API to put up a product for review when you're in a hurry": https://github.com/openfoodfacts/openfoodfacts-server/issues/1408
                 if (event.key === 'S') {
                     flagThisRevision();
                     return;
@@ -526,6 +451,91 @@ color: #00f;
         });
     }
 
+
+
+
+    // ***
+    // * View mode
+    // *
+    // Test if we are in a product view.
+    if (pageType === "product view") {
+
+        // If ingredients are allready entered, show results of the OCR
+        if($("#editingredients")[0]) {
+            // Looking for ingredients language
+            var regex1 = new RegExp(/\((..)\)/);
+            var ingredientsButton = $("#editingredients").html();
+            //console.log($("#editingredients").html());
+            var lc = regex1.exec(ingredientsButton)[1];
+            console.log("Ingredients language: "+lc);
+
+            // Show results of the OCR
+            $('body').on('DOMNodeInserted', '#ingredients_list', function(e) {
+                $(e.target).before( "<p>OCR results (not saved):</p>" );
+                $(e.target).before( "<textarea id=\"ingredientFromGCV\"></textarea>" );
+                getIngredientsFromGCV(code,lc);
+                $(e.target).before( "<p>Text to be saved:</p>" );
+            });
+        }
+
+    }
+
+
+
+    // ***
+    // * Edit mode
+    // *
+    // Accesskeys ; see https://stackoverflow.com/questions/5061353/how-to-create-a-keyboard-shortcut-for-an-input-button
+    //    "P" could be for "Product characteristic" section (view mode: <h2>Product characteristics</h2> => <h2 id="product_characteristic">Product characteristics</h2> (not very useful) ; edit mode: <legend>Product characteristics</legend> => add the id)
+    //    "P" could also be for the "product name" field (edit mode: id="product_name_fr" when fr)
+    //    "Q" for "quantity"
+    //    "B" for "brands"
+    //    "C" for "categories" (very important field)
+    //    "L" for "labels"
+    //    "I" could be for "Ingredients" section (view mode: <h2>Ingredients</h2> => <h2 id="ingredients_section">Ingredients</h2> ; edit mode: <legend>Ingredients</legend> => add the id)
+    //    "I" could also be for the "Ingredients" field (edit mode: id="ingredients_text_fr" when fr)
+    //    "N" could be for "Nutrition facts" section (view mode: <h2>Nutrition facts</h2> => <h2 id="nutrition_facts_section">Nutrition facts</h2> ; edit mode: <legend>Nutrition facts</legend> => add the id)
+    //    "N" could also be for the "Energy" field in edit mode (id="nutriment_energy")
+    //    "F" for "Dietary fiber" (often not completed for historical reasons)
+    if (pageType === "edit") {
+        $("#product_name_fr").attr("accesskey","P");
+        $("#quantity").attr("accesskey","Q");
+        $("#brands_tagsinput").attr("accesskey","B");
+        $("#categories_tagsinput").attr("accesskey","C");
+        $("#labels_tagsinput").attr("accesskey","L");
+        $("#ingredients_text_fr").attr("accesskey","I");
+        $("#nutriment_energy").attr("accesskey","N");
+        $("#nutriment_fiber").attr("accesskey","F");
+
+        // TODO: add ingredients picture aside ingredients text area
+        var ingredientsImage = $("#display_ingredients_es img");
+        console.log("ingredientsImage: "+ ingredientsImage);
+        $("#ingredients_text_es").after(ingredientsImage);
+        $("#ingredients_text_es").css({
+            "width": "50%",
+            "float": "left",
+        });
+        // //$("#display_ingredients_es img").clone().after("#ingredients_text_es");
+    }
+
+
+
+    // ***
+    // * Saved product page
+    // *
+    var nbOfSameBrandProducts;
+    if(pageType === "saved-product page") {
+        $("#main_column").append('<p id="furthermore"><strong>Going further:</strong></p>' +
+                                 '<ul id="going-further">' +
+                                 '</ul>');
+        $("#furthermore").before('<p id="product_issues"><strong>Product issues:</strong></p>' +
+                                 '<ul id="issues" style="margin-bottom: 0.2rem">' +
+                                 '</ul>');
+        $("#issues").after('<p>→ <a href="'+editURL+'">Re-edit current product</a></p>');
+        isNbOfSimilarNamedProductsWithoutACategory();
+        addQualityTags();
+        addStateTags();
+    }
 
 
 
@@ -596,6 +606,8 @@ color: #00f;
     /***
      * listByRows
      *
+     * @param   : none
+     * @return  : none
      */
     function listByRows() {
         console.log("List by rows -------------");
@@ -746,7 +758,7 @@ color: #00f;
     }
 
     // ***
-    // * Flag this version
+    // * Flag revision
     // *
     function flagRevision(rev) {
         // Extract current user URL
@@ -755,8 +767,10 @@ color: #00f;
         // Extract current user name from URL /cgi/user.pl?userid=charlesnepote&type=edit => charlesnepote
         var user_name = $(user_url).attr('href').match(/userid=(.*)&type/)[1];
         console.log("user_name: "); console.log(user_name);
-        //var session = $.cookie("session");
-        //console.log("session: "+session);
+        // Submit data to a Google Spreasheet, see:
+        //   * https://gist.github.com/mhawksey/1276293
+        //   * https://mashe.hawksey.info/2014/07/google-sheets-as-a-database-insert-with-apps-script-using-postget-methods-with-ajax-example/
+        //   * https://medium.com/@dmccoy/how-to-submit-an-html-form-to-google-sheets-without-google-forms-b833952cc175
         // https://script.google.com/macros/s/AKfycbwi9tIOPc7zh2NggDuq8geTSZqdZ470unBWUi4KV4AwYzCTNO8/exec?code=123&issue=fhkshf
         // Debug CORS: https://www.test-cors.org/
         // CORS proxies:
@@ -800,13 +814,12 @@ color: #00f;
             '<div id="flag_result"></div>' +
             '</div>';
         showPowerUserInfo(flagWindow); // open a new window
-        var spreadsheetURL = 'https://docs.google.com/spreadsheets/d/1DE85Or0QiYwIXcG4vSVZyFSLMKvmJqOXM5ooJzxZr6Y/';
 
         const form = document.forms['flag_form'];
         console.log(form);
         form.addEventListener('submit', e => {
             console.log("Submited rev "+rev);
-            e.preventDefault();
+            e.preventDefault();  // Do not submit the form
             fetch(googleScriptURL, {
                 method: 'POST',
                 mode: 'cors',
@@ -814,6 +827,7 @@ color: #00f;
             })
             .then(function(response) {
                 console.log('Success!', response);
+                var spreadsheetURL = 'https://docs.google.com/spreadsheets/d/1DE85Or0QiYwIXcG4vSVZyFSLMKvmJqOXM5ooJzxZr6Y/';
                 $("#flag_result").append('<p style="margin-top:1rem;font-weight: bold;">' +
                                          '✅ Version ' +
                                          '<a href="' + spreadsheetURL + '" style="color:blue" target="_blank">' +
@@ -824,31 +838,6 @@ color: #00f;
     }
 
 
-    // * Add a flag button/API to put up a product for review when you're in a hurry: https://github.com/openfoodfacts/openfoodfacts-server/issues/1408
-    //   * With Google Spreasheet, see: https://gist.github.com/mhawksey/1276293
-    //   * https://mashe.hawksey.info/2014/07/google-sheets-as-a-database-insert-with-apps-script-using-postget-methods-with-ajax-example/
-    //   * https://medium.com/@dmccoy/how-to-submit-an-html-form-to-google-sheets-without-google-forms-b833952cc175
-    // Test: sendLoggingData("reporting_date=2019-06-14&admin_user=CharlesNepote&product_code="+code);
-    // sendLoggingData("reporting_date=2019-06-14&admin_user=CharlesNepote&product_code="+code+"&callback=?");
-    function sendLoggingData(serializedData) { // does not work!
-        // https://api.jquery.com/jQuery.ajax/
-        var request = $.ajax({
-            //url: "https://script.google.com/macros/s/AKfycbxIWuMcXnysGTqR7JWtcOzb3usXtZQwMfp87SsiF7QL4dauQBGR/exec?issue=2019&code=CharlesNepote&callback=?",
-            url: "https://cors.io?https://script.google.com/macros/s/AKfycbxIWuMcXnysGTqR7JWtcOzb3usXtZQwMfp87SsiF7QL4dauQBGR/exec",
-            type: "GET",        // alias for 'method'
-            crossDomain: true,
-            dataType: "json",
-            data: {
-                issue: '2019',
-                code: 'toto',
-            }
-        }).success(function() {
-            // do something
-            console.log("success1")
-        });
-        request.crossDomain = true;
-        console.log("request: "+request);
-    };
 
 
     // https://fr.openfoodfacts.org/etat/marques-a-completer/code/506036745xxxx&json=1
