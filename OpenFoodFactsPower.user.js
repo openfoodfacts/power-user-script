@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-12-03T14:15
+// @version     2019-12-04T15:15
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -25,7 +25,7 @@
     var version_user;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2019-12-03T14:15 - mode: " + pageType);
+    console.log("2019-12-04T15:15 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -65,6 +65,7 @@
     //   * zoom every images with mouse wheel; see http://www.jacklmoore.com/zoom/
     //   * show/hide barcode; keyboard shortcut (shift+B)
     //     * see https://github.com/openfoodfacts/openfoodfacts-server/issues/1728
+    //   * Edit mode: show hide help comments for each field (see help screen)
     //   * keyboard shortcut to API product page (alt+shift+A)
     //   * keyboard shortcut to get back to view mode (v)
     //   * keyboard shortcut to enter edit mode: (e) in the current window, (E) in a new window
@@ -301,6 +302,9 @@ color: #00f;
         var help = "<ul class='pus_menu'>" +
             "<li>(?) or (h): this present help</li>" +
             "<hr id='nav_keys'>" +
+            ((pageType === "edit") ?
+               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label>Field helpers</label></li>':
+               "") +
             ((pageType === "product view"|pageType === "edit") ?
                "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
                "<li>(Alt+shift+key): direct access to (P)roduct name, (Q)uality, (B)rands, (C)ategories, (L)abels, (I)ngredients, e(N)ergy, (F)ibers</li>" +
@@ -341,8 +345,41 @@ color: #00f;
         // Help icon fixed
         $('body').append('<button id="pwe_help" style="position:fixed; left:50%;top:0rem;padding:0 1rem 0 1rem;font-size:1.5rem;background-color:red;">?</button>');
         //$('#select_country_li').insertAfter('<li id="pwe_help" style="font-size:2rem;background-color:red;">?</li>'); // issue: menu desappear when scrolling
+
+        // User help dialog
+        $('body').append('<div id="power-user-help" title="Information"></div>');
+        $("#power-user-help").dialog({autoOpen: false});
+        $("#power-user-help").html(help);
         $("#pwe_help").click(function(){
-            showPowerUserInfo(help); // open a new window
+            $("#power-user-help").dialog({
+                autoOpen: true,
+                width: 400,
+                dialogClass: 'dialogstyleperso',
+            });
+        });
+        // add style if necessarry
+        //$("#power-user-help").prev().addClass('ui-state-information');
+        console.log(getLocalStorage("pus-helpers"));
+        if(getLocalStorage("pus-helpers") === "unchecked") {
+            $('#pus-helpers').removeAttr('checked');
+            $('.note').hide();
+            $('.example').hide();
+        }
+        // Hide/unhide field helpers
+        $('#pus-helpers').change(function() {
+            if(this.checked) {
+                localStorage.setItem('pus-helpers', "checked");
+                console.log("Show helpers");
+                $('.note').show();
+                $('.example').show();
+            }
+            else {
+                localStorage.setItem('pus-helpers', "unchecked");
+                $('.note').hide();
+                $('.example').hide();
+                console.log("Hide helpers");
+            }
+            //$('#textbox1').val(this.checked);
         });
 
 
@@ -989,24 +1026,6 @@ color: #00f;
     }
 
 
-    // Show pop-up
-    function showPowerUserInfo(message) {
-        // Inspiration: http://christianelagace.com
-        // create div for popup
-        $('body').append('<div id="power-user-help" title="Information"></div>');
-        $("#power-user-help").html(message);
-        // transforme la division en popup
-        var popup = $("#power-user-help").dialog({
-            autoOpen: true,
-            width: 400,
-            dialogClass: 'dialogstyleperso',
-        });
-        // add style if necessarry
-        //$("#power-user-help").prev().addClass('ui-state-information');
-        return popup;
-    }
-
-
     /**
      * getIngredientsFromGCV: Get ingredients via Google Cloud Vision
      *
@@ -1070,4 +1089,14 @@ color: #00f;
         return originalArray;
     }
 
+    /**
+     * getLocalStorage
+     *
+     * @param    {String}  key - key to check
+     * @returns  {String}
+     */
+    function getLocalStorage(key) {
+        var val = localStorage.getItem(key);
+        return val ? val:"";
+    }
 })();
