@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-12-04T15:15
+// @version     2019-12-09T18:34
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -25,7 +25,7 @@
     var version_user;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2019-12-04T15:15 - mode: " + pageType);
+    console.log("2019-12-09T18:34 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -183,6 +183,16 @@ font-size: 0.9rem;
 
 .ui-widget-content a {
 color: #00f;
+}
+
+#pwe_help {
+position:fixed;
+left:0%;
+top:3rem;
+padding:0 0.7rem 0 0.7rem;
+font-size:1.5rem;
+background-color:red;
+border-radius: 0 10px 10px 0;
 }
 
 }`;
@@ -343,7 +353,7 @@ color: #00f;
             "</ul>";
 
         // Help icon fixed
-        $('body').append('<button id="pwe_help" style="position:fixed; left:50%;top:0rem;padding:0 1rem 0 1rem;font-size:1.5rem;background-color:red;">?</button>');
+        $('body').append('<button id="pwe_help">?</button>');
         //$('#select_country_li').insertAfter('<li id="pwe_help" style="font-size:2rem;background-color:red;">?</li>'); // issue: menu desappear when scrolling
 
         // User help dialog
@@ -979,38 +989,30 @@ color: #00f;
     function isPageType() {
         // Detect API page. Example: https://world.openfoodfacts.org/api/v0/product/3599741003380.json
         var regex_api = RegExp('api/v0/');
-        if(regex_api.test(document.URL) === true) {
-            return "api";
-        }
+        if(regex_api.test(document.URL) === true) return "api";
+
         // Detect producers platform
         var regex_pro = RegExp('\.pro\.open');
-        if(regex_pro.test(document.URL) === true) {
-            proPlatform = true;
-        }
+        if(regex_pro.test(document.URL) === true) proPlatform = true;
+
         // Detect "edit" mode.
         var regex = RegExp('product.pl');
         if(regex.test(document.URL) === true) {
-            if (!$("#sorted_langs").length) { // Detect "Changes saved." page
-                return "saved-product page";
-            }
-            else {
-                return "edit";
-            }
+            if (!$("#sorted_langs").length) return "saved-product page"; // Detect "Changes saved." page
+            else return "edit";
         }
+
         // Detect page containing a list of products (home page, search results...)
-        if ($(".products")[0]) {
-            return "list";
-        }
+        if ($(".products")[0]) return "list";
+
         // Detect search form
         var regex_search = RegExp('cgi/search.pl$');
-        if(regex_search.test(document.URL) === true) {
-            return "search form";
-        }
+        if(regex_search.test(document.URL) === true) return "search form";
+
         // Finally, it's a product view
-        if(regex.test(document.URL) !== true) {
-            return "product view";
-        }
+        if($("body").attr("typeof") === "food:foodProduct") return "product view";
     };
+
 
 
     /**
