@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-12-09T18:34
+// @version     2019-12-12T13:49
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -25,7 +25,7 @@
     var version_user;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2019-12-09T18:34 - mode: " + pageType);
+    console.log("2019-12-12T13:49 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -148,8 +148,8 @@ margin-bottom: 0.2rem !important;
 border-bottom: 1px solid lightgrey; }
 
 /* Special background color for all input fieds */
-textarea, .tagsinput, input[type=text], input.nutriment_value { background-color: LightYellow !important; }
-textarea:focus, .tagsinput:focus, input[type=text]:focus, input.nutriment_value:focus { background-color: lightblue !important; }
+textarea, .tagify, input[type=text], input.nutriment_value { background-color: LightYellow !important; }
+textarea:focus, .tagify__input:focus, .tagify:focus, input[type=text]:focus, input.nutriment_value:focus { background-color: lightblue !important; }
 
 /* Small enhancements */
 p { margin-bottom: 0.6rem !important; }
@@ -357,40 +357,11 @@ border-radius: 0 10px 10px 0;
         //$('#select_country_li').insertAfter('<li id="pwe_help" style="font-size:2rem;background-color:red;">?</li>'); // issue: menu desappear when scrolling
 
         // User help dialog
-        $('body').append('<div id="power-user-help" title="Information"></div>');
-        $("#power-user-help").dialog({autoOpen: false});
-        $("#power-user-help").html(help);
         $("#pwe_help").click(function(){
-            $("#power-user-help").dialog({
-                autoOpen: true,
-                width: 400,
-                dialogClass: 'dialogstyleperso',
-            });
+            showPowerUserInfo(help);
+            toggleHelpers();
         });
-        // add style if necessarry
-        //$("#power-user-help").prev().addClass('ui-state-information');
-        console.log(getLocalStorage("pus-helpers"));
-        if(getLocalStorage("pus-helpers") === "unchecked") {
-            $('#pus-helpers').removeAttr('checked');
-            $('.note').hide();
-            $('.example').hide();
-        }
-        // Hide/unhide field helpers
-        $('#pus-helpers').change(function() {
-            if(this.checked) {
-                localStorage.setItem('pus-helpers', "checked");
-                console.log("Show helpers");
-                $('.note').show();
-                $('.example').show();
-            }
-            else {
-                localStorage.setItem('pus-helpers', "unchecked");
-                $('.note').hide();
-                $('.example').hide();
-                console.log("Hide helpers");
-            }
-            //$('#textbox1').val(this.checked);
-        });
+
 
 
         // API accesskey
@@ -401,7 +372,7 @@ border-radius: 0 10px 10px 0;
         $(document).on('keydown', function(event) {
             // console.log(event);
             // If the key is not pressed inside a input field (ex. search product field)
-            if (!$(event.target).is(':input')) {
+            if (!$(event.target).is(':input') && !$(event.target).is('span.tagify__input')) {
                 // (Shift + B): toggle show/hide barcode
                 if (event.key === 'B') {
                     if (barcode === true) {
@@ -439,6 +410,7 @@ border-radius: 0 10px 10px 0;
                 // (?): open help box
                 if (event.key === '?' || event.key === 'h') {
                     showPowerUserInfo(help); // open a new window
+                    toggleHelpers();
                     return;
                 }
                 // (S): Flag a product
@@ -553,6 +525,9 @@ border-radius: 0 10px 10px 0;
         $("#ingredients_text_fr").attr("accesskey","I");
         $("#nutriment_energy").attr("accesskey","N");
         $("#nutriment_fiber").attr("accesskey","F");
+
+        // Toggle helpers based on previous selection if any
+        toggleHelpers();
 
         // TODO: add ingredients picture aside ingredients text area
         var ingredientsImage = $("#display_ingredients_es img");
@@ -773,6 +748,57 @@ border-radius: 0 10px 10px 0;
                 });
             });
             return data;
+        });
+    }
+
+
+    // Show pop-up
+    function showPowerUserInfo(message) {
+        console.log($("#power-user-help"));
+        // Inspiration: http://christianelagace.com
+        // If not already exists, create div for popup
+        if($("#power-user-help").length === 0) {
+            $('body').append('<div id="power-user-help" title="Information"></div>');
+            $("#power-user-help").dialog({autoOpen: false});
+        }
+
+        $("#power-user-help").html(message);
+
+        // transforme la division en popup
+        var popup = $("#power-user-help").dialog({
+            autoOpen: true,
+            width: 400,
+            dialogClass: 'dialogstyleperso',
+        });
+        // add style if necessarry
+        //$("#power-user-help").prev().addClass('ui-state-information');
+        return popup;
+    }
+
+
+
+    function toggleHelpers() {
+        console.log("Helpers: " + getLocalStorage("pus-helpers"));
+        if(getLocalStorage("pus-helpers") === "unchecked") {
+            $('#pus-helpers').removeAttr('checked');
+            $('.note').hide();
+            $('.example').hide();
+        }
+        // Hide/unhide field helpers
+        $('#pus-helpers').change(function() {
+            if(this.checked) {
+                localStorage.setItem('pus-helpers', "checked");
+                console.log("Show helpers");
+                $('.note').show();
+                $('.example').show();
+            }
+            else {
+                localStorage.setItem('pus-helpers', "unchecked");
+                console.log("Hide helpers");
+                $('.note').hide();
+                $('.example').hide();
+            }
+            //$('#textbox1').val(this.checked);
         });
     }
 
