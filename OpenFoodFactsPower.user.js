@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-12-12T13:49
+// @version     2019-12-16T17:27
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -18,14 +18,26 @@
 // @require     https://cdn.jsdelivr.net/jsbarcode/3.6.0/JsBarcode.all.min.js
 // @require     https://cdn.jsdelivr.net/npm/wheelzoom
 // @author      charles@openfoodfacts.org
+
+// @require     https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.6/jquery.tagsinput.min.js
 // ==/UserScript==
 
 (function() {
     'use strict';
+    /*--- For this to work well, we must also add-in the jQuery-UI CSS.
+    We add the CSS this way so that the embedded, relatively linked images load correctly.
+    (Use //ajax... so that https or http is selected as appropriate to avoid "mixed content".)
+    */
+    $("head").append (
+        '<link '
+        + 'href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css" '
+        + 'rel="stylesheet" type="text/css">'
+    );
+
     var version_user;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2019-12-12T13:49 - mode: " + pageType);
+    console.log("2019-12-16T17:27 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -71,7 +83,7 @@
     //   * keyboard shortcut to enter edit mode: (e) in the current window, (E) in a new window
     //     * see Add "Edit" keyboard shortcut for logged users: https://github.com/openfoodfacts/openfoodfacts-server/issues/1852
     //   * keyboard shortcuts to help modify data without a mouse: P(roduct), Q(uality), B(rands), C(ategories), L(abels), I(ngredients), (e)N(ergy), F(ibers)
-    //   * Add quick links in the sidebar: page translation, category translation, Recent Changes...
+    //   * Add quick links in the sidebar: page translation, category translation, Recent Changes, Hunger Game...
     //   * dedicated to list screens (facets, search results...):
     //     * [alpha] keyboard shortcut to list products as a table containing ingredients and options to edit or delete ingredients
     //               (shift+L) ["L" for "list"]
@@ -255,7 +267,13 @@ border-radius: 0 10px 10px 0;
             'Help category translations</a></p>'+
             '<p>'+
             '> <a href="/cgi/recent_changes.pl?&page=1&page_size=900">' +
-            'Recent Changes</a></p>');
+            'Recent Changes</a>' +
+            '</p>' +
+            '<p>'+
+            '> <a href="/hunger-game">' +
+            'Hunger Game</a>' +
+            '</p>'
+        );
     }
 
 
