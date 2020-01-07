@@ -98,7 +98,7 @@
     //       * "XX products without brand that might be from this brand" link
 
     // * DEPLOYMENT
-    //   * Tampermonkey suggest to update the extension when one click to updateURL:
+    //   * Tampermonkey suggests to update the extension when one click to updateURL:
     //     https://gist.github.com/CharlesNepote/f6c675dce53830757854141c7ba769fc/raw/OpenFoodFactsPowerUser.user.js
 
 
@@ -107,29 +107,29 @@
     //   * Add automatic detection of nutriments, see: https://robotoff.openfoodfacts.org/api/v1/predict/nutrient?ocr_url=https://static.openfoodfacts.org/images/products/841/037/511/0228/nutrition_pt.12.json
     //   * Easily delete ingredients when too buggy
     //   * Add a shortcut to move a product to OBF, OPF
-    //   * Add fiew informations on the confirmation page:
-    //     * Nutri-Score and Nova if just calculated?
+    //   * Add few informations on the confirmation page:
+    //     * Nutri-Score and NOVA if just calculated?
     //     * unknown ingredients
-    //   * product of a brand from a particular country, that are not present in this country (see @teolemon)
-    //   * keyboard shortcut to get back to view mode (v) => target=_self + prevent leaving page if changes are not saved
+    //   * Product of a brand from a particular country, that are not present in this country (see @teolemon)
+    //   * Keyboard shortcut to get back to view mode (v) => target=_self + prevent leaving page if changes are not saved
     //   * On the fly quality checks in the product edit form (javascript): https://github.com/openfoodfacts/openfoodfacts-server/issues/1905
     //   * Mass edit (?) -- see https://github.com/roiKosmic/OFFMassUpdate/blob/master/js/content_script.js
     //   * Mass edit with regexp (with preview)
-    //   * mass deletion of a tag?
-    //   * mini Hunger Game (dedicated to categories?)
-    //   * revert from an old version
+    //   * Mass deletion of a tag?
+    //   * Mini Hunger Game (dedicated to categories?)
+    //   * Revert from an old version
     // * UI & DESIGN
-    //   * picture dates
-    //   * highlight products with old pictures (?)
-    //   * add a fixed menu button as in mass-updater
-    //   * hightlight empty fields?
-    //   * select high resolution images on demand
-    //   * show special prompt when the nutrition photo has changed, but not the nutrition data itself: https://github.com/openfoodfacts/openfoodfacts-server/issues/1910
+    //   * Picture dates
+    //   * Highlight products with old pictures (?)
+    //   * Add a fixed menu button as in mass-updater
+    //   * Highlight empty fields?
+    //   * Select high resolution images on demand
+    //   * Show special prompt when the nutrition photo has changed, but not the nutrition data itself: https://github.com/openfoodfacts/openfoodfacts-server/issues/1910
     //   * Show a special prompt when the ingredient list photo has changed, but not the ingredient list itself: https://github.com/openfoodfacts/openfoodfacts-server/issues/1909
     // * BUGS
     //   * wheelzoom transform image links to: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaH..................
-    //   * some access keys doesnt seem to work, due to javascript library
-    //     * see Support hitting the TAB key only once to quickly move to the next text field and then make entering text possible:
+    //   * Some access keys dont seem to work, due to javascript library
+    //     * See Support hitting the TAB key only once to quickly move to the next text field and then make entering text possible:
     //       https://github.com/openfoodfacts/openfoodfacts-server/issues/1245
     //   * focus on .tagsinput fields is not highlighted
 
@@ -237,7 +237,7 @@ border-radius: 0 10px 10px 0;
 
 
     // ***
-    // * Every modes, except "api"
+    // * Every mode, except "api"
     // *
     // Add quick links in the sidebar: page translation, category translation, Recent Changes...
     if (pageType !== "api") {
@@ -261,7 +261,7 @@ border-radius: 0 10px 10px 0;
 
 
     // ***
-    // * Every modes, except "api", "list", "search-form"
+    // * Every mode, except "api", "list", "search-form"
     // *
     if (pageType === "edit" ||
         pageType === "product view"||
@@ -479,7 +479,7 @@ border-radius: 0 10px 10px 0;
     // Test if we are in a product view.
     if (pageType === "product view") {
 
-        // If ingredients are allready entered, show results of the OCR
+        // If ingredients are already entered, show results of the OCR
         if($("#editingredients")[0]) {
             // Looking for ingredients language
             var regex1 = new RegExp(/\((..)\)/);
@@ -840,7 +840,7 @@ border-radius: 0 10px 10px 0;
         // Extract current user name from URL /cgi/user.pl?userid=charlesnepote&type=edit => charlesnepote
         var user_name = $(user_url).attr('href').match(/userid=(.*)&type/)[1];
         console.log("user_name: "); console.log(user_name);
-        // Submit data to a Google Spreasheet, see:
+        // Submit data to a Google Spreadsheet, see:
         //   * https://gist.github.com/mhawksey/1276293
         //   * https://mashe.hawksey.info/2014/07/google-sheets-as-a-database-insert-with-apps-script-using-postget-methods-with-ajax-example/
         //   * https://medium.com/@dmccoy/how-to-submit-an-html-form-to-google-sheets-without-google-forms-b833952cc175
