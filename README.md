@@ -14,6 +14,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2020-01-09T16:54
+* Add version date to flag feature
 ### 2019-12-16T17:27
 * Add Hunger Game link
 * Various fixes
