@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2019-12-16T17:27
+// @version     2020-01-09T16:54
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -18,9 +18,23 @@
 // @require     https://cdn.jsdelivr.net/jsbarcode/3.6.0/JsBarcode.all.min.js
 // @require     https://cdn.jsdelivr.net/npm/wheelzoom
 // @author      charles@openfoodfacts.org
-
-// @require     https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.6/jquery.tagsinput.min.js
 // ==/UserScript==
+
+function loadScript(url, callback) {
+    // Adding the script tag to the head as suggested before
+    var head = document.head;
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+
+    // Then bind the event to the callback function.
+    // There are several events for cross browser compatibility.
+    script.onreadystatechange = callback;
+    script.onload = callback;
+
+    // Fire the loading
+    head.appendChild(script);
+}
 
 (function() {
     'use strict';
@@ -35,9 +49,10 @@
     );
 
     var version_user;
+    var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2019-12-16T17:27 - mode: " + pageType);
+    console.log("2020-01-09T16:54 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -621,7 +636,7 @@ border-radius: 0 10px 10px 0;
         nbOfProducts = nbOfProducts.toLocaleString(); //console.log(nbOfProducts); // 1 009 326
         $(".button-group li div").text(xxxProducts.replace(/(\d+)(.*)/, nbOfProducts+"$2")); // 1 009 326 products /**/
 
-        
+
         var listByRowsMode = false; // We are not yet in "list by rows" mode
         // Keyboard actions
         if (listByRowsOption === true) { listByRows(); }
@@ -833,16 +848,20 @@ border-radius: 0 10px 10px 0;
         // https://us.openfoodfacts.org/product/0744473477111/coconut-milk-non-dairy-frozen-dessert-vanilla-bean-so-delicious-dairy-free?rev=8
         var rev = getURLParam("rev");
         if (rev !== null) {
+            version_date = $("#rev_summary > p > time > time").attr("datetime");
+            console.log("version_date: "); console.log(version_date);
             flagRevision(rev);
         }
         else {
             var _url = "/api/v0/product/" + code + ".json"
             $.getJSON(_url, function(data) {
                 rev = data.product.rev;
-                console.log("rev: ");
-                console.log(rev);
+                console.log("rev: "); console.log(rev);
                 version_user = data.product.last_editor;
                 console.log("version_user: "); console.log(version_user);
+                var last_modified_t = new Date(data.product.last_modified_t*1000);
+                version_date = last_modified_t.toISOString();
+                console.log("version_date: "); console.log(version_date);
                 flagRevision(rev);
             });
         }
@@ -898,6 +917,7 @@ border-radius: 0 10px 10px 0;
             '<input type="hidden" name="admin_user" value="'+ user_name + '">' +
             '<input type="hidden" name="code" value="'+ code + '">' +
             '<input type="hidden" name="version_nb" value="'+ rev + '">' +
+            '<input type="hidden" name="version_date" value="'+ version_date + '">' +
             '<input type="hidden" name="version_user" value="'+ version_user + '">' +
             '<input type="hidden" name="url" value="'+ document.location + '">' +
             '<input id="transfer_submit" type="submit" value="Flag this version">' +
