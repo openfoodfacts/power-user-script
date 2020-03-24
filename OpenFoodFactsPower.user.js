@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-03-10T15:55
+// @version     2020-03-24T11:12
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -27,7 +27,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-01-09T16:54 - mode: " + pageType);
+    console.log("2020-03-24T11:12 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -98,6 +98,7 @@
     //       * and a link to product edit
     //     * Going further
     //       * "XX products without brand that might be from this brand" link
+    //   * Add a field to filter Recent Changes results (filter as you type)
 
     // * DEPLOYMENT
     //   * Tampermonkey suggests to update the extension when one click to updateURL:
@@ -671,6 +672,22 @@ border-radius: 0 10px 10px 0;
 
 
     // ***
+    // * Recent Changes page
+    // *
+    if (pageType === "recent changes") {
+        $("#main_column h1").after('<input id="filter" type="text" placeholder="Filter...">');
+        $("#filter").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#main_column li").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+            value == "" ? $("#main_column details").show() : $("#main_column details").hide();
+        });
+    }
+
+
+
+    // ***
     // * "list" mode (when a page contains a list of products (home page, facets, search results...)
     // *
     if (pageType === "list") {
@@ -1148,6 +1165,11 @@ border-radius: 0 10px 10px 0;
         // Detect search form
         var regex_search = RegExp('cgi/search.pl$');
         if(regex_search.test(document.URL) === true) return "search form";
+
+
+        // Detect recentchanges
+        regex_search = RegExp('cgi/recent_changes.pl');
+        if(regex_search.test(document.URL) === true) return "recent changes";
 
         // Finally, it's a product view
         if($("body").attr("typeof") === "food:foodProduct") return "product view";
