@@ -14,6 +14,11 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2020-04-11T17:26
+* Add openbeautyfacts.org link and its status code (200 = the product exists; 404 it doesn't)
+* Add .pro.openffodfacts.org link (status code isn't working)
+* Add "ingredient mode" to simplify ingredients management => ("i" key in "edit" mode)
+* Developper: console.log messages more clear
 ### 2020-03-24TT11:12
 * Add a field to filter Recent Changes results (filter as you type)
 ### 2020-01-09T16:54
