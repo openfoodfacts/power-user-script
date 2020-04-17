@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-04-11T17:26
+// @version     2020-04-17T14:33
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -39,7 +39,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-04-11T17:26 - mode: " + pageType);
+    console.log("2020-04-17T14:33 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -92,6 +92,7 @@
     //               The LanguageTool Firefox extension is recommanded because it detects automatically the language of each field.
     //               https://addons.mozilla.org/en-US/firefox/addon/languagetool/
     //     * Inline edit of ingredients in list mode
+    //   * Firefox: Nutrition facts picture takes all the place available
     // * FEATURES
     //   * [beta] transfer data from a language to another (use *very* carefully); keyboard shortcut (shift+T)
     //   * [beta] easily delete ingredients, by entering the list by rows mode (shift+L)
@@ -100,14 +101,15 @@
     //     * Ask charles@openfoodfacts.org
     //   * launch Google OCR if "Edit ingredients" is clicked in view mode
     //   * "[Products without brand that might be from this brand]" link, following product code
-    //   * Open Beauty Facts link + pro.openfoodfacts.dev link
+    //   * Links beside barcode number: Google link for product barcode + Open Beauty Facts + Open Pet Food Facts + pro.openfoodfacts.dev
     //   * help screen: add "Similarly named products without a category" link
     //   * help screen: add "Product code search on Google" link
     //   * help screen: add links to Google/Yandex Reverse Image search (thanks Tacite for suggestion)
     //   * Add fiew informations on the confirmation page:
     //     * Products issues:
     //       * To be completed (from "states_tags")
-    //       * Quality tags
+    //       * Quality errors tags (green message if none)
+    //       * Quality warings tags (green message if none)
     //       * and a link to product edit
     //     * Going further
     //       * "XX products without brand that might be from this brand" link
@@ -120,6 +122,9 @@
 
     // TODO
     // * FEATURES
+    //   * Easily delete nutrition facts
+    //   * identify problematic fields based on quality feedbacks; https://world.openfoodfacts.org/api/v0/product/7502271153193.json
+    //     * see "data_quality_errors_tags" array
     //   * Add automatic detection of nutriments, see: https://robotoff.openfoodfacts.org/api/v1/predict/nutrient?ocr_url=https://static.openfoodfacts.org/images/products/841/037/511/0228/nutrition_pt.12.json
     //   * Easily delete ingredients when too buggy
     //   * Add a shortcut to move a product to OBF, OPF
@@ -143,6 +148,7 @@
     //   * Show special prompt when the nutrition photo has changed, but not the nutrition data itself: https://github.com/openfoodfacts/openfoodfacts-server/issues/1910
     //   * Show a special prompt when the ingredient list photo has changed, but not the ingredient list itself: https://github.com/openfoodfacts/openfoodfacts-server/issues/1909
     // * BUGS
+    //   * deal with products without official barcodes: https://fr.openfoodfacts.org/produit/2000050217197/mondose-exquisite-belgian-chocolates
     //   * wheelzoom transform image links to: data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaH..................
     //   * Some access keys dont seem to work, due to javascript library
     //     * See Support hitting the TAB key only once to quickly move to the next text field and then make entering text possible:
@@ -153,7 +159,7 @@
     // css
     // See https://stackoverflow.com/questions/4376431/javascript-heredoc
     var css = `
-/**
+/*
  * OFF web app already load jquery-ui.css but it doesn't work properly with "dialog" function.
  * We add the CSS this way so that the embedded, relatively linked images load correctly.
  * (Use //ajax... so that https or http is selected as appropriate to avoid "mixed content".)
@@ -312,6 +318,20 @@ background-color:red;
 border-radius: 0 10px 10px 0;
 }
 
+
+/* Let nutrition image as tall as Nutrition facts table */
+#nutrition_image_copy {
+width: 80%;
+width: -moz-available;
+height: 90%;
+}
+
+#nutrition_image_copy > img {
+/*height: 100%;/**/
+/*max-weight: 100%;/**/
+width: -moz-available;
+}
+
 .productLink::before {
 content: " — ";
 }
@@ -414,12 +434,23 @@ content: " — ";
                         sameBrandProductsURL +
                         '" title="Products without brand that might be from this brand">'+
                         'Non-branded ϵ same brand?</a>]</span>');
-            // Link to OpenBeautyFacts
+            // Google Link
+            var googleLink = 'https://www.google.com/search?q=' + code;
+            $("#barcode_paragraph")
+                .append(' <span id="googleLink" class="productLink">[<a href="' + googleLink +
+                        '">G</a>]');
+            // Link to Open Beauty Facts
             var obfLink = 'https://world.openbeautyfacts.org/product/' + code;
             productExists("https://cors-anywhere.herokuapp.com/"+obfLink,"#obfLinkStatus","","");
             $("#barcode_paragraph")
                 .append(' <span id="obfLink" class="productLink">[<a href="' + obfLink +
                         '">obf.org</a>] (<span id="obfLinkStatus"></span>)');
+            // Link to Open Pet Food Facts
+            var opffLink = 'https://world.openpetfoodfacts.org/product/' + code;
+            productExists("https://cors-anywhere.herokuapp.com/"+opffLink,"#opffLinkStatus","","");
+            $("#barcode_paragraph")
+                .append(' <span id="opffLink" class="productLink">[<a href="' + opffLink +
+                        '">opff.org</a>] (<span id="opffLinkStatus"></span>)');
             // Link to .pro.openfoodfacts.dev
             //var proDevLink = 'https://off:off@world.pro.openfoodfacts.dev/product/' + code;
             var proDevLink = 'https://world.pro.openfoodfacts.dev/product/' + code;
@@ -708,7 +739,6 @@ content: " — ";
         addQualityTags();
         addStateTags();
     }
-
 
 
 
@@ -1133,24 +1163,45 @@ content: " — ";
     }
 
 
+    /**
+     * Display the quality tags in "product issues" section (#issues id)
+     * Examples:
+     *
+     * @returns none
+     */
     function addQualityTags() {
         $.getJSON(apiProductURL, function(data) {
-            var qualityTagsArray = data.product.quality_tags;
-            console.log("qualityTagsArray: ");
-            console.log(qualityTagsArray);
+            var qualityErrorsTagsArray = data.product.data_quality_errors_tags;
+            console.log("addQualityTags() > qualityErrorsTagsArray: ");
+            console.log(qualityErrorsTagsArray);
             //var list = '<ul><li>' + arr.join('</li><li>') + '</li></ul>';
-            var list = qualityTagsArray.join(' ◼ ');
-            $("#issues").append('<li><span>Quality tags: ' + list +
-                                    ' </span>' +
-                                    '</li>');
+            var list = (qualityErrorsTagsArray.length === 0 ?
+                        ('<span style="color: green">No quality errors</span>') :
+                        ('<span style="color: red">' + qualityErrorsTagsArray.join(' ◼ ') + '</span>'));
+            $("#issues").append('<li id="qualityErrorsTags">Quality error tags: ' + list + '</li>');
+
+            var qualityWarningsTagsArray = data.product.data_quality_warnings_tags;
+            console.log("addQualityTags() > qualityWarningsTagsArray: ");
+            console.log(qualityWarningsTagsArray);
+            //var list = '<ul><li>' + arr.join('</li><li>') + '</li></ul>';
+            list = (qualityWarningsTagsArray.length === 0 ?
+                        ('<span style="color: green">No quality warnings</span>') :
+                        ('<span style="color: red">' + qualityWarningsTagsArray.join(' ◼ ') + '</span>'));
+            $("#issues").append('<li id="qualityWarningsTags">Quality warnings tags: ' + list + '</li>');
         });
     }
 
 
+    /**
+     * Display the "to be completed" state tags in "product issues" section (#issues id)
+     * Examples: "To be completed (from "State tags"): ingredients ◼ characteristics ◼ categories ◼ packaging ◼ quantity ◼ photos to be validated
+     *
+     * @returns none
+     */
     function addStateTags() { // TODO: merge with addQualityTags function?
         $.getJSON(apiProductURL, function(data) {
             var stateTagsArray = data.product.states_tags;
-            console.log("stateTagsArray: ");
+            console.log("addStateTags() > stateTagsArray: ");
             console.log(stateTagsArray);
             //var list = '<ul><li>' + arr.join('</li><li>') + '</li></ul>';
             var filteredStateTagsArray = keepMatching(stateTagsArray, /(.*)to-be(.*)/);
@@ -1166,13 +1217,19 @@ content: " — ";
     }
 
 
+    /**
+     * Display the number and the link to similar named products without a category
+     *
+     * @returns none
+     */
     function isNbOfSimilarNamedProductsWithoutACategory() {
+        // Get URL
         var url = getSimilarlyNamedProductsWithoutCategorySearchURL();
         console.log("isNbOfSimilarNamedProductsWithoutACategory() > url: " + url);
         $.getJSON(url + "&json=1", function(data) {
             var nbOfSimilarNamedProductsWithoutACategory = data.count;
             console.log("isNbOfSimilarNamedProductsWithoutACategory() > nbOfSimilarNamedProductsWithoutACategory: " + nbOfSimilarNamedProductsWithoutACategory);
-            $("#going-further").append('<li><span><a href="' +
+            $("#going-further").append('<li><span id="nbOfSimilarNamedProductsWithoutACategory"><a href="' +
                                        url +
                                        '">' + nbOfSimilarNamedProductsWithoutACategory +
                                        ' products with a similar name but without a category</a></span>' +
@@ -1376,8 +1433,8 @@ content: " — ";
             url: urlToCheck,
             type: "GET",
             //xhrFields: { withCredentials: true },
-//             username: userName,
-//             password: passWord,
+            //             username: userName,
+            //             password: passWord,
             headers: { // send auth headers, needed for .dev platform
                 "Authorization": "Basic " + btoa(userName + ":" + passWord)
             },
@@ -1405,5 +1462,4 @@ content: " — ";
 
 
 })();
-
 
