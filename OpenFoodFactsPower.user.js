@@ -502,7 +502,7 @@ content: " — ";
               "<li>(E): edit product in a new window</li>":
               "") +
             ((pageType === "product view"|pageType === "edit") ?
-              "<li id='api_product_page'>(Alt+shift+A): API product page (json)</li>":
+              "<li id='api_product_page'>(a): <a href='" + apiProductURL + "'>API product page</a> (json)</li>":
               "") +
             "<li><a href='https://google.com/search?&q="+ code + "'>Product code search on Google</a></li>" +
             "<li>Google Reverse Image search"+
