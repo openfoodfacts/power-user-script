@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-04-17T14:33
+// @version     2020-04-17T17:34
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -39,7 +39,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-04-17T14:33 - mode: " + pageType);
+    console.log("2020-04-17T17:34 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -80,7 +80,7 @@
     //   * show/hide barcode; keyboard shortcut (shift+B)
     //     * see https://github.com/openfoodfacts/openfoodfacts-server/issues/1728
     //   * Edit mode: show hide help comments for each field (see help screen)
-    //   * keyboard shortcut to API product page (alt+shift+A)
+    //   * keyboard shortcut to API product page (a)
     //   * keyboard shortcut to get back to view mode (v)
     //   * keyboard shortcut to enter edit mode: (e) in the current window, (E) in a new window
     //     * see Add "Edit" keyboard shortcut for logged users: https://github.com/openfoodfacts/openfoodfacts-server/issues/1852
@@ -541,10 +541,6 @@ content: " — ";
 
 
 
-        // API accesskey
-        $('body').append('<a id="api-page" href="'+ apiProductURL +'" target="_blank"></a>');
-        $("#api-page").attr("accesskey","A");
-
         // Keyboard actions
         $(document).on('keydown', function(event) {
             // console.log(event);
@@ -567,6 +563,11 @@ content: " — ";
                             displayValue: true});
                         return;
                     }
+                }
+                // (a): api page in a new window
+                if ((pageType === "product view" || pageType == "edit") && event.key === 'a') {
+                    window.open(apiProductURL, "_blank"); // edit in current window
+                    return;
                 }
                 // (e): edit current product in current window
                 if (pageType === "product view" && event.key === 'e') {
