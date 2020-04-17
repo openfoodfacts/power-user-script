@@ -14,6 +14,11 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2020-04-17T14:33
+* Confirmation page: quality errors and quality warnings displayed in red (or green when it's all right)
+* Google Link for product barcode (near the barcode)
+* Link to Open Pet Food Facts (near the barcode)
+* Firefox: Nutrition facts picture takes all the place available
 ### 2020-04-11T17:26
 * Add openbeautyfacts.org link and its status code (200 = the product exists; 404 it doesn't)
 * Add .pro.openffodfacts.org link (status code isn't working)
