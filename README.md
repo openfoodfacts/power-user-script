@@ -1,5 +1,15 @@
 # power-user-script
-User script for your browser, to empower Open Food Facts contribution.
+User script for your browser, to empower Open Food Facts contribution. Some features:
+* keyboard shortcuts to different pages: product edition (e), product JSON (a), view mode (v), etc.
+* styling improvements via CSS: barcode highlighted, fields highlighted, etc.
+* show/hide barcode
+* show/hide helpers
+* sidebar quick links: page translation, category translation, Recent Changes, Hunger Game...
+* inline edit of ingredients
+* information enhancements beside barcode number: links to Google search, Open Beauty Facts, etc.
+* information enhancements in the confirmation page: product issues, going further, etc.
+* recent changes filter (filter as you type)
+* etc. See complete list in the "changelog" or directly in JS code
 
 # Install
 To run userscripts it's best to have a script manager installed. Userscript managers are available as browser extensions:
