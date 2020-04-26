@@ -399,7 +399,7 @@ content: " — ";
             'Recent Changes</a>' +
             '</p>' +
             '<p>'+
-            '> <a href="/hunger-game">' +
+            '> <a href="https://hunger.openfoodfacts.org">' +
             'Hunger Game</a>' +
             '</p>'
         );
