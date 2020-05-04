@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-04-17T17:34
+// @version     2020-05-04T10:39
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -39,7 +39,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-04-17T17:34 - mode: " + pageType);
+    console.log("2020-05-04T10:39 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -73,7 +73,6 @@
     //   * better distinguished sections
     //   * fields highlighted, current field highlighted
     //   * less margins for some elements
-    //   * number of products easier to read (with separators depending on your locale); see: https://github.com/openfoodfacts/openfoodfacts-server/issues/2474
     // * UI
     //   * help screen called with button [?] or keyboard shortcut (?) or (h)
     //   * zoom every images with mouse wheel; see http://www.jacklmoore.com/zoom/
@@ -122,7 +121,7 @@
 
     // TODO
     // * FEATURES
-    //   * Easily delete nutrition facts
+    //   * Easily delete nutrition facts (Tacite, Teolemon, Sebleouf)
     //   * identify problematic fields based on quality feedbacks; https://world.openfoodfacts.org/api/v0/product/7502271153193.json
     //     * see "data_quality_errors_tags" array
     //   * Add automatic detection of nutriments, see: https://robotoff.openfoodfacts.org/api/v1/predict/nutrient?ocr_url=https://static.openfoodfacts.org/images/products/841/037/511/0228/nutrition_pt.12.json
@@ -318,18 +317,21 @@ background-color:red;
 border-radius: 0 10px 10px 0;
 }
 
-
 /* Let nutrition image as tall as Nutrition facts table */
 #nutrition_image_copy {
 width: 80%;
 width: -moz-available;
-height: 90%;
+height: 92%;
 }
 
 #nutrition_image_copy > img {
-/*height: 100%;/**/
-/*max-weight: 100%;/**/
-width: -moz-available;
+/* Vertical image:    https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=8002063211913 */
+/* Horizontal image:  https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=0490711801117 */
+height: 100%;/**/
+width: 100%;/**/
+/* https://hacks.mozilla.org/2015/02/exploring-object-fit/ */
+object-fit:contain;
+object-position: left;
 }
 
 .productLink::before {
@@ -399,7 +401,7 @@ content: " — ";
             'Recent Changes</a>' +
             '</p>' +
             '<p>'+
-            '> <a href="/hunger-game">' +
+            '> <a href="https://hunger.openfoodfacts.org">' +
             'Hunger Game</a>' +
             '</p>'
         );
