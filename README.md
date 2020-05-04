@@ -1,5 +1,7 @@
 # power-user-script
-User script for your browser, to empower Open Food Facts contribution. Some features:
+User script for your browser, to empower [Open Food Facts](https://world.openfoodfacts.org/)  contribution. Power User Script is a kind of laboratory, to explore new features before they can get into Open Food Facts.
+
+Some features:
 * keyboard shortcuts to different pages: product edition (e), product JSON (a), view mode (v), etc.
 * styling improvements via CSS: barcode highlighted, fields highlighted, etc.
 * show/hide barcode
@@ -24,6 +26,10 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2020-05-04T10:39
+* Modify link to hunger game
+* Nutrition facts picture takes all the place available: should work for every modern browser (CSS3)
+* very small update, the "a" key now opens the json page in a new window (instead of Alt+Shift+A)
 ### 2020-04-17T14:33
 * Confirmation page: quality errors and quality warnings displayed in red (or green when it's all right)
 * Google Link for product barcode (near the barcode)
