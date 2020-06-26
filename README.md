@@ -26,6 +26,9 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2020-06-26T16:33
+* Deep link to Hunger Game when the page is related to a category, label or brand
+* exclude wiki pages from script
 ### 2020-05-04T10:39
 * Modify link to hunger game
 * Nutrition facts picture takes all the place available: should work for every modern browser (CSS3)
