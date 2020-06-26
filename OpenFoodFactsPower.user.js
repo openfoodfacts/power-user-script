@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-05-04T10:39
+// @version     2020-05-04T16:33
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -10,6 +10,7 @@
 // @include     https://*.pro.openfoodfacts.org/*
 // @include     https://*.openfoodfacts.dev/*
 // @exclude     https://*.wiki.openfoodfacts.org/*
+// @exclude     https://wiki.openfoodfacts.org/*
 // @exclude     https://translate.openfoodfacts.org/*
 // @exclude     https://donate.openfoodfacts.org/*
 // @exclude     https://monitoring.openfoodfacts.org/*
@@ -39,7 +40,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-05-04T10:39 - mode: " + pageType);
+    console.log("2020-05-04T16:33 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -140,6 +141,8 @@
     //   * Revert from an old version
     // * UI & DESIGN
     //   * Picture dates
+    //     => in the list: change background color depending on the year?
+    //     => in the product page: highlight in red when date is old?
     //   * Highlight products with old pictures (?)
     //   * Add a fixed menu button as in mass-updater
     //   * Highlight empty fields?
@@ -389,6 +392,7 @@ content: " — ";
         if(pageLanguage === "en") {                     // Delete page language if "en" because we can't make the difference bewteen "en-GB" and "en-US"
             pageLanguage = "";
         }
+        // Non contextual links
         $(".sidebar p:first").after(
             '<p>'+
             '> <a href="https://crowdin.com/project/openfoodfacts/'+pageLanguage+'">' +
@@ -400,13 +404,25 @@ content: " — ";
             '> <a href="/cgi/recent_changes.pl?&page=1&page_size=900">' +
             'Recent Changes</a>' +
             '</p>' +
-            '<p>'+
+            '<p id="hungerGameLink">'+
             '> <a href="https://hunger.openfoodfacts.org">' +
             'Hunger Game</a>' +
             '</p>'
         );
+        // Hunger Game contextual link
+        var tagName;
+        var hungerGameDeepLink =
+            ($("div[itemtype='https://schema.org/Brand']").length) ? "questions?type=brand&value_tag=" + normalizeTagName($("h1[itemprop='name']").text())
+            : (/label\/(.*)$/.test(document.URL) === true) ? "questions?type=label&value_tag=en:" +  normalizeTagName(RegExp.$1)
+            : (($("div[itemtype='https://schema.org/Thing']").length) ? "questions?type=category&value_tag=en:" +  normalizeTagName($("h1[itemprop='name']").text())
+            : "");
+        $("#hungerGameLink").after(
+            ((hungerGameDeepLink) ? '<p>'+
+            '> <a href="https://hunger.openfoodfacts.org/' + hungerGameDeepLink + '">' +
+            'Hunger Game (deep)</a>' +
+            '</p>' : "")
+        );
     }
-
 
 
     // ***
@@ -722,6 +738,7 @@ content: " — ";
             "float": "left",
         });
         // //$("#display_ingredients_es img").clone().after("#ingredients_text_es");
+
     }
 
 
@@ -1078,6 +1095,7 @@ content: " — ";
         }
     }
 
+
     // ***
     // * Flag revision
     // *
@@ -1418,6 +1436,20 @@ content: " — ";
         var user_name = $("#user_id").text();
         console.log("getConnectedUserID() > user_name: "); console.log(user_name);
         return user_name;
+    }
+
+
+    /**
+     * normalizeTagName: returns a normalized version of a tag
+     *
+     * @param    {string} tagName: tag to normalize;  eg. "Cereal bars"
+     * @returns  {String} normalized tagName;         eg. "cereal-bars"
+     */
+    function normalizeTagName(tagName) {
+        tagName = tagName.toLowerCase()
+        tagName = tagName.replace(/ /mg, "-");
+        console.log("normalizeTagName() - tagName: " + tagName);
+        return tagName;
     }
 
 
