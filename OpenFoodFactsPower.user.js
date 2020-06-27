@@ -586,14 +586,14 @@ content: " — ";
             toggleHelpers();
         });
 
-        //Ingredients analysis check - opens in new window
-        $('body').append('<button id="ing_analysis">Ingredients analysis</button>');
-        $("#ing_analysis").click(function(){
-           //console.log("analyse");
-           submitToPopup(analyse_form);
-        });
-
-
+        if (pageType === "edit"){
+            //Ingredients analysis check - opens in new window
+            $('body').append('<button id="ing_analysis">Ingredients analysis</button>');
+            $("#ing_analysis").click(function(){
+                //console.log("analyse");
+                submitToPopup(analyse_form);
+            });
+        }
 
         // Keyboard actions
         $(document).on('keydown', function(event) {
