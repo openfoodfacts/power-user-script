@@ -474,7 +474,7 @@ content: " — ";
             console.log("href:" + href);
             var productCode = href.split("/")[2];
             console.log("productCode:" + productCode);
-            var url = "/cgi/product.pl?type=edit&code=" + productCode;
+            var url = "/cgi/product.pl?type=edit&code=" + productCode + '#tabs_ingredients_image';
             $('.products > li a').attr("href", url);
         });
     }
