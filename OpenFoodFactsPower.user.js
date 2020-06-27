@@ -235,6 +235,7 @@ document.body.appendChild(analyse_form);
 	margin: .5em .4em .5em 0;
 	cursor: pointer;
 }
+
 .ui-dialog .ui-resizable-n {
 	height: 2px;
 	top: 0;
@@ -453,6 +454,30 @@ content: " — ";
         );
     }
 
+    //Add button to ingredient so it opens in a new window
+    if (pageType === "ingredients"){
+        $('#tagstable').find('tr').each(function(){
+            var tds = $(this).find('td');
+            var url = "";
+            if(tds.length != 0) {
+                url = tds.eq(0).html();
+            }
+            var url1 = url.replace('defined"','defined" target="_blank"');
+            $(this).find('td').eq(2).after('<td style="width:400px">"' + url1 + '"</td>');
+        });
+    }
+
+    //Add a button to go straight to edit rather than the product page then edit
+	if (pageType === "list"){
+        $( ".products > li" ).each(function() {
+            var href = $('.products > li a').attr("href");//.attr("data-language");
+            console.log("href:" + href);
+            var productCode = href.split("/")[2];
+            console.log("productCode:" + productCode);
+            var url = "/cgi/product.pl?type=edit&code=" + productCode;
+            $('.products > li a').attr("href", url);
+        });
+    }
 
     // ***
     // * Every mode, except "api", "list", "search-form"
@@ -594,6 +619,8 @@ content: " — ";
                 submitToPopup(analyse_form);
             });
         }
+
+
 
         // Keyboard actions
         $(document).on('keydown', function(event) {
@@ -1383,6 +1410,11 @@ content: " — ";
         // Detect recentchanges
         regex_search = RegExp('cgi/recent_changes.pl');
         if(regex_search.test(document.URL) === true) return "recent changes";
+
+        //Detect if in the list of ingredients
+        regex_search = RegExp('ingredients');
+        if(regex_search.test(document.URL) === true) return "ingredients";
+
 
         // Finally, it's a product view
         if($("body").attr("typeof") === "food:foodProduct") return "product view";
