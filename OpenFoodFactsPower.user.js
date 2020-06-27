@@ -33,6 +33,25 @@
 // * Tagify 3.6.3, in replacement of jQuery-Tags-Input 1.3.6 (no more maintained)
 //   https://github.com/yairEO/tagify
 
+//Hidden form for ingredients analysis
+//Ingredients analysis takes its input from 'ingredients_text' but the language pages have the text in 'ingredients_text_xx'
+//so we have to copy the text (in Copytext) before submitting the form
+var analyse_form = document.createElement("form");
+analyse_form.setAttribute("method", "get");
+analyse_form.setAttribute("enctype", "multipart/form-data");//.openfoodfacts.org/cgi
+//analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
+var txt = document.createElement('textarea');
+txt.setAttribute('id', 'ingredients_text');
+txt.setAttribute('name', 'ingredients_text');
+txt.setAttribute('style', 'display:none;');
+var sub = document.createElement('input');
+sub.setAttribute('type', 'hidden');
+sub.setAttribute('name', 'action');
+sub.setAttribute('value', 'process');
+analyse_form.appendChild(txt);
+analyse_form.appendChild(sub);
+document.body.appendChild(analyse_form);
+
 (function() {
     'use strict';
 
@@ -320,6 +339,16 @@ background-color:red;
 border-radius: 0 10px 10px 0;
 }
 
+#ing_analysis {
+position:fixed;
+left:0%;
+top:5rem;
+padding:0 0.7rem 0 0.7rem;
+font-size:1.5rem;
+background-color:red;
+border-radius: 0 10px 10px 0;
+}
+
 /* Let nutrition image as tall as Nutrition facts table */
 #nutrition_image_copy {
 width: 80%;
@@ -555,6 +584,13 @@ content: " — ";
         $("#pwe_help").click(function(){
             showPowerUserInfo(help);
             toggleHelpers();
+        });
+
+        //Ingredients analysis check - opens in new window
+        $('body').append('<button id="ing_analysis">Ingredients analysis</button>');
+        $("#ing_analysis").click(function(){
+           //console.log("analyse");
+           submitToPopup(analyse_form);
         });
 
 
@@ -838,9 +874,27 @@ content: " — ";
 
     }
 
+	//Copy data from the language specific ingredients_text to the ingredients_text in the hidden form so it can be poassed to the analyser
+	function Copydata(){
+		var lang = $('ul#tabs_ingredients_image > li.active').attr("data-language");
+		console.log("Lang:" + lang);
+		var cd = $("#ingredients_text_"+lang).val();
+		console.log("Language Text:"+cd);
 
+		//As target language can be different from the page language we have to create the full URL
+		var URL = "http:/" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
+		//analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
+		analyse_form.setAttribute("action", URL);
+	  $("#ingredients_text").val(cd);
+	}
 
-
+	function submitToPopup(f) {
+		console.log("submitToPopup");
+		Copydata();
+		var w = window.open('', 'form-target', 'width=800','height=800');
+		f.target = 'form-target';
+		f.submit();
+	}
 
     /***
      * listByRows
