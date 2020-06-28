@@ -913,8 +913,16 @@ content: " — ";
 		//console.log("Language Text:"+cd);
 
         //Here we have to manipulate the language for regional languages
-        if(lang == 'ca'){lang = 'es-ca';} //Catalan
-        if(lang == 'en'){lang = pageLanguage + '-en';} //English from source language page
+        if(lang === 'ca'){lang = 'es-ca';} //Catalan
+        if(lang === 'en'){
+            if(pageLanguage === 'en'){
+                lang = 'uk';//English
+            }
+            else
+            {
+                lang = pageLanguage + '-en'; //English from source language page
+            }
+        }
 
 		//As target language can be different from the page language we have to create the full URL
 		var URL = "http:/" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
