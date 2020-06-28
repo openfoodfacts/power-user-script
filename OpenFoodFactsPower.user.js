@@ -469,13 +469,15 @@ content: " — ";
 
     //Add a button to go straight to edit rather than the product page then edit
 	if (pageType === "list"){
-        $( ".products > li" ).each(function() {
-            var href = $('.products > li a').attr("href");//.attr("data-language");
-            console.log("href:" + href);
+        $( "ul.products > li a" ).each(function() {
+            var href = $(this).attr("href");
+            //console.log("href:" + href);
             var productCode = href.split("/")[2];
-            console.log("productCode:" + productCode);
-            var url = "/cgi/product.pl?type=edit&code=" + productCode + '#tabs_ingredients_image';
-            $('.products > li a').attr("href", url);
+            //console.log("productCode:" + productCode);
+            var url = '/cgi/product.pl?type=edit&code=' + productCode + '#tabs_ingredients_image';
+            //console.log("New URL:"+url);
+            $(this).attr("href", url); //Puts in ul/li
+            $(this).attr("target", "_blank");
         });
     }
 
