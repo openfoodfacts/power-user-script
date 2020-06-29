@@ -33,6 +33,25 @@
 // * Tagify 3.6.3, in replacement of jQuery-Tags-Input 1.3.6 (no more maintained)
 //   https://github.com/yairEO/tagify
 
+//Hidden form for ingredients analysis
+//Ingredients analysis takes its input from 'ingredients_text' but the language pages have the text in 'ingredients_text_xx'
+//so we have to copy the text (in Copytext) before submitting the form
+var analyse_form = document.createElement("form");
+analyse_form.setAttribute("method", "get");
+analyse_form.setAttribute("enctype", "multipart/form-data");//.openfoodfacts.org/cgi
+//analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
+var txt = document.createElement('textarea');
+txt.setAttribute('id', 'ingredients_text');
+txt.setAttribute('name', 'ingredients_text');
+txt.setAttribute('style', 'display:none;');
+var sub = document.createElement('input');
+sub.setAttribute('type', 'hidden');
+sub.setAttribute('name', 'action');
+sub.setAttribute('value', 'process');
+analyse_form.appendChild(txt);
+analyse_form.appendChild(sub);
+document.body.appendChild(analyse_form);
+
 (function() {
     'use strict';
 
@@ -216,6 +235,7 @@
 	margin: .5em .4em .5em 0;
 	cursor: pointer;
 }
+
 .ui-dialog .ui-resizable-n {
 	height: 2px;
 	top: 0;
@@ -314,6 +334,16 @@ color: #00f;
 position:fixed;
 left:0%;
 top:3rem;
+padding:0 0.7rem 0 0.7rem;
+font-size:1.5rem;
+background-color:red;
+border-radius: 0 10px 10px 0;
+}
+
+#ing_analysis {
+position:fixed;
+left:0%;
+top:5rem;
 padding:0 0.7rem 0 0.7rem;
 font-size:1.5rem;
 background-color:red;
@@ -424,6 +454,32 @@ content: " — ";
         );
     }
 
+    //Add button to ingredient so it opens in a new window
+    if (pageType === "ingredients"){
+        $('#tagstable').find('tr').each(function(){
+            var tds = $(this).find('td');
+            var url = "";
+            if(tds.length != 0) {
+                url = tds.eq(0).html();
+            }
+            var url1 = url.replace('defined"','defined" target="_blank"');
+            $(this).find('td').eq(2).after('<td style="width:400px">"' + url1 + '"</td>');
+        });
+    }
+
+    //Add a button to go straight to edit rather than the product page then edit
+	if (pageType === "list"){
+        $( "ul.products > li a" ).each(function() {
+            var href = $(this).attr("href");
+            //console.log("href:" + href);
+            var productCode = href.split("/")[2];
+            //console.log("productCode:" + productCode);
+            var url = '/cgi/product.pl?type=edit&code=' + productCode + '#tabs_ingredients_image';
+            //console.log("New URL:"+url);
+            $(this).attr("href", url); //Puts in ul/li
+            $(this).attr("target", "_blank");
+        });
+    }
 
     // ***
     // * Every mode, except "api", "list", "search-form"
@@ -556,6 +612,15 @@ content: " — ";
             showPowerUserInfo(help);
             toggleHelpers();
         });
+
+        if (pageType === "edit"){
+            //Ingredients analysis check - opens in new window
+            $('body').append('<button id="ing_analysis">Ingredients analysis</button>');
+            $("#ing_analysis").click(function(){
+                //console.log("analyse");
+                submitToPopup(analyse_form);
+            });
+        }
 
 
 
@@ -838,9 +903,42 @@ content: " — ";
 
     }
 
+	//Copy data from the language specific ingredients_text to the ingredients_text in the hidden form so it can be poassed to the analyser
+	function Copydata(){
+		var lang = $('ul#tabs_ingredients_image > li.active').attr("data-language");
+        var pageLanguage = $("html").attr('lang');      // Get page language
 
+		//console.log("Lang:" + lang);
+		var cd = $("#ingredients_text_"+lang).val();
+		//console.log("Language Text:"+cd);
 
+        //Here we have to manipulate the language for regional languages
+        if(lang === 'ca'){lang = 'es-ca';} //Catalan
+        if(lang === 'en'){
+            if(pageLanguage === 'en'){
+                lang = 'uk';//English
+            }
+            else
+            {
+                lang = pageLanguage + '-en'; //English from source language page
+            }
+        }
 
+		//As target language can be different from the page language we have to create the full URL
+		var URL = "http:/" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
+		//analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
+        //console.log("analyse url="+URL);
+		analyse_form.setAttribute("action", URL);
+	  $("#ingredients_text").val(cd);
+	}
+
+	function submitToPopup(f) {
+		console.log("submitToPopup");
+		Copydata();
+		var w = window.open('', 'form-target', 'width=800','height=800');
+		f.target = 'form-target';
+		f.submit();
+	}
 
     /***
      * listByRows
@@ -1329,6 +1427,11 @@ content: " — ";
         // Detect recentchanges
         regex_search = RegExp('cgi/recent_changes.pl');
         if(regex_search.test(document.URL) === true) return "recent changes";
+
+        //Detect if in the list of ingredients
+        regex_search = RegExp('ingredients');
+        if(regex_search.test(document.URL) === true) return "ingredients";
+
 
         // Finally, it's a product view
         if($("body").attr("typeof") === "food:foodProduct") return "product view";
