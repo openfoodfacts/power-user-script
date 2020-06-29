@@ -443,7 +443,15 @@ content: " — ";
             if(tds.length != 0) {
                 url = tds.eq(0).html();
             }
-            var url1 = url.replace('defined"','defined" target="_blank"');
+            var url1;
+            if(url.includes('defined')){
+                url1 = url.replace('defined"','defined" target="_blank"');
+               }
+            else
+            {
+                url1 = url.replace('known"','known" target="_blank"');
+            }
+            console.log("url1="+url1);
             $(this).find('td').eq(2).after('<td style="width:400px">"' + url1 + '"</td>');
         });
     }
