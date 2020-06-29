@@ -1500,7 +1500,7 @@ content: " — ";
         return originalArray;
     }
 
-
+ 
     /**
      * replaceInsideArray: replace some content by another in each string of an array
      * @example  finalArray = replaceInsideArray(["en:tomatoes","en:eggs"], /en:/, '');
