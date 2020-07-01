@@ -937,7 +937,7 @@ content: " — ";
         }
 
 		//As target language can be different from the page language we have to create the full URL
-		var URL = "http:/" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
+		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
        console.log("analyse url="+URL);
        analyse_form.action = URL;
 		//analyse_form.setAttribute("action", URL);
@@ -1682,4 +1682,3 @@ content: " — ";
 
 
 })();
-
