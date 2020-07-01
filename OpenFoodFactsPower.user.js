@@ -1023,6 +1023,7 @@ content: " — ";
         var prods = getJSONList(urlList);
         //console.log(prods);
 
+        $(".pus_edit_link").remove();
         $(".off").hide();
         $(".app").hide();
         $(".project").hide();
