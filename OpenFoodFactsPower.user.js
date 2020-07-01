@@ -381,6 +381,28 @@ content: " — ";
  display: inline;
 }
 
+.pus_edit_link {
+ display: inline !important; /**/
+ z-index: -2;/**/
+ position: relative;
+ bottom: 7rem;
+ border: 3px solid;
+ right: 0rem;
+}
+
+.product_link {
+ z-index: 2;
+ background-color: white;
+}
+
+.pus_edit_link:hover {
+ z-index: 5;
+}
+
+.product_link:hover + .pus_edit_link {
+ z-index: 5;
+}
+
 `;
 
     // apply custom CSS
@@ -464,6 +486,7 @@ content: " — ";
         );
     }
 
+
     // Add external link to ingredient so it opens in a new window
     if (pageType === "ingredients"){
         $('#tagstable').find('tr').each(function(){
@@ -481,14 +504,14 @@ content: " — ";
     // Add a button to go straight to edit rather than the product page then edit
 	if (pageType === "list") {
         $( "ul.products > li a" ).each(function() {
+            $(this).addClass("product_link");
             var href = $(this).attr("href");
             //console.log("href:" + href);
             var productCode = href.split("/")[2];
             //console.log("productCode:" + productCode);
-            var url = '/cgi/product.pl?type=edit&code=' + productCode + '#tabs_ingredients_image';
-            //console.log("New URL:"+url);
-            $(this).attr("href", url); //Puts in ul/li
-            $(this).attr("target", "_blank");
+            $(this).after('<a class="pus_edit_link" href="'+
+                          "/cgi/product.pl?type=edit&code=" + productCode + '" target="_blank">🖉</a>');
+
         });
     }
 
