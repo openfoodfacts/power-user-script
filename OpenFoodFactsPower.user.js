@@ -61,6 +61,25 @@
     var zoomOption        = false; // "true" allows zooming images with mouse wheel, while "false" disallow it
     var listByRowsOption  = false; // "true" automatically lists products by rows, while "false" not
 
+    //Hidden form for ingredients analysis used both in list mode and single products.
+    //Ingredients analysis takes its input from 'ingredients_text' for single products or from textarea with the id=i[product_id] when in a list
+    //but the language pages have the text in 'ingredients_text_xx'
+    //so we have to copy the text (in Copytext) before submitting the form
+    var analyse_form = document.createElement("form");
+    analyse_form.setAttribute("method", "get");
+    analyse_form.setAttribute("enctype", "multipart/form-data");
+    var txt = document.createElement('textarea');
+    txt.setAttribute('id', 'ingredients_text');
+    txt.setAttribute('name', 'ingredients_text');
+    txt.setAttribute('style', 'display:none;');
+    var sub = document.createElement('input');
+    sub.setAttribute('type', 'hidden');
+    sub.setAttribute('name', 'action');
+    sub.setAttribute('value', 'process');
+    analyse_form.appendChild(txt);
+    analyse_form.appendChild(sub);
+    document.body.appendChild(analyse_form);
+
     // Open Food Facts power user
     // * Main code by Charles Nepote (@CharlesNepote)
     // * Barcode code by @harragastudios
@@ -608,30 +627,12 @@ content: " — ";
 
         if (pageType === "edit"){
 
-            //Hidden form for ingredients analysis
-            //Ingredients analysis takes its input from 'ingredients_text' but the language pages have the text in 'ingredients_text_xx'
-            //so we have to copy the text (in Copytext) before submitting the form
-            var analyse_form = document.createElement("form");
-            analyse_form.setAttribute("method", "get");
-            analyse_form.setAttribute("enctype", "multipart/form-data");//.openfoodfacts.org/cgi
-            //analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
-            var txt = document.createElement('textarea');
-            txt.setAttribute('id', 'ingredients_text');
-            txt.setAttribute('name', 'ingredients_text');
-            txt.setAttribute('style', 'display:none;');
-            var sub = document.createElement('input');
-            sub.setAttribute('type', 'hidden');
-            sub.setAttribute('name', 'action');
-            sub.setAttribute('value', 'process');
-            analyse_form.appendChild(txt);
-            analyse_form.appendChild(sub);
-            document.body.appendChild(analyse_form);
-
             //Ingredients analysis check - opens in new window
             $('body').append('<button id="ing_analysis">Ingredients analysis</button>');
             $("#ing_analysis").click(function(){
                 //console.log("analyse");
-                submitToPopup(analyse_form);
+                Copydata();
+				submitToPopup(analyse_form);
             });
         }
 
@@ -916,7 +917,35 @@ content: " — ";
 
     }
 
-	//Copy data from the language specific ingredients_text to the ingredients_text in the hidden form so it can be poassed to the analyser
+    //Copy data from the list textarea to the ingredients_text in the hidden form so it can be passed to the analyser
+    //As the list can contain different languages we take the language from the textarea
+	function CopyListData(_code, lang){
+		console.log("Lang:" + lang);
+		var cd = $("#i" + _code).val()
+		console.log("Language Text:"+cd);
+
+        //Here we have to manipulate the language for regional languages
+        if(lang === 'ca'){lang = 'es-ca';} //Catalan
+        if(lang === 'en'){
+            if(pageLanguage === 'en'){
+                lang = 'uk';//English
+            }
+            else
+            {
+                lang = pageLanguage + '-en'; //English from source language page
+            }
+        }
+
+		//As target language can be different from the page language we have to create the full URL
+		var URL = "http:/" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
+       console.log("analyse url="+URL);
+       analyse_form.action = URL;
+		//analyse_form.setAttribute("action", URL);
+	  $("#ingredients_text").val(cd);
+	}
+
+	//Copy data from the language specific ingredients_text to the ingredients_text in the hidden form so it can be passed to the analyser
+    //This is for single product page, list is handled differently
 	function Copydata(){
 		var lang = $('ul#tabs_ingredients_image > li.active').attr("data-language");
         var pageLanguage = $("html").attr('lang');      // Get page language
@@ -947,7 +976,6 @@ content: " — ";
 
 	function submitToPopup(f) {
 		console.log("submitToPopup");
-		Copydata();
 		var w = window.open('', 'form-target', 'width=800','height=800');
 		f.target = 'form-target';
 		f.submit();
@@ -1029,12 +1057,53 @@ content: " — ";
                                  "onclick=\"window.open('"+editIngUrl+"','_blank');\">"+
                                  'Edit [🡕]'+
                                  '</button>'+
-                                 '</div>');
+                                 
+								 "<button title=\"Ingredients analysis\" "+
+                                 ' id="p_actions_analysis_'+local_code+'" value="'+local_code+'">'+
+                                 'Analysis'+
+                                 '</button>'+
+
+                                 "<button title=\"Move to open beauty\" "+
+                                 ' id="p_actions_obf_'+local_code+'" value="'+local_code+'">'+
+                                 '->OBF'+
+                                 '</button>'+
+								 '</div>');
+								 
                 $("#i"+local_code).attr('lang', _lang);
                 // Edit ingredient field inline
                 //$("#i"+local_code).dblclick(function() {
                 //    console.log("dblclick on: "+$(this).attr("id"));
                 //});
+
+                //Ingredients analysis check - opens in new window
+                $("#p_actions_analysis_"+local_code).click(function(){
+                    //console.log("analyse");
+                    var _code = $(this).attr("value");
+
+                    CopyListData(_code, _lang);
+                    submitToPopup(analyse_form);
+                });
+
+                //Move product to OBF
+                $("#p_actions_obf_"+local_code).click(function(){
+                    var _code = $(this).attr("value");
+                    var _url = encodeURI(document.location.protocol + "//" + document.location.host +
+                                         "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=obf");
+                    console.log("api call-> "+_url);
+                    var _d = $.getJSON(_url, function() {
+                        console.log("getJSONList(urlList) > Move to OBF");
+                    })
+                        .done(function(jqm2) {
+                            console.log(jqm2["status_verbose"]);
+                            console.log(jqm2);
+                        })
+                        .fail(function() {
+                            console.log("getJSONList(urlList) > fail");
+                        });
+                            $("body").append('<div id="timed_alert">Moved!</div>');
+                            $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
+                });
+
                 $("#p_actions_sav_"+local_code).click(function(){
                     //saveProductField(productCode, field);
                     var _code = $(this).attr("value");
