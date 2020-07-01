@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-05-04T16:33
+// @version     2020-07-01T11:58
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -40,7 +40,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-05-04T16:33 - mode: " + pageType);
+    console.log("2020-07-01T11:58 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -80,6 +80,7 @@
     //   * show/hide barcode; keyboard shortcut (shift+B)
     //     * see https://github.com/openfoodfacts/openfoodfacts-server/issues/1728
     //   * Edit mode: show hide help comments for each field (see help screen)
+    //   * Ingredient lists: external link for each ingredient (appear when hovering rows)
     //   * keyboard shortcut to API product page (a)
     //   * keyboard shortcut to get back to view mode (v)
     //   * keyboard shortcut to enter edit mode: (e) in the current window, (E) in a new window
@@ -102,6 +103,7 @@
     //   * launch Google OCR if "Edit ingredients" is clicked in view mode
     //   * "[Products without brand that might be from this brand]" link, following product code
     //   * Links beside barcode number: Google link for product barcode + Open Beauty Facts + Open Pet Food Facts + pro.openfoodfacts.dev
+    //   * Product view: button to open an ingredient analysis popup
     //   * help screen: add "Similarly named products without a category" link
     //   * help screen: add "Product code search on Google" link
     //   * help screen: add links to Google/Yandex Reverse Image search (thanks Tacite for suggestion)
@@ -352,7 +354,15 @@ object-position: left;
 content: " — ";
 }
 
-}`;
+.hidden {
+ display: none;
+}
+
+.ingredient_td:hover .hidden {
+ display: inline;
+}
+
+`;
 
     // apply custom CSS
     var s = document.createElement('style');
@@ -435,29 +445,22 @@ content: " — ";
         );
     }
 
-    //Add button to ingredient so it opens in a new window
+    // Add external link to ingredient so it opens in a new window
     if (pageType === "ingredients"){
         $('#tagstable').find('tr').each(function(){
             var tds = $(this).find('td');
-            var url = "";
+            var urlToIngredient;
+            $(this).children().addClass("ingredient_td");
             if(tds.length != 0) {
-                url = tds.eq(0).html();
+                urlToIngredient = tds.children().attr("href"); // /category/gouda/ingredient/dairy
             }
-            var url1;
-            if(url.includes('defined')){
-                url1 = url.replace('defined"','defined" target="_blank"');
-               }
-            else
-            {
-                url1 = url.replace('known"','known" target="_blank"');
-            }
-            console.log("url1="+url1);
-            $(this).find('td').eq(2).after('<td style="width:400px">"' + url1 + '"</td>');
+            $(this).find('td').children().after(' <a href="'+ urlToIngredient +'" target="_blank"><span class="hidden"> ↗ ↗ ↗ </span></a>');
         });
     }
 
-    //Add a button to go straight to edit rather than the product page then edit
-	if (pageType === "list"){
+
+    // Add a button to go straight to edit rather than the product page then edit
+	if (pageType === "list") {
         $( "ul.products > li a" ).each(function() {
             var href = $(this).attr("href");
             //console.log("href:" + href);
@@ -469,6 +472,7 @@ content: " — ";
             $(this).attr("target", "_blank");
         });
     }
+
 
     // ***
     // * Every mode, except "api", "list", "search-form"
@@ -934,7 +938,7 @@ content: " — ";
         }
 
 		//As target language can be different from the page language we have to create the full URL
-		var URL = "http:/" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
+		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
 		//analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
         //console.log("analyse url="+URL);
 		analyse_form.setAttribute("action", URL);
@@ -1500,7 +1504,7 @@ content: " — ";
         return originalArray;
     }
 
- 
+
     /**
      * replaceInsideArray: replace some content by another in each string of an array
      * @example  finalArray = replaceInsideArray(["en:tomatoes","en:eggs"], /en:/, '');
