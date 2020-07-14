@@ -472,6 +472,7 @@ content: " — ";
             '</p>'
         );
         // Hunger Game contextual link
+	// TODO: display a number of opportunities.
         var tagName;
         var hungerGameDeepLink =
             ($("div[itemtype='https://schema.org/Brand']").length) ? "questions?type=brand&value_tag=" + normalizeTagName($("h1[itemprop='name']").text())
@@ -523,7 +524,16 @@ content: " — ";
         pageType === "product view"||
         pageType === "saved-product page") {
 
-
+	// Showing it directly on the product page, for emerging categories. 
+	// https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=lasagne
+        var SearchUncategorizedProductsOpportunitiesDeepLink = normalizeTagName($("h1[itemprop='name']").text())
+            : "");
+        $("#SearchUncategorizedProductsOpportunities").after(
+            ((SearchUncategorizedProductsOpportunitiesDeepLink) ? '<p>'+
+            '> <a href="https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=' + SearchUncategorizedProductsOpportunitiesDeepLink + '">' +
+            'Categorization opportunities using Mass Edit</a>' +
+            '</p>' : "")
+	    
         if(proPlatform) {
             var publicURL = document.URL.replace(/\.pro\./gi, ".");
             console.log("publicURL: "+publicURL);
