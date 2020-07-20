@@ -527,7 +527,7 @@ content: " — ";
 	// Showing it directly on the product page, for emerging categories. 
 	// https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=lasagne
         var SearchUncategorizedProductsOpportunitiesDeepLink = normalizeTagName($("h1[itemprop='name']").text());
-        $("#SearchUncategorizedProductsOpportunities").after(
+        $("#hungerGameLink").after(
             ((SearchUncategorizedProductsOpportunitiesDeepLink) ? '<p>'+
             '> <a href="/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=' + SearchUncategorizedProductsOpportunitiesDeepLink + '">' +
             'Categorization opportunities using Mass Edit</a>' +
