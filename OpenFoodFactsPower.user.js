@@ -533,7 +533,6 @@ content: " — ";
             '> <a href="/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=' + SearchUncategorizedProductsOpportunitiesDeepLink + '">' +
             'Categorization opportunities using Mass Edit</a>' +
             '</p>' : "");
-	    
         if(proPlatform) {
             var publicURL = document.URL.replace(/\.pro\./gi, ".");
             console.log("publicURL: "+publicURL);
