@@ -434,6 +434,18 @@ content: " — ";
     if(pageType !== "list") {
         var code, barcode;
         code = getURLParam("code")||$('span[property="food:code"]').html();
+
+        if (code === undefined) {
+            // product view needs more effort to get the product code.
+            // Using e.g. <link rel="canonical" href="https://uk.openfoodfacts.org/product/00994835/black-forest-christmas-pudding-marks-spencer">
+            // as it doesn't contain the code if the given code is not a valid entry.
+            var code2 = $('link[rel="canonical"]').attr("href").match('product/\([0-9]+\)');
+            if (code2 && code2[1]) {
+                code = code2[1];
+            }
+        }
+        //console.log("code2: "+ code2);
+
         console.log("code: "+ code);
         // build API product link; example: https://world.openfoodfacts.org/api/v0/product/737628064502.json
         var apiProductURL = "/api/v0/product/" + code + ".json";
@@ -531,7 +543,7 @@ content: " — ";
         }
 
         // Add informations right after the barcode
-        if ($("#barcode_paragraph")) {
+        if ($("#barcode_paragraph") && code !== undefined) {
             // Find products from the same brand
             var sameBrandProducts = code.replace(/[0-9][0-9][0-9][0-9]$/gi, "xxxx");
             var sameBrandProductsURL = document.location.protocol +
