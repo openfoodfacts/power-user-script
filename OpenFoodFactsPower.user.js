@@ -548,6 +548,11 @@ content: " — ";
             $("#barcode_paragraph")
                 .append(' <span id="googleLink" class="productLink">[<a href="' + googleLink +
                         '">G</a>]');
+            // DuckDuckGo Link
+            var duckLink = 'https://duckduckgo.com/?q=' + code;
+            $("#barcode_paragraph")
+                .append(' <span id="duckLink" class="productLink">[<a href="' + duckLink +
+                        '">DDG</a>]');
             // Link to Open Beauty Facts
             var obfLink = 'https://world.openbeautyfacts.org/product/' + code;
             productExists("https://cors-anywhere.herokuapp.com/"+obfLink,"#obfLinkStatus","","");
