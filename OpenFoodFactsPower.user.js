@@ -958,6 +958,7 @@ content: " — ";
                 lang = pageLanguage + '-en'; //English from source language page
             }
         }
+        if(lang === 'et'){lang = 'ee';} //Estonian
 
 		//As target language can be different from the page language we have to create the full URL
 		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
@@ -988,6 +989,7 @@ content: " — ";
                 lang = pageLanguage + '-en'; //English from source language page
             }
         }
+        if(lang === 'et'){lang = 'ee';} //Estonian
 
 		//As target language can be different from the page language we have to create the full URL
 		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
