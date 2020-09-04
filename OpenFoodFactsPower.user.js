@@ -940,6 +940,8 @@ content: " — ";
 
     }
 
+    var langcodes_with_different_countrycodes = [ "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
+    
     //Copy data from the list textarea to the ingredients_text in the hidden form so it can be passed to the analyser
     //As the list can contain different languages we take the language from the textarea
 	function CopyListData(_code, lang){
@@ -958,15 +960,18 @@ content: " — ";
                 lang = pageLanguage + '-en'; //English from source language page
             }
         }
-        if(lang === 'et'){lang = 'ee';} //Estonian
-        if(lang === 'sv'){lang = 'se';} //Swedish
+        
+        // handle languages where the language code and country code differ.
+        if (langcodes_with_different_countrycodes.includes(lang)) {
+            lang = "world-" + lang;
+        }
 
 		//As target language can be different from the page language we have to create the full URL
 		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
-       console.log("analyse url="+URL);
-       analyse_form.action = URL;
+        console.log("CopyListData() analyse url="+URL);
+        analyse_form.action = URL;
 		//analyse_form.setAttribute("action", URL);
-	  $("#ingredients_text").val(cd);
+        $("#ingredients_text").val(cd);
 	}
 
 	//Copy data from the language specific ingredients_text to the ingredients_text in the hidden form so it can be passed to the analyser
@@ -990,15 +995,18 @@ content: " — ";
                 lang = pageLanguage + '-en'; //English from source language page
             }
         }
-        if(lang === 'et'){lang = 'ee';} //Estonian
-        if(lang === 'sv'){lang = 'se';} //Swedish
+        
+        // handle languages where the language code and country code differ.
+        if (langcodes_with_different_countrycodes.includes(lang)) {
+            lang = "world-" + lang;
+        }
 
 		//As target language can be different from the page language we have to create the full URL
 		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
 		//analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
-        //console.log("analyse url="+URL);
+        console.log("Copydata() analyse url="+URL);
 		analyse_form.setAttribute("action", URL);
-	  $("#ingredients_text").val(cd);
+	    $("#ingredients_text").val(cd);
 	}
 
 	function submitToPopup(f) {
