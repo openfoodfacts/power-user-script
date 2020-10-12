@@ -1148,10 +1148,10 @@ content: " — ";
                 $("#p_actions_sav_"+local_code).click(function(){
                     //saveProductField(productCode, field);
                     var _code = $(this).attr("value");
-                    var _url = encodeURI(document.location.protocol + "//" + document.location.host +
-                                         "/cgi/product_jqm2.pl?code=" + _code +
-                                         "&ingredients_text_"+_lang+
-                                         "=" + $("#i" + _code).val());
+                    var _url = document.location.protocol + "//" + encodeURIComponent(document.location.host) +
+                                         "/cgi/product_jqm2.pl?code=" + encodeURIComponent(_code) +
+                                         "&ingredients_text_" + encodeURIComponent(_lang) +
+                                         "=" + encodeURIComponent($("#i" + _code).val());
                     console.log("getJSONList(urlList) > "+_url);
                     var _d = $.getJSON(_url, function() {
                         console.log("getJSONList(urlList) > Save product ingredients");
