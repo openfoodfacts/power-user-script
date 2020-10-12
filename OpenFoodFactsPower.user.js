@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-07-01T11:58
+// @version     2020-10-12T22:57
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -121,7 +121,7 @@
     //     * Ask charles@openfoodfacts.org
     //   * launch Google OCR if "Edit ingredients" is clicked in view mode
     //   * "[Products without brand that might be from this brand]" link, following product code
-    //   * Links beside barcode number: Google link for product barcode + Open Beauty Facts + Open Pet Food Facts + pro.openfoodfacts.dev
+    //   * Links beside barcode number: Google and DuckDuckGo link for product barcode + Open Beauty Facts + Open Pet Food Facts + pro.openfoodfacts.dev
     //   * Product view: button to open an ingredient analysis popup
     //   * help screen: add "Similarly named products without a category" link
     //   * help screen: add "Product code search on Google" link
