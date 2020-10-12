@@ -925,6 +925,7 @@ content: " — ";
  .ingr                     { display: table-cell; /*width: 800px;/**/ height:8rem; margin: 0; vertical-align: middle; padding: 0 0.6rem 0 0.6rem;}
  .p_actions                 { display: table-cell; width: 100px;  vertical-align: middle; padding: 0.5rem; line-height: 2.6rem !important; width: 4rem !important; }
  .ingr, .p_actions > button { font-size: 0.9rem; vertical-align: middle; }
+ .save_needs_clicking { background-color: #ff952b; }
  .p_actions > button { margin: 0 0 0 0; padding: 0.3rem 0.1rem 0.3rem 0.1rem; width: 6rem; }
  .ingr_del { background-color: #ff2c2c; }
 ._lang { position: absolute; top:3rem; right:16px; font-size:3rem; opacity:0.4; }
@@ -1115,6 +1116,11 @@ content: " — ";
                 //$("#i"+local_code).dblclick(function() {
                 //    console.log("dblclick on: "+$(this).attr("id"));
                 //});
+                
+                $("#i"+local_code).on("change", function() {
+                    var _code = $(this).attr("id").replace('i','p_actions_sav_');
+                    $("#"+_code).addClass("save_needs_clicking");
+                });
 
                 //Ingredients analysis check - opens in new window
                 $("#p_actions_analysis_"+local_code).click(function(){
@@ -1165,6 +1171,7 @@ content: " — ";
                         });
                             $("body").append('<div id="timed_alert">Saved!</div>');
                             $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
+                            $("#p_actions_sav_"+_code).removeClass("save_needs_clicking");
                 });
                 // Delete ingredients field: https://world.openfoodfacts.net/cgi/product_jqm2.pl?code=0048151623426&ingredients_text=
                 $("#p_actions_del_"+local_code).click(function(){
