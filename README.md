@@ -27,6 +27,7 @@ Just click on the Raw button and your script manager will ask you if you want to
 
 # Changelog
 ### 2020-10-14T11:53
+* fixes from @svensven (thanks!)
 * Categorization opportunities link
 * Add DuckDuckGo link for product barcode (near the barcode)
 ### 2020-06-26T16:33
