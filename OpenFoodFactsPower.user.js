@@ -536,7 +536,9 @@ content: " — ";
              SearchUncategorizedProductsOpportunitiesDeepLink + '">' +
             'Categorization opportunities</a>' +
             '</p>' : ""));
-        if(proPlatform) {
+
+	// Add product public link if we are on the pro platform
+	if(proPlatform) {
             var publicURL = document.URL.replace(/\.pro\./gi, ".");
             console.log("publicURL: "+publicURL);
             $(".sidebar p:first").after('<p>> <a href="'+publicURL+'">Product public URL</a></p>');
