@@ -28,6 +28,8 @@ Just click on the Raw button and your script manager will ask you if you want to
 # Changelog
 ### 2020-10-14T11:53
 * Categorization opportunities link
+* Add DuckDuckGo link for product barcode (near the barcode)
+### 2020-06-26T16:33
 * Deep link to Hunger Game when the page is related to a category, label or brand
 * exclude wiki pages from script
 ### 2020-05-04T10:39

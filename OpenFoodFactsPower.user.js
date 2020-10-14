@@ -121,7 +121,7 @@
     //     * Ask charles@openfoodfacts.org
     //   * launch Google OCR if "Edit ingredients" is clicked in view mode
     //   * "[Products without brand that might be from this brand]" link, following product code
-    //   * Links beside barcode number: Google link for product barcode + Open Beauty Facts + Open Pet Food Facts + pro.openfoodfacts.dev
+    //   * Links beside barcode number: Google and DuckDuckGo link for product barcode + Open Beauty Facts + Open Pet Food Facts + pro.openfoodfacts.dev
     //   * Product view: button to open an ingredient analysis popup
     //   * help screen: add "Similarly named products without a category" link
     //   * help screen: add "Product code search on Google" link
@@ -434,6 +434,18 @@ content: " — ";
     if(pageType !== "list") {
         var code, barcode;
         code = getURLParam("code")||$('span[property="food:code"]').html();
+
+        if (code === undefined) {
+            // product view needs more effort to get the product code.
+            // Using e.g. <link rel="canonical" href="https://uk.openfoodfacts.org/product/00994835/black-forest-christmas-pudding-marks-spencer">
+            // as it doesn't contain the code if the given code is not a valid entry.
+            var code2 = $('link[rel="canonical"]').attr("href").match('product/\([0-9]+\)');
+            if (code2 && code2[1]) {
+                code = code2[1];
+            }
+        }
+        //console.log("code2: "+ code2);
+
         console.log("code: "+ code);
         // build API product link; example: https://world.openfoodfacts.org/api/v0/product/737628064502.json
         var apiProductURL = "/api/v0/product/" + code + ".json";
@@ -545,7 +557,7 @@ content: " — ";
         }
 
         // Add informations right after the barcode
-        if ($("#barcode_paragraph")) {
+        if ($("#barcode_paragraph") && code !== undefined) {
             // Find products from the same brand
             var sameBrandProducts = code.replace(/[0-9][0-9][0-9][0-9]$/gi, "xxxx");
             var sameBrandProductsURL = document.location.protocol +
@@ -562,6 +574,11 @@ content: " — ";
             $("#barcode_paragraph")
                 .append(' <span id="googleLink" class="productLink">[<a href="' + googleLink +
                         '">G</a>]');
+            // DuckDuckGo Link
+            var duckLink = 'https://duckduckgo.com/?q=' + code;
+            $("#barcode_paragraph")
+                .append(' <span id="duckLink" class="productLink">[<a href="' + duckLink +
+                        '">DDG</a>]');
             // Link to Open Beauty Facts
             var obfLink = 'https://world.openbeautyfacts.org/product/' + code;
             productExists("https://cors-anywhere.herokuapp.com/"+obfLink,"#obfLinkStatus","","");
@@ -922,6 +939,7 @@ content: " — ";
  .ingr                     { display: table-cell; /*width: 800px;/**/ height:8rem; margin: 0; vertical-align: middle; padding: 0 0.6rem 0 0.6rem;}
  .p_actions                 { display: table-cell; width: 100px;  vertical-align: middle; padding: 0.5rem; line-height: 2.6rem !important; width: 4rem !important; }
  .ingr, .p_actions > button { font-size: 0.9rem; vertical-align: middle; }
+ .save_needs_clicking { background-color: #ff952b; }
  .p_actions > button { margin: 0 0 0 0; padding: 0.3rem 0.1rem 0.3rem 0.1rem; width: 6rem; }
  .ingr_del { background-color: #ff2c2c; }
 ._lang { position: absolute; top:3rem; right:16px; font-size:3rem; opacity:0.4; }
@@ -1112,6 +1130,11 @@ content: " — ";
                 //$("#i"+local_code).dblclick(function() {
                 //    console.log("dblclick on: "+$(this).attr("id"));
                 //});
+                
+                $("#i"+local_code).on("change", function() {
+                    var _code = $(this).attr("id").replace('i','p_actions_sav_');
+                    $("#"+_code).addClass("save_needs_clicking");
+                });
 
                 //Ingredients analysis check - opens in new window
                 $("#p_actions_analysis_"+local_code).click(function(){
@@ -1145,10 +1168,10 @@ content: " — ";
                 $("#p_actions_sav_"+local_code).click(function(){
                     //saveProductField(productCode, field);
                     var _code = $(this).attr("value");
-                    var _url = encodeURI(document.location.protocol + "//" + document.location.host +
-                                         "/cgi/product_jqm2.pl?code=" + _code +
-                                         "&ingredients_text_"+_lang+
-                                         "=" + $("#i" + _code).val());
+                    var _url = document.location.protocol + "//" + encodeURIComponent(document.location.host) +
+                                         "/cgi/product_jqm2.pl?code=" + encodeURIComponent(_code) +
+                                         "&ingredients_text_" + encodeURIComponent(_lang) +
+                                         "=" + encodeURIComponent($("#i" + _code).val());
                     console.log("getJSONList(urlList) > "+_url);
                     var _d = $.getJSON(_url, function() {
                         console.log("getJSONList(urlList) > Save product ingredients");
@@ -1162,6 +1185,7 @@ content: " — ";
                         });
                             $("body").append('<div id="timed_alert">Saved!</div>');
                             $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
+                            $("#p_actions_sav_"+_code).removeClass("save_needs_clicking");
                 });
                 // Delete ingredients field: https://world.openfoodfacts.net/cgi/product_jqm2.pl?code=0048151623426&ingredients_text=
                 $("#p_actions_del_"+local_code).click(function(){
