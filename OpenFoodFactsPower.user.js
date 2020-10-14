@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-07-01T11:58
+// @version     2020-10-14T11:53
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -105,7 +105,7 @@
     //   * keyboard shortcut to enter edit mode: (e) in the current window, (E) in a new window
     //     * see Add "Edit" keyboard shortcut for logged users: https://github.com/openfoodfacts/openfoodfacts-server/issues/1852
     //   * keyboard shortcuts to help modify data without a mouse: P(roduct), Q(uality), B(rands), C(ategories), L(abels), I(ngredients), (e)N(ergy), F(ibers)
-    //   * Quick links in the sidebar: page translation, category translation, Recent Changes, Hunger Game...
+    //   * Quick links in the sidebar: page translation, category translation, Recent Changes, Hunger Game, categorization opportunities...
     //   * dedicated to list screens (facets, search results...):
     //     * [alpha] keyboard shortcut to list products as a table containing ingredients and options to edit or delete ingredients
     //               (shift+L) ["L" for "list"]
