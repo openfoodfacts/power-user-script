@@ -524,14 +524,18 @@ content: " — ";
         pageType === "product view"||
         pageType === "saved-product page") {
 
-	// Showing it directly on the product page, for emerging categories. 
-	// https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=lasagne
-        var SearchUncategorizedProductsOpportunitiesDeepLink = normalizeTagName($("h1[itemprop='name']").text());
+        // Showing it directly on the product page, for emerging categories.
+        // https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=lasagne
+        var productName = $('h1[property="food:name"]').html().match(/(.*?)(( - .*)|$)/)[1]; // h1[property="food:name"] => Cerneaux noix de pécan - Vahiné - 50 g ℮
+        console.log("productName: " + productName);
+        var SearchUncategorizedProductsOpportunitiesDeepLink = encodeURI(productName);
         $("#hungerGameLink").after(
             ((SearchUncategorizedProductsOpportunitiesDeepLink) ? '<p>'+
-            '> <a href="/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=' + SearchUncategorizedProductsOpportunitiesDeepLink + '">' +
-            'Categorization opportunities using Mass Edit</a>' +
-            '</p>' : "");
+            '> <a title="Categorization opportunities using Mass Edit"'+
+            'href="/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=' +
+             SearchUncategorizedProductsOpportunitiesDeepLink + '">' +
+            'Categorization opportunities</a>' +
+            '</p>' : ""));
         if(proPlatform) {
             var publicURL = document.URL.replace(/\.pro\./gi, ".");
             console.log("publicURL: "+publicURL);
