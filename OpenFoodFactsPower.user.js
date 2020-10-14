@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-10-12T22:57
+// @version     2020-10-14T11:53
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -105,7 +105,7 @@
     //   * keyboard shortcut to enter edit mode: (e) in the current window, (E) in a new window
     //     * see Add "Edit" keyboard shortcut for logged users: https://github.com/openfoodfacts/openfoodfacts-server/issues/1852
     //   * keyboard shortcuts to help modify data without a mouse: P(roduct), Q(uality), B(rands), C(ategories), L(abels), I(ngredients), (e)N(ergy), F(ibers)
-    //   * Quick links in the sidebar: page translation, category translation, Recent Changes, Hunger Game...
+    //   * Quick links in the sidebar: page translation, category translation, Recent Changes, Hunger Game, categorization opportunities...
     //   * dedicated to list screens (facets, search results...):
     //     * [alpha] keyboard shortcut to list products as a table containing ingredients and options to edit or delete ingredients
     //               (shift+L) ["L" for "list"]
@@ -484,6 +484,7 @@ content: " — ";
             '</p>'
         );
         // Hunger Game contextual link
+	// TODO: display a number of opportunities.
         var tagName;
         var hungerGameDeepLink =
             ($("div[itemtype='https://schema.org/Brand']").length) ? "questions?type=brand&value_tag=" + normalizeTagName($("h1[itemprop='name']").text())
@@ -535,8 +536,21 @@ content: " — ";
         pageType === "product view"||
         pageType === "saved-product page") {
 
+        // Showing it directly on the product page, for emerging categories.
+        // https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=lasagne
+        var productName = $('h1[property="food:name"]').html().match(/(.*?)(( - .*)|$)/)[1]; // h1[property="food:name"] => Cerneaux noix de pécan - Vahiné - 50 g ℮
+        console.log("productName: " + productName);
+        var SearchUncategorizedProductsOpportunitiesDeepLink = encodeURI(productName);
+        $("#hungerGameLink").after(
+            ((SearchUncategorizedProductsOpportunitiesDeepLink) ? '<p>'+
+            '> <a title="Categorization opportunities using Mass Edit"'+
+            'href="/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=' +
+             SearchUncategorizedProductsOpportunitiesDeepLink + '">' +
+            'Categorization opportunities</a>' +
+            '</p>' : ""));
 
-        if(proPlatform) {
+	// Add product public link if we are on the pro platform
+	if(proPlatform) {
             var publicURL = document.URL.replace(/\.pro\./gi, ".");
             console.log("publicURL: "+publicURL);
             $(".sidebar p:first").after('<p>> <a href="'+publicURL+'">Product public URL</a></p>');
