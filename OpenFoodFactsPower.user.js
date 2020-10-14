@@ -931,6 +931,7 @@ content: " — ";
 ._lang { position: absolute; top:3rem; right:16px; font-size:3rem; opacity:0.4; }
 
 #timed_alert { position:fixed; top:0; right:0; font-size: 8rem }
+#timed_alert.failed { color: red; }
 
 `;
         // Show an easier to read number of products
@@ -1159,20 +1160,25 @@ content: " — ";
                                          "&ingredients_text_" + encodeURIComponent(_lang) +
                                          "=" + encodeURIComponent($("#i" + _code).val());
                     console.log("getJSONList(urlList) > "+_url);
+                    $("body").append('<div id="timed_alert">Saving</div>');
                     var _d = $.getJSON(_url, function() {
                         console.log("getJSONList(urlList) > Save product ingredients");
                     })
                         .done(function(jqm2) {
                             console.log(jqm2["status_verbose"]);
                             console.log(jqm2);
+                            $("#p_actions_sav_"+_code).removeClass("save_needs_clicking");
+                            $("#timed_alert").html('Saved!');
+                            $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
                         })
                         .fail(function() {
                             console.log("getJSONList(urlList) > fail");
-                        });
-                            $("body").append('<div id="timed_alert">Saved!</div>');
+                            $("#timed_alert").html('Failed!');
+                            $("#timed_alert").addClass('failed');
                             $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
-                            $("#p_actions_sav_"+_code).removeClass("save_needs_clicking");
+                        });
                 });
+
                 // Delete ingredients field: https://world.openfoodfacts.net/cgi/product_jqm2.pl?code=0048151623426&ingredients_text=
                 $("#p_actions_del_"+local_code).click(function(){
                     //deleteProductField(productCode, field);
