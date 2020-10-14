@@ -536,21 +536,8 @@ content: " — ";
         pageType === "product view"||
         pageType === "saved-product page") {
 
-        // Showing it directly on the product page, for emerging categories.
-        // https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=lasagne
-        var productName = $('h1[property="food:name"]').html().match(/(.*?)(( - .*)|$)/)[1]; // h1[property="food:name"] => Cerneaux noix de pécan - Vahiné - 50 g ℮
-        console.log("productName: " + productName);
-        var SearchUncategorizedProductsOpportunitiesDeepLink = encodeURI(productName);
-        $("#hungerGameLink").after(
-            ((SearchUncategorizedProductsOpportunitiesDeepLink) ? '<p>'+
-            '> <a title="Categorization opportunities using Mass Edit"'+
-            'href="/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=' +
-             SearchUncategorizedProductsOpportunitiesDeepLink + '">' +
-            'Categorization opportunities</a>' +
-            '</p>' : ""));
-
-	// Add product public link if we are on the pro platform
-	if(proPlatform) {
+        // Add product public link if we are on the pro platform
+        if(proPlatform) {
             var publicURL = document.URL.replace(/\.pro\./gi, ".");
             console.log("publicURL: "+publicURL);
             $(".sidebar p:first").after('<p>> <a href="'+publicURL+'">Product public URL</a></p>');
@@ -812,6 +799,20 @@ content: " — ";
     // Test if we are in a product view.
     if (pageType === "product view") {
 
+        // Showing it directly on the product page, for emerging categories.
+        // https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=lasagne
+        var productName = $('h1[property="food:name"]').html().match(/(.*?)(( - .*)|$)/)[1]; // h1[property="food:name"] => Cerneaux noix de pécan - Vahiné - 50 g ℮
+        console.log("productName: " + productName);
+        var SearchUncategorizedProductsOpportunitiesDeepLink = encodeURI(productName);
+        $("#hungerGameLink").after(
+            ((SearchUncategorizedProductsOpportunitiesDeepLink) ? '<p>'+
+            '> <a title="Categorization opportunities using Mass Edit"'+
+            'href="/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=' +
+             SearchUncategorizedProductsOpportunitiesDeepLink + '">' +
+            'Categorization opportunities</a>' +
+            '</p>' : ""));
+
+
         // If ingredients are already entered, show results of the OCR
         if($("#editingredients")[0]) {
             // Looking for ingredients language
@@ -974,7 +975,7 @@ content: " — ";
     }
 
     var langcodes_with_different_countrycodes = [ "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
-    
+
     //Copy data from the list textarea to the ingredients_text in the hidden form so it can be passed to the analyser
     //As the list can contain different languages we take the language from the textarea
 	function CopyListData(_code, lang){
@@ -998,7 +999,7 @@ content: " — ";
                 lang = pageLanguage + '-en'; //English from source language page
             }
         }
-        
+
 		//As target language can be different from the page language we have to create the full URL
 		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
         console.log("CopyListData() analyse url="+URL);
@@ -1033,7 +1034,7 @@ content: " — ";
                 lang = pageLanguage + '-en'; //English from source language page
             }
         }
-        
+
 		//As target language can be different from the page language we have to create the full URL
 		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
 		//analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
@@ -1126,7 +1127,7 @@ content: " — ";
                                  "onclick=\"window.open('"+editIngUrl+"','_blank');\">"+
                                  'Edit [🡕]'+
                                  '</button>'+
-                                 
+
 								 "<button title=\"Ingredients analysis\" "+
                                  ' id="p_actions_analysis_'+local_code+'" value="'+local_code+'">'+
                                  'Analysis'+
@@ -1137,13 +1138,13 @@ content: " — ";
                                  '->OBF'+
                                  '</button>'+
 								 '</div>');
-								 
+
                 $("#i"+local_code).attr('lang', _lang);
                 // Edit ingredient field inline
                 //$("#i"+local_code).dblclick(function() {
                 //    console.log("dblclick on: "+$(this).attr("id"));
                 //});
-                
+
                 $("#i"+local_code).on("change", function() {
                     var _code = $(this).attr("id").replace('i','p_actions_sav_');
                     $("#"+_code).addClass("save_needs_clicking");
