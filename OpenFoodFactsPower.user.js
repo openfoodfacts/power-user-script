@@ -52,7 +52,7 @@
              if (event.key === 'v') {
                  window.open(viewURL, "_blank"); // open a new window
                  return;
-             };
+             }
         });
         return;
     }
@@ -619,16 +619,16 @@ content: " — ";
             ((pageType === "edit") ?
                '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label>Field helpers</label></li>':
                "") +
-            ((pageType === "product view"|pageType === "edit") ?
+            ((pageType === "product view" || pageType === "edit") ?
                "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
                "<li>(Alt+shift+key): direct access to (P)roduct name, (Q)uality, (B)rands, (C)ategories, (L)abels, (I)ngredients, e(N)ergy, (F)ibers</li>" +
                "<hr>":
                "") +
-            ((pageType === "product view"|pageType === "api") ?
+            ((pageType === "product view" || pageType === "api") ?
               "<li>(e): edit current product in current window</li>" +
               "<li>(E): edit product in a new window</li>":
               "") +
-            ((pageType === "product view"|pageType === "edit") ?
+            ((pageType === "product view" || pageType === "edit") ?
               "<li id='api_product_page'>(a): <a href='" + apiProductURL + "'>API product page</a> (json)</li>":
               "") +
             "<li><a href='https://google.com/search?&q="+ code + "'>Product code search on Google</a></li>" +
@@ -904,7 +904,7 @@ content: " — ";
         $("#filter").on("keyup", function() {
             var value = $(this).val().toLowerCase();
             $("#main_column li").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
             });
             value == "" ? $("#main_column details").show() : $("#main_column details").hide();
         });
@@ -980,7 +980,7 @@ content: " — ";
     //As the list can contain different languages we take the language from the textarea
     function CopyListData(_code, lang){
         console.log("Lang:" + lang);
-        var cd = $("#i" + _code).val()
+        var cd = $("#i" + _code).val();
         console.log("Language Text:"+cd);
         var country = lang;
 
@@ -1341,7 +1341,7 @@ content: " — ";
             flagRevision(rev);
         }
         else {
-            var _url = "/api/v0/product/" + code + ".json"
+            var _url = "/api/v0/product/" + code + ".json";
             $.getJSON(_url, function(data) {
                 rev = data.product.rev;
                 console.log("rev: "); console.log(rev);
@@ -1431,7 +1431,7 @@ content: " — ";
                                          'flagged</a>.</p>');
                 return;})
             .catch(error => console.error('Error!', error.message));
-        })
+        });
     }
 
 
@@ -1597,7 +1597,7 @@ content: " — ";
 
         // Finally, it's a product view
         if($("body").attr("typeof") === "food:foodProduct") return "product view";
-    };
+    }
 
 
 
@@ -1629,7 +1629,7 @@ content: " — ";
         $.getJSON(ingredientsURL, function(json) {
             $("#ingredientFromGCV").append(json.ingredients_text_from_image);
         });
-    };
+    }
 
 
     /**
@@ -1711,7 +1711,7 @@ content: " — ";
      * @returns  {String} normalized tagName;         eg. "cereal-bars"
      */
     function normalizeTagName(tagName) {
-        tagName = tagName.toLowerCase()
+        tagName = tagName.toLowerCase();
         tagName = tagName.replace(/ /mg, "-");
         console.log("normalizeTagName() - tagName: " + tagName);
         return tagName;
