@@ -9,6 +9,7 @@
 // @include     https://*.openpetfoodfacts.org/*
 // @include     https://*.pro.openfoodfacts.org/*
 // @include     https://*.openfoodfacts.dev/*
+// @include     http://*.productopener.localhost/*
 // @exclude     https://*.wiki.openfoodfacts.org/*
 // @exclude     https://wiki.openfoodfacts.org/*
 // @exclude     https://translate.openfoodfacts.org/*
