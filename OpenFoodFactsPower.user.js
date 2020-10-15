@@ -1091,8 +1091,8 @@ content: " — ";
             $( ".products > li" ).each(function( index ) {
                 //console.log( index + ": " + $( this ).text() );
                 //$( this ).find(">:first-child").append('<span class="ingr">'+data["products"][index]["ingredients_text"]+'</span>');
-                local_code = data["products"][index]["code"];
-                var _lang = data["products"][index]["lang"];
+                local_code = data.products[index].code;
+                var _lang = data.products[index].lang;
                 editIngUrl = document.location.protocol + "//" + document.location.host +
                              '/cgi/product.pl?type=edit&code=' + local_code + '#tabs_ingredients_image';
                 // Add ingredients form
@@ -1103,12 +1103,12 @@ content: " — ";
                 //       https://bugzilla.mozilla.org/show_bug.cgi?id=1073827#c33
                 //       about:config in Firefox
                 $("html").removeAttr("lang");
-                if (data["products"][index]["ingredients_text"] == null) {
-                    data["products"][index]["ingredients_text"] = '';
+                if (data.products[index].ingredients_text == null) {
+                    data.products[index].ingredients_text = '';
                 }
                 $( this ).append('<div class="wrap_ingr">'+
                                  '<textarea class="ingr" id="i'+local_code+'" lang="'+_lang+'">'+
-                                 data["products"][index]["ingredients_text"]+
+                                 data.products[index].ingredients_text+
                                  '</textarea>'+
                                  '<span class="_lang">'+ _lang +'</span>'+
                                  '</div>'
@@ -1168,16 +1168,17 @@ content: " — ";
                         console.log("getJSONList(urlList) > Move to OBF");
                     })
                         .done(function(jqm2) {
-                            console.log(jqm2["status_verbose"]);
+                            console.log(jqm2.status_verbose);
                             console.log(jqm2);
                         })
                         .fail(function() {
                             console.log("getJSONList(urlList) > fail");
                         });
-                            $("body").append('<div id="timed_alert">Moved!</div>');
-                            $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
+                    $("body").append('<div id="timed_alert">Moved!</div>');
+                    $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
                 });
 
+                // Save ingredients
                 $("#p_actions_sav_"+local_code).click(function(){
                     //saveProductField(productCode, field);
                     var _code = $(this).attr("value");
@@ -1191,7 +1192,7 @@ content: " — ";
                         console.log("getJSONList(urlList) > Save product ingredients");
                     })
                         .done(function(jqm2) {
-                            console.log(jqm2["status_verbose"]);
+                            console.log(jqm2.status_verbose);
                             console.log(jqm2);
                             $("#p_actions_sav_"+_code).removeClass("save_needs_clicking");
                             $("#timed_alert").html('Saved!');
@@ -1215,7 +1216,7 @@ content: " — ";
                         console.log("getJSONList(urlList) > Delete product ingredients");
                     })
                         .done(function(jqm2) {
-                            console.log(jqm2["status_verbose"]);
+                            console.log(jqm2.status_verbose);
                             console.log(jqm2);
                             $("#i"+_code).empty();
                         })
