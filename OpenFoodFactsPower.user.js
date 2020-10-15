@@ -974,7 +974,7 @@ content: " — ";
 
     }
 
-    var langcodes_with_different_countrycodes = [ "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
+    var langcodes_with_different_countrycodes = [ "af", "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
 
     //Copy data from the list textarea to the ingredients_text in the hidden form so it can be passed to the analyser
     //As the list can contain different languages we take the language from the textarea
