@@ -991,13 +991,7 @@ content: " — ";
         //Here we have to manipulate the language for regional languages
         if(lang === 'ca'){lang = 'es-ca';} //Catalan
         if(lang === 'en'){
-            if(pageLanguage === 'en'){
-                lang = 'uk';//English
-            }
-            else
-            {
-                lang = pageLanguage + '-en'; //English from source language page
-            }
+            lang = 'world'; //English
         }
 
 		//As target language can be different from the page language we have to create the full URL
