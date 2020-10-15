@@ -1107,6 +1107,9 @@ content: " — ";
                 //       https://bugzilla.mozilla.org/show_bug.cgi?id=1073827#c33
                 //       about:config in Firefox
                 $("html").removeAttr("lang");
+                if (data["products"][index]["ingredients_text"] == null) {
+                    data["products"][index]["ingredients_text"] = '';
+                }
                 $( this ).append('<div class="wrap_ingr">'+
                                  '<textarea class="ingr" id="i'+local_code+'" lang="'+_lang+'">'+
                                  data["products"][index]["ingredients_text"]+
