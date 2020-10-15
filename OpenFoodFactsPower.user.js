@@ -982,20 +982,21 @@ content: " — ";
 		console.log("Lang:" + lang);
 		var cd = $("#i" + _code).val()
 		console.log("Language Text:"+cd);
+        var country = lang;
 
         // handle languages where the language code and country code differ.
         if (langcodes_with_different_countrycodes.includes(lang)) {
-            lang = "world-" + lang;
+            country = "world-" + lang;
         }
 
         //Here we have to manipulate the language for regional languages
-        if(lang === 'ca'){lang = 'es-ca';} //Catalan
+        if(lang === 'ca'){ country = 'es-ca'; } //Catalan
         if(lang === 'en'){
-            lang = 'world'; //English
+            country = 'world'; //English
         }
 
 		//As target language can be different from the page language we have to create the full URL
-		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
+		var URL = "//" + country + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
         console.log("CopyListData() analyse url="+URL);
         analyse_form.action = URL;
 		//analyse_form.setAttribute("action", URL);
@@ -1007,6 +1008,7 @@ content: " — ";
 	function Copydata(){
 		var lang = $('ul#tabs_ingredients_image > li.active').attr("data-language");
         var pageLanguage = $("html").attr('lang');      // Get page language
+        var country = lang;
 
 		//console.log("Lang:" + lang);
 		var cd = $("#ingredients_text_"+lang).val();
@@ -1014,23 +1016,23 @@ content: " — ";
 
         // handle languages where the language code and country code differ.
         if (langcodes_with_different_countrycodes.includes(lang)) {
-            lang = "world-" + lang;
+            country = "world-" + lang;
         }
 
         //Here we have to manipulate the language for regional languages
-        if(lang === 'ca'){lang = 'es-ca';} //Catalan
+        if(lang === 'ca'){ country = 'es-ca'; } //Catalan
         if(lang === 'en'){
             if(pageLanguage === 'en'){
-                lang = 'uk';//English
+                country = 'uk';//English
             }
             else
             {
-                lang = pageLanguage + '-en'; //English from source language page
+                country = pageLanguage + '-en'; //English from source language page
             }
         }
 
 		//As target language can be different from the page language we have to create the full URL
-		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
+		var URL = "//" + country + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
 		//analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
         console.log("Copydata() analyse url="+URL);
 		analyse_form.setAttribute("action", URL);
