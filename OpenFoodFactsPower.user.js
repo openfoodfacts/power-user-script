@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-10-14T11:53
+// @version     2020-10-15T08:35
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -40,7 +40,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-07-01T11:58 - mode: " + pageType);
+    console.log("2020-10-15T08:35 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -52,7 +52,7 @@
              if (event.key === 'v') {
                  window.open(viewURL, "_blank"); // open a new window
                  return;
-             };
+             }
         });
         return;
     }
@@ -484,7 +484,7 @@ content: " — ";
             '</p>'
         );
         // Hunger Game contextual link
-	// TODO: display a number of opportunities.
+    // TODO: display a number of opportunities.
         var tagName;
         var hungerGameDeepLink =
             ($("div[itemtype='https://schema.org/Brand']").length) ? "questions?type=brand&value_tag=" + normalizeTagName($("h1[itemprop='name']").text())
@@ -515,7 +515,7 @@ content: " — ";
 
 
     // Add a button to go straight to edit rather than the product page then edit
-	if (pageType === "list") {
+    if (pageType === "list") {
         $( "ul.products > li a" ).each(function() {
             $(this).addClass("product_link");
             var href = $(this).attr("href");
@@ -619,16 +619,16 @@ content: " — ";
             ((pageType === "edit") ?
                '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label>Field helpers</label></li>':
                "") +
-            ((pageType === "product view"|pageType === "edit") ?
+            ((pageType === "product view" || pageType === "edit") ?
                "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
                "<li>(Alt+shift+key): direct access to (P)roduct name, (Q)uality, (B)rands, (C)ategories, (L)abels, (I)ngredients, e(N)ergy, (F)ibers</li>" +
                "<hr>":
                "") +
-            ((pageType === "product view"|pageType === "api") ?
+            ((pageType === "product view" || pageType === "api") ?
               "<li>(e): edit current product in current window</li>" +
               "<li>(E): edit product in a new window</li>":
               "") +
-            ((pageType === "product view"|pageType === "edit") ?
+            ((pageType === "product view" || pageType === "edit") ?
               "<li id='api_product_page'>(a): <a href='" + apiProductURL + "'>API product page</a> (json)</li>":
               "") +
             "<li><a href='https://google.com/search?&q="+ code + "'>Product code search on Google</a></li>" +
@@ -673,7 +673,7 @@ content: " — ";
             $("#ing_analysis").click(function(){
                 //console.log("analyse");
                 Copydata();
-				submitToPopup(analyse_form);
+                submitToPopup(analyse_form);
             });
         }
 
@@ -904,7 +904,7 @@ content: " — ";
         $("#filter").on("keyup", function() {
             var value = $(this).val().toLowerCase();
             $("#main_column li").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
             });
             value == "" ? $("#main_column details").show() : $("#main_column details").hide();
         });
@@ -974,81 +974,77 @@ content: " — ";
 
     }
 
-    var langcodes_with_different_countrycodes = [ "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
+    var langcodes_with_different_countrycodes = [ "af", "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
 
     //Copy data from the list textarea to the ingredients_text in the hidden form so it can be passed to the analyser
     //As the list can contain different languages we take the language from the textarea
-	function CopyListData(_code, lang){
-		console.log("Lang:" + lang);
-		var cd = $("#i" + _code).val()
-		console.log("Language Text:"+cd);
+    function CopyListData(_code, lang){
+        console.log("Lang:" + lang);
+        var cd = $("#i" + _code).val();
+        console.log("Language Text:"+cd);
+        var country = lang;
 
         // handle languages where the language code and country code differ.
         if (langcodes_with_different_countrycodes.includes(lang)) {
-            lang = "world-" + lang;
+            country = "world-" + lang;
         }
 
         //Here we have to manipulate the language for regional languages
-        if(lang === 'ca'){lang = 'es-ca';} //Catalan
+        if(lang === 'ca'){ country = 'es-ca'; } //Catalan
         if(lang === 'en'){
-            if(pageLanguage === 'en'){
-                lang = 'uk';//English
-            }
-            else
-            {
-                lang = pageLanguage + '-en'; //English from source language page
-            }
+            country = 'world'; //English
         }
 
-		//As target language can be different from the page language we have to create the full URL
-		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
+        //As target language can be different from the page language we have to create the full URL
+        var URL = "//" + country + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
         console.log("CopyListData() analyse url="+URL);
         analyse_form.action = URL;
-		//analyse_form.setAttribute("action", URL);
+        //analyse_form.setAttribute("action", URL);
         $("#ingredients_text").val(cd);
-	}
+    }
 
-	//Copy data from the language specific ingredients_text to the ingredients_text in the hidden form so it can be passed to the analyser
+    //Copy data from the language specific ingredients_text to the ingredients_text in the hidden form so it can be passed to the analyser
     //This is for single product page, list is handled differently
-	function Copydata(){
-		var lang = $('ul#tabs_ingredients_image > li.active').attr("data-language");
+    function Copydata(){
+        var lang = $('ul#tabs_ingredients_image > li.active').attr("data-language");
         var pageLanguage = $("html").attr('lang');      // Get page language
+        var country = lang;
 
-		//console.log("Lang:" + lang);
-		var cd = $("#ingredients_text_"+lang).val();
-		//console.log("Language Text:"+cd);
+        //console.log("Lang:" + lang);
+        var cd = $("#ingredients_text_"+lang).val();
+        //console.log("Language Text:"+cd);
 
         // handle languages where the language code and country code differ.
         if (langcodes_with_different_countrycodes.includes(lang)) {
-            lang = "world-" + lang;
+            country = "world-" + lang;
         }
 
         //Here we have to manipulate the language for regional languages
-        if(lang === 'ca'){lang = 'es-ca';} //Catalan
+        if(lang === 'ca'){ country = 'es-ca'; } //Catalan
         if(lang === 'en'){
             if(pageLanguage === 'en'){
-                lang = 'uk';//English
+                country = 'uk';//English
             }
             else
             {
-                lang = pageLanguage + '-en'; //English from source language page
+                country = pageLanguage + '-en'; //English from source language page
             }
         }
 
-		//As target language can be different from the page language we have to create the full URL
-		var URL = "//" + lang + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
-		//analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
+        //As target language can be different from the page language we have to create the full URL
+        var URL = "//" + country + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
+        //analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
         console.log("Copydata() analyse url="+URL);
-		analyse_form.setAttribute("action", URL);
-	    $("#ingredients_text").val(cd);
-	}
+        analyse_form.setAttribute("action", URL);
+        $("#ingredients_text").val(cd);
+    }
 
-	function submitToPopup(f) {
-		console.log("submitToPopup");
-		var w = window.open('', 'form-target', 'width=800','height=800');
-		f.target = 'form-target';
-		f.submit();
-	}
+    function submitToPopup(f) {
+        console.log("submitToPopup");
+        var w = window.open('', 'form-target', 'width=800','height=800');
+        f.target = 'form-target';
+        f.submit();
+    }
 
     /***
      * listByRows
@@ -1095,8 +1091,8 @@ content: " — ";
             $( ".products > li" ).each(function( index ) {
                 //console.log( index + ": " + $( this ).text() );
                 //$( this ).find(">:first-child").append('<span class="ingr">'+data["products"][index]["ingredients_text"]+'</span>');
-                local_code = data["products"][index]["code"];
-                var _lang = data["products"][index]["lang"];
+                local_code = data.products[index].code;
+                var _lang = data.products[index].lang;
                 editIngUrl = document.location.protocol + "//" + document.location.host +
                              '/cgi/product.pl?type=edit&code=' + local_code + '#tabs_ingredients_image';
                 // Add ingredients form
@@ -1107,9 +1103,12 @@ content: " — ";
                 //       https://bugzilla.mozilla.org/show_bug.cgi?id=1073827#c33
                 //       about:config in Firefox
                 $("html").removeAttr("lang");
+                if (data.products[index].ingredients_text == null) {
+                    data.products[index].ingredients_text = '';
+                }
                 $( this ).append('<div class="wrap_ingr">'+
                                  '<textarea class="ingr" id="i'+local_code+'" lang="'+_lang+'">'+
-                                 data["products"][index]["ingredients_text"]+
+                                 data.products[index].ingredients_text+
                                  '</textarea>'+
                                  '<span class="_lang">'+ _lang +'</span>'+
                                  '</div>'
@@ -1128,7 +1127,7 @@ content: " — ";
                                  'Edit [🡕]'+
                                  '</button>'+
 
-								 "<button title=\"Ingredients analysis\" "+
+                                 "<button title=\"Ingredients analysis\" "+
                                  ' id="p_actions_analysis_'+local_code+'" value="'+local_code+'">'+
                                  'Analysis'+
                                  '</button>'+
@@ -1137,7 +1136,7 @@ content: " — ";
                                  ' id="p_actions_obf_'+local_code+'" value="'+local_code+'">'+
                                  '->OBF'+
                                  '</button>'+
-								 '</div>');
+                                 '</div>');
 
                 $("#i"+local_code).attr('lang', _lang);
                 // Edit ingredient field inline
@@ -1169,16 +1168,17 @@ content: " — ";
                         console.log("getJSONList(urlList) > Move to OBF");
                     })
                         .done(function(jqm2) {
-                            console.log(jqm2["status_verbose"]);
+                            console.log(jqm2.status_verbose);
                             console.log(jqm2);
                         })
                         .fail(function() {
                             console.log("getJSONList(urlList) > fail");
                         });
-                            $("body").append('<div id="timed_alert">Moved!</div>');
-                            $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
+                    $("body").append('<div id="timed_alert">Moved!</div>');
+                    $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
                 });
 
+                // Save ingredients
                 $("#p_actions_sav_"+local_code).click(function(){
                     //saveProductField(productCode, field);
                     var _code = $(this).attr("value");
@@ -1192,7 +1192,7 @@ content: " — ";
                         console.log("getJSONList(urlList) > Save product ingredients");
                     })
                         .done(function(jqm2) {
-                            console.log(jqm2["status_verbose"]);
+                            console.log(jqm2.status_verbose);
                             console.log(jqm2);
                             $("#p_actions_sav_"+_code).removeClass("save_needs_clicking");
                             $("#timed_alert").html('Saved!');
@@ -1216,7 +1216,7 @@ content: " — ";
                         console.log("getJSONList(urlList) > Delete product ingredients");
                     })
                         .done(function(jqm2) {
-                            console.log(jqm2["status_verbose"]);
+                            console.log(jqm2.status_verbose);
                             console.log(jqm2);
                             $("#i"+_code).empty();
                         })
@@ -1342,7 +1342,7 @@ content: " — ";
             flagRevision(rev);
         }
         else {
-            var _url = "/api/v0/product/" + code + ".json"
+            var _url = "/api/v0/product/" + code + ".json";
             $.getJSON(_url, function(data) {
                 rev = data.product.rev;
                 console.log("rev: "); console.log(rev);
@@ -1432,7 +1432,7 @@ content: " — ";
                                          'flagged</a>.</p>');
                 return;})
             .catch(error => console.error('Error!', error.message));
-        })
+        });
     }
 
 
@@ -1598,7 +1598,7 @@ content: " — ";
 
         // Finally, it's a product view
         if($("body").attr("typeof") === "food:foodProduct") return "product view";
-    };
+    }
 
 
 
@@ -1630,7 +1630,7 @@ content: " — ";
         $.getJSON(ingredientsURL, function(json) {
             $("#ingredientFromGCV").append(json.ingredients_text_from_image);
         });
-    };
+    }
 
 
     /**
@@ -1712,7 +1712,7 @@ content: " — ";
      * @returns  {String} normalized tagName;         eg. "cereal-bars"
      */
     function normalizeTagName(tagName) {
-        tagName = tagName.toLowerCase()
+        tagName = tagName.toLowerCase();
         tagName = tagName.replace(/ /mg, "-");
         console.log("normalizeTagName() - tagName: " + tagName);
         return tagName;

@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2020-10-15T08:35
+* minor fixes and code tidying
 ### 2020-10-14T11:53
 * fixes from @svensven (thanks!)
 * Categorization opportunities link
