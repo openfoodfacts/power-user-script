@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-10-15T08:35
+// @version     2020-10-17T08:30
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -40,7 +40,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-10-15T08:35 - mode: " + pageType);
+    console.log("2020-10-17T08:30 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -84,7 +84,7 @@
     // * Main code by Charles Nepote (@CharlesNepote)
     // * Barcode code by @harragastudios
 
-    // Firefox: add it via Greamonkey or Tampermonkey extension: https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/
+    // Firefox: add it via Greasemonkey or Tampermonkey extension: https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/
     // Chrome (not tested): add it with Tampermonkey: https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo
 
     // Main features
@@ -113,6 +113,9 @@
     //               https://addons.mozilla.org/en-US/firefox/addon/languagetool/
     //     * Inline edit of ingredients in list mode
     //   * Firefox: Nutrition facts picture takes all the place available
+    //   * Option to set ingredient textareas to fixed width font, to make it easier to see bad OCR, 
+    //     such as when it confuses "m" and "rn" (e.g. corn), lowercase l/L and uppercase i/I, etc.
+    //
     // * FEATURES
     //   * [beta] transfer data from a language to another (use *very* carefully); keyboard shortcut (shift+T)
     //   * [beta] easily delete ingredients, by entering the list by rows mode (shift+L)
