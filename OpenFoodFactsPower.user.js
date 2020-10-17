@@ -412,6 +412,11 @@ input.show_comparison {
     z-index: 5;
 }
 
+/* ingredients box alternative font */
+textarea.monospace {
+    font-family: Consolas, Lucida Console, monospace;
+}
+
 `;
 
     // apply custom CSS
@@ -626,7 +631,10 @@ input.show_comparison {
             "<li>(?) or (h): this present help</li>" +
             "<hr id='nav_keys'>" +
             ((pageType === "edit") ?
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label>Field helpers</label></li>':
+               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label for="pus-helpers">Field helpers</label></li>':
+               "") +
+            ((pageType === "edit" || pageType === "list") ?
+               '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>':
                "") +
             ((pageType === "product view" || pageType === "edit") ?
                "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
@@ -673,6 +681,7 @@ input.show_comparison {
         $("#pwe_help").click(function(){
             showPowerUserInfo(help);
             toggleHelpers();
+            toggleIngredientsMonospace();
         });
 
         if (pageType === "edit"){
@@ -740,6 +749,7 @@ input.show_comparison {
                 if (event.key === '?' || event.key === 'h') {
                     showPowerUserInfo(help); // open a new window
                     toggleHelpers();
+                    toggleIngredientsMonospace();
                     return;
                 }
                 // (S): Flag a product
@@ -871,6 +881,7 @@ input.show_comparison {
 
         // Toggle helpers based on previous selection if any
         toggleHelpers();
+        toggleIngredientsMonospace();
 
         // TODO: add ingredients picture aside ingredients text area
         var ingredientsImage = $("#display_ingredients_es img");
@@ -1234,6 +1245,7 @@ input.show_comparison {
                         });
                 });
             });
+            toggleIngredientsMonospace();
             return data;
         });
     }
@@ -1308,14 +1320,21 @@ input.show_comparison {
 
 
 
+    /**
+     * Hide/show example text below editing fields,
+     * and store the setting from the popup checkbox in local storage.
+     */
     function toggleHelpers() {
+
+        // read setting from local storage
         console.log("toggleHelpers() > Helpers: " + getLocalStorage("pus-helpers"));
         if(getLocalStorage("pus-helpers") === "unchecked") {
-            $('#pus-helpers').removeAttr('checked');
+            $('#pus-helpers').removeAttr('checked'); // set checkbox state
             $('.note').hide();
             $('.example').hide();
         }
-        // Hide/unhide field helpers
+
+        // hide/unhide field helpers on toggling the checkbox
         $('#pus-helpers').change(function() {
             if(this.checked) {
                 localStorage.setItem('pus-helpers', "checked");
@@ -1330,6 +1349,40 @@ input.show_comparison {
                 $('.example').hide();
             }
             //$('#textbox1').val(this.checked);
+        });
+    }
+
+
+    /**
+     * Optionally set the ingredients box font to monospace,
+     * to more easily see OCR errors like "com" vs "corn", uppercase "I" vs lowercase "l", etc.
+     * and store the setting from the popup checkbox in local storage.
+     */
+    function toggleIngredientsMonospace() {
+
+        // read setting from local storage
+        console.log("toggleIngredientsMonospace() > Monospace: " + getLocalStorage("pus-ingredients-font"));
+        if(getLocalStorage("pus-ingredients-font") === "monospace") {
+            $('#pus-ingredients-font').prop("checked", true); // set checkbox state
+            $("textarea[id^='ingredients_text_']").addClass("monospace"); // edit view
+            $("div.wrap_ingr > textarea.ingr").addClass("monospace"); // list view
+        }
+
+        // change the textarea font on toggling the checkbox
+        $('#pus-ingredients-font').change(function() {
+            if(this.checked) {
+                localStorage.setItem('pus-ingredients-font', "monospace");
+                console.log("toggleIngredientsMonospace() > monospace font");
+                $("textarea[id^='ingredients_text_']").addClass("monospace"); // edit view
+                $("div.wrap_ingr > textarea.ingr").addClass("monospace"); // list view
+            }
+            else {
+                localStorage.setItem('pus-ingredients-font', "default");
+                console.log("toggleIngredientsMonospace() > default font");
+                $("textarea[id^='ingredients_text_']").removeClass("monospace"); // edit view
+                $("div.wrap_ingr > textarea.ingr").removeClass("monospace"); // list view
+            }
+
         });
     }
 
