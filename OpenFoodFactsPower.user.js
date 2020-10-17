@@ -329,6 +329,14 @@ input.show_comparison {
     font-size: 0.9rem;
 }
 
+/* checkboxes in popup */
+.pus_menu label {
+    margin-top: 0;
+}
+.pus_menu input[type=checkbox] {
+    margin-bottom: 0;
+}
+
 .ui-widget-content a {
     color: #00f;
 }
