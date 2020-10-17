@@ -14,6 +14,7 @@
 // @exclude     https://wiki.openfoodfacts.org/*
 // @exclude     https://translate.openfoodfacts.org/*
 // @exclude     https://donate.openfoodfacts.org/*
+// @exclude     https://hunger.openfoodfacts.org/*
 // @exclude     https://monitoring.openfoodfacts.org/*
 // @icon        http://world.openfoodfacts.org/favicon.ico
 // @updateURL   https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
