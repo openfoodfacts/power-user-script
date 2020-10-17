@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-10-15T08:35
+// @version     2020-10-17T08:30
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -40,7 +40,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-10-15T08:35 - mode: " + pageType);
+    console.log("2020-10-17T08:30 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -84,7 +84,7 @@
     // * Main code by Charles Nepote (@CharlesNepote)
     // * Barcode code by @harragastudios
 
-    // Firefox: add it via Greamonkey or Tampermonkey extension: https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/
+    // Firefox: add it via Greasemonkey or Tampermonkey extension: https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/
     // Chrome (not tested): add it with Tampermonkey: https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo
 
     // Main features
@@ -113,6 +113,9 @@
     //               https://addons.mozilla.org/en-US/firefox/addon/languagetool/
     //     * Inline edit of ingredients in list mode
     //   * Firefox: Nutrition facts picture takes all the place available
+    //   * Option to set ingredient textareas to fixed width font, to make it easier to see bad OCR, 
+    //     such as when it confuses "m" and "rn" (e.g. corn), lowercase l/L and uppercase i/I, etc.
+    //
     // * FEATURES
     //   * [beta] transfer data from a language to another (use *very* carefully); keyboard shortcut (shift+T)
     //   * [beta] easily delete ingredients, by entering the list by rows mode (shift+L)
@@ -304,10 +307,11 @@ p { margin-bottom: 0.6rem !important; }
 #image_box_front { margin-bottom: 1rem !important; }
 
 .unselectbuttondiv_front_fr {
-text-align: center !important; }
+    text-align: center !important;
+}
 
 .unselectbutton_front_fr {
-margin:0 0 0 0 !important;
+    margin:0 0 0 0 !important;
 }
 
 /* Buttons Rotate left - Rotate right: 0.25rem vs 1.25 */
@@ -321,86 +325,99 @@ margin:0 0 0 0 !important;
 input.nutriment_value { margin: 0 0 0 0; }
 
 input.show_comparison {
-margin: 0 0 0.2rem 0 !important;
+    margin: 0 0 0.2rem 0 !important;
 }
 
 .pus_menu {
-font-size: 0.9rem;
+    font-size: 0.9rem;
+}
+
+/* checkboxes in popup */
+.pus_menu label {
+    margin-top: 0;
+}
+.pus_menu input[type=checkbox] {
+    margin-bottom: 0;
 }
 
 .ui-widget-content a {
-color: #00f;
+    color: #00f;
 }
 
 #pwe_help {
-position:fixed;
-left:0%;
-top:3rem;
-padding:0 0.7rem 0 0.7rem;
-font-size:1.5rem;
-background-color:red;
-border-radius: 0 10px 10px 0;
+    position:fixed;
+    left:0%;
+    top:3rem;
+    padding:0 0.7rem 0 0.7rem;
+    font-size:1.5rem;
+    background-color:red;
+    border-radius: 0 10px 10px 0;
 }
 
 #ing_analysis {
-position:fixed;
-left:0%;
-top:5rem;
-padding:0 0.7rem 0 0.7rem;
-font-size:1.5rem;
-background-color:red;
-border-radius: 0 10px 10px 0;
+    position:fixed;
+    left:0%;
+    top:5rem;
+    padding:0 0.7rem 0 0.7rem;
+    font-size:1.5rem;
+    background-color:red;
+    border-radius: 0 10px 10px 0;
 }
 
 /* Let nutrition image as tall as Nutrition facts table */
 #nutrition_image_copy {
-width: 80%;
-width: -moz-available;
-height: 92%;
+    width: 80%;
+    width: -moz-available;
+    height: 92%;
 }
 
 #nutrition_image_copy > img {
-/* Vertical image:    https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=8002063211913 */
-/* Horizontal image:  https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=0490711801117 */
-height: 100%;/**/
-width: 100%;/**/
-/* https://hacks.mozilla.org/2015/02/exploring-object-fit/ */
-object-fit:contain;
-object-position: left;
+    /* Vertical image:    https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=8002063211913 */
+    /* Horizontal image:  https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=0490711801117 */
+    height: 100%;/**/
+    width: 100%;/**/
+    /* https://hacks.mozilla.org/2015/02/exploring-object-fit/ */
+    object-fit:contain;
+    object-position: left;
 }
 
 .productLink::before {
-content: " — ";
+    content: " — ";
 }
 
 .hidden {
- display: none;
+    display: none;
 }
 
 .ingredient_td:hover .hidden {
- display: inline;
+    display: inline;
 }
 
 .pus_edit_link {
- display: inline !important; /**/
- z-index: -2;/**/
- position: relative;
- bottom: 7rem;
- border: 3px solid;
- right: 0rem;
+    display: inline !important; /**/
+    z-index: -2;/**/
+    position: relative;
+    bottom: 7rem;
+    border: 3px solid;
+    right: 0rem;
 }
 
 .product_link {
- z-index: 2;
- background-color: white;
+    z-index: 2;
+    background-color: white;
 }
 
 .pus_edit_link:hover {
- z-index: 5;
+    z-index: 5;
 }
 
 .product_link:hover + .pus_edit_link {
- z-index: 5;
+    z-index: 5;
+}
+
+/* ingredients box alternative font */
+textarea.monospace {
+    font-family: Consolas, Lucida Console, monospace;
 }
 
 `;
@@ -617,7 +634,10 @@ content: " — ";
             "<li>(?) or (h): this present help</li>" +
             "<hr id='nav_keys'>" +
             ((pageType === "edit") ?
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label>Field helpers</label></li>':
+               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label for="pus-helpers">Field helpers</label></li>':
+               "") +
+            ((pageType === "edit" || pageType === "list") ?
+               '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>':
                "") +
             ((pageType === "product view" || pageType === "edit") ?
                "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
@@ -664,6 +684,7 @@ content: " — ";
         $("#pwe_help").click(function(){
             showPowerUserInfo(help);
             toggleHelpers();
+            toggleIngredientsMonospace();
         });
 
         if (pageType === "edit"){
@@ -731,6 +752,7 @@ content: " — ";
                 if (event.key === '?' || event.key === 'h') {
                     showPowerUserInfo(help); // open a new window
                     toggleHelpers();
+                    toggleIngredientsMonospace();
                     return;
                 }
                 // (S): Flag a product
@@ -862,6 +884,7 @@ content: " — ";
 
         // Toggle helpers based on previous selection if any
         toggleHelpers();
+        toggleIngredientsMonospace();
 
         // TODO: add ingredients picture aside ingredients text area
         var ingredientsImage = $("#display_ingredients_es img");
@@ -1225,6 +1248,7 @@ content: " — ";
                         });
                 });
             });
+            toggleIngredientsMonospace();
             return data;
         });
     }
@@ -1299,14 +1323,21 @@ content: " — ";
 
 
 
+    /**
+     * Hide/show example text below editing fields,
+     * and store the setting from the popup checkbox in local storage.
+     */
     function toggleHelpers() {
+
+        // read setting from local storage
         console.log("toggleHelpers() > Helpers: " + getLocalStorage("pus-helpers"));
         if(getLocalStorage("pus-helpers") === "unchecked") {
-            $('#pus-helpers').removeAttr('checked');
+            $('#pus-helpers').removeAttr('checked'); // set checkbox state
             $('.note').hide();
             $('.example').hide();
         }
-        // Hide/unhide field helpers
+
+        // hide/unhide field helpers on toggling the checkbox
         $('#pus-helpers').change(function() {
             if(this.checked) {
                 localStorage.setItem('pus-helpers', "checked");
@@ -1321,6 +1352,40 @@ content: " — ";
                 $('.example').hide();
             }
             //$('#textbox1').val(this.checked);
+        });
+    }
+
+
+    /**
+     * Optionally set the ingredients box font to monospace,
+     * to more easily see OCR errors like "com" vs "corn", uppercase "I" vs lowercase "l", etc.
+     * and store the setting from the popup checkbox in local storage.
+     */
+    function toggleIngredientsMonospace() {
+
+        // read setting from local storage
+        console.log("toggleIngredientsMonospace() > Monospace: " + getLocalStorage("pus-ingredients-font"));
+        if(getLocalStorage("pus-ingredients-font") === "monospace") {
+            $('#pus-ingredients-font').prop("checked", true); // set checkbox state
+            $("textarea[id^='ingredients_text_']").addClass("monospace"); // edit view
+            $("div.wrap_ingr > textarea.ingr").addClass("monospace"); // list view
+        }
+
+        // change the textarea font on toggling the checkbox
+        $('#pus-ingredients-font').change(function() {
+            if(this.checked) {
+                localStorage.setItem('pus-ingredients-font', "monospace");
+                console.log("toggleIngredientsMonospace() > monospace font");
+                $("textarea[id^='ingredients_text_']").addClass("monospace"); // edit view
+                $("div.wrap_ingr > textarea.ingr").addClass("monospace"); // list view
+            }
+            else {
+                localStorage.setItem('pus-ingredients-font', "default");
+                console.log("toggleIngredientsMonospace() > default font");
+                $("textarea[id^='ingredients_text_']").removeClass("monospace"); // edit view
+                $("div.wrap_ingr > textarea.ingr").removeClass("monospace"); // list view
+            }
+
         });
     }
 
