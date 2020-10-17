@@ -304,10 +304,11 @@ p { margin-bottom: 0.6rem !important; }
 #image_box_front { margin-bottom: 1rem !important; }
 
 .unselectbuttondiv_front_fr {
-text-align: center !important; }
+    text-align: center !important;
+}
 
 .unselectbutton_front_fr {
-margin:0 0 0 0 !important;
+    margin:0 0 0 0 !important;
 }
 
 /* Buttons Rotate left - Rotate right: 0.25rem vs 1.25 */
@@ -321,86 +322,86 @@ margin:0 0 0 0 !important;
 input.nutriment_value { margin: 0 0 0 0; }
 
 input.show_comparison {
-margin: 0 0 0.2rem 0 !important;
+    margin: 0 0 0.2rem 0 !important;
 }
 
 .pus_menu {
-font-size: 0.9rem;
+    font-size: 0.9rem;
 }
 
 .ui-widget-content a {
-color: #00f;
+    color: #00f;
 }
 
 #pwe_help {
-position:fixed;
-left:0%;
-top:3rem;
-padding:0 0.7rem 0 0.7rem;
-font-size:1.5rem;
-background-color:red;
-border-radius: 0 10px 10px 0;
+    position:fixed;
+    left:0%;
+    top:3rem;
+    padding:0 0.7rem 0 0.7rem;
+    font-size:1.5rem;
+    background-color:red;
+    border-radius: 0 10px 10px 0;
 }
 
 #ing_analysis {
-position:fixed;
-left:0%;
-top:5rem;
-padding:0 0.7rem 0 0.7rem;
-font-size:1.5rem;
-background-color:red;
-border-radius: 0 10px 10px 0;
+    position:fixed;
+    left:0%;
+    top:5rem;
+    padding:0 0.7rem 0 0.7rem;
+    font-size:1.5rem;
+    background-color:red;
+    border-radius: 0 10px 10px 0;
 }
 
 /* Let nutrition image as tall as Nutrition facts table */
 #nutrition_image_copy {
-width: 80%;
-width: -moz-available;
-height: 92%;
+    width: 80%;
+    width: -moz-available;
+    height: 92%;
 }
 
 #nutrition_image_copy > img {
-/* Vertical image:    https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=8002063211913 */
-/* Horizontal image:  https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=0490711801117 */
-height: 100%;/**/
-width: 100%;/**/
-/* https://hacks.mozilla.org/2015/02/exploring-object-fit/ */
-object-fit:contain;
-object-position: left;
+    /* Vertical image:    https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=8002063211913 */
+    /* Horizontal image:  https://world.openfoodfacts.org/cgi/product.pl?type=edit&code=0490711801117 */
+    height: 100%;/**/
+    width: 100%;/**/
+    /* https://hacks.mozilla.org/2015/02/exploring-object-fit/ */
+    object-fit:contain;
+    object-position: left;
 }
 
 .productLink::before {
-content: " — ";
+    content: " — ";
 }
 
 .hidden {
- display: none;
+    display: none;
 }
 
 .ingredient_td:hover .hidden {
- display: inline;
+    display: inline;
 }
 
 .pus_edit_link {
- display: inline !important; /**/
- z-index: -2;/**/
- position: relative;
- bottom: 7rem;
- border: 3px solid;
- right: 0rem;
+    display: inline !important; /**/
+    z-index: -2;/**/
+    position: relative;
+    bottom: 7rem;
+    border: 3px solid;
+    right: 0rem;
 }
 
 .product_link {
- z-index: 2;
- background-color: white;
+    z-index: 2;
+    background-color: white;
 }
 
 .pus_edit_link:hover {
- z-index: 5;
+    z-index: 5;
 }
 
 .product_link:hover + .pus_edit_link {
- z-index: 5;
+    z-index: 5;
 }
 
 `;
