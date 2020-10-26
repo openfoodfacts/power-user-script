@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-10-23T07:26
+// @version     2020-10-26T09:44
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -40,7 +40,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-10-23T07:26 - mode: " + pageType);
+    console.log("2020-10-26T09:44 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -972,8 +972,8 @@ textarea.monospace {
  .ingr_del { background-color: #ff2c2c; }
 ._lang { position: absolute; top:3rem; right:16px; font-size:3rem; opacity:0.4; }
 
-#timed_alert { position:fixed; top:0; right:0; font-size: 8rem }
-#timed_alert.failed { color: red; }
+#timed_alert, div.timed_alert { position:fixed; top:0; right:0; font-size: 8rem }
+#timed_alert.failed, div.timed_alert.failed { color: red; }
 
 `;
         // Show an easier to read number of products
@@ -1191,18 +1191,22 @@ textarea.monospace {
                     var _url = encodeURI(document.location.protocol + "//" + document.location.host +
                                          "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=obf");
                     console.log("api call-> "+_url);
+                    $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
                     var _d = $.getJSON(_url, function() {
                         console.log("getJSONList(urlList) > Move to OBF");
                     })
                         .done(function(jqm2) {
                             console.log(jqm2.status_verbose);
                             console.log(jqm2);
+                            $("#timed_alert_" + _code).html('Moved!');
+                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
                         })
                         .fail(function() {
                             console.log("getJSONList(urlList) > fail");
+                            $("#timed_alert_" + _code).html('Failed!');
+                            $("#timed_alert_" + _code).addClass('failed');
+                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
                         });
-                    $("body").append('<div id="timed_alert">Moved!</div>');
-                    $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
                 });
 
                 // Save ingredients
@@ -1214,7 +1218,7 @@ textarea.monospace {
                                          "&ingredients_text_" + encodeURIComponent(_lang) +
                                          "=" + encodeURIComponent($("#i" + _code).val());
                     console.log("getJSONList(urlList) > "+_url);
-                    $("body").append('<div id="timed_alert">Saving</div>');
+                    $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Saving</div>');
                     var _d = $.getJSON(_url, function() {
                         console.log("getJSONList(urlList) > Save product ingredients");
                     })
@@ -1222,14 +1226,14 @@ textarea.monospace {
                             console.log(jqm2.status_verbose);
                             console.log(jqm2);
                             $("#p_actions_sav_"+_code).removeClass("save_needs_clicking");
-                            $("#timed_alert").html('Saved!');
-                            $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
+                            $("#timed_alert_" + _code).html('Saved!');
+                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
                         })
                         .fail(function() {
                             console.log("getJSONList(urlList) > fail");
-                            $("#timed_alert").html('Failed!');
-                            $("#timed_alert").addClass('failed');
-                            $("#timed_alert").fadeOut(3000, function () { $(this).remove(); });
+                            $("#timed_alert_" + _code).html('Failed!');
+                            $("#timed_alert_" + _code).addClass('failed');
+                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
                         });
                 });
 
