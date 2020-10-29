@@ -421,6 +421,8 @@ textarea.monospace {
     font-family: Consolas, Lucida Console, monospace;
 }
 
+.products a.with_barcode { margin-top: 0; padding-top: 0; }
+
 `;
 
     // apply custom CSS
@@ -980,6 +982,7 @@ textarea.monospace {
             '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>' +
             "<hr>" +
             "<li>(Shift+L): List edit mode</li>" +
+            "<li>(Shift+b): Show/hide barcodes</li>" +
             "</ul>";
 
         // Help icon fixed
@@ -990,6 +993,9 @@ textarea.monospace {
             showPowerUserInfo(listhelp);
             toggleIngredientsMonospace();
         });
+
+        // detect product codes and add them as attributes
+        addCodesToProductList();
 
 
         // Show an easier to read number of products
@@ -1018,11 +1024,17 @@ textarea.monospace {
                     toggleIngredientsMonospace();
                     return;
                 }
+
+                // (Shift + B) - show/hide barcodes
+                if (event.key === 'B') {
+                    toggleListBarcodes();
+                    return;
+                }
             }
 
         });
 
-    }
+    } // if list mode
 
     var langcodes_with_different_countrycodes = [ "af", "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
 
@@ -1462,6 +1474,87 @@ textarea.monospace {
             showSingleBarcode(code);
         }
     }
+
+
+    /**
+     * Show/hide graphical barcodes on the list view
+     */
+    function toggleListBarcodes() {
+        if ($("svg.list_barcode").length) {
+            hideListBarcodes();
+        } else {
+            showListBarcodes();
+        }
+    }
+
+    function showListBarcodes() {
+        $("ul.products li[data-code]").each(function(index, element) {
+            let code = $(this).attr('data-code');
+            if ($("#barcode_draw_" + code).length) { return; }
+
+            $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.product_link', this) );
+
+            let barcode_format = 'CODE128';
+
+            switch (code.length) {
+                case 13:
+                    barcode_format = 'EAN13';
+                    break;
+                case 12:
+                    barcode_format = 'UPC';
+                    break;
+                case 8:
+                    barcode_format = 'EAN8';
+                    break;
+            }
+
+            JsBarcode("#barcode_draw_" + code, code, {
+                format: barcode_format,
+                flat: true,
+                fontSize: 10,
+                lineColor: "black",
+                width: 1,
+                height: 40,
+                displayValue: true,
+            });
+
+            $('a.product_link', this).addClass('with_barcode');
+        });
+    }
+
+    function hideListBarcodes() {
+        $("svg.list_barcode").remove();
+        $('ul.products .with_barcode').removeClass('with_barcode');
+    }
+
+    /**
+     * The product list view has no easy way to get the barcode for each entry,
+     * so detect them from the link, and add an attribute to the LI tag recording the barcode for later use.
+     */
+    function addCodesToProductList() {
+        $("ul.products li").each(function() {
+            let product_url = $("a.product_link", this).attr('href'); // find URL within "this"
+            let product_code = product_url.match(/\/([0-9]+)\//); // find a number surrounded by slashes
+            if (product_code && product_code[1]) {
+                $(this).attr('data-code', product_code[1]);
+            }
+        });
+    }
+
+    /**
+     * Get an array of barcodes for the current list view.
+     * Read barcodes out of data attributes added by addCodesToProductList()
+     * @return {Array}
+     */
+    /*
+    function getCodesFromProductList() {
+        let product_codes = new Array();
+        $("ul.products li").each(function() {
+            product_codes.push($(this).attr('data-code'));
+        });
+        return product_codes;
+    }
+    */
 
 
     // ***
