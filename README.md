@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2020-10-29T18:00
+* Add graphical barcodes to list view (shift-B) (Issue #26)
 ### 2020-10-17T08:30
 * Add option to set ingredient textareas to fixed width font, to make it easier to see bad OCR, such as when it confuses "m" and "rn" (e.g. corn), lowercase l/L and uppercase i/I, letter O with number 0, etc.
 ### 2020-10-15T08:35
