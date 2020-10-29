@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-10-26T09:44
+// @version     2020-10-29T18:00
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -19,9 +19,10 @@
 // @grant       GM_getResourceText
 // @require     http://code.jquery.com/jquery-latest.min.js
 // @require     http://code.jquery.com/ui/1.12.1/jquery-ui.min.js
-// @require     https://cdn.jsdelivr.net/jsbarcode/3.6.0/JsBarcode.all.min.js
+// @require     https://cdn.jsdelivr.net/npm/jsbarcode@latest/dist/JsBarcode.all.min.js
 // @author      charles@openfoodfacts.org
 // ==/UserScript==
+/* eslint-env jquery */
 
 // Product Opener (Open Food Facts web app) uses:
 // * jQuery 2.1.4:
@@ -30,7 +31,7 @@
 // * jQuery-UI 1.12.1:
 //   view-source:https://static.openfoodfacts.org/js/dist/jquery-ui.js
 //   http://code.jquery.com/ui/1.12.1/jquery-ui.min.js
-// * Tagify 3.6.3, in replacement of jQuery-Tags-Input 1.3.6 (no more maintained)
+// * Tagify 3.x:
 //   https://github.com/yairEO/tagify
 
 (function() {
@@ -40,7 +41,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-10-26T09:44 - mode: " + pageType);
+    console.log("2020-10-29T18:00 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -49,10 +50,10 @@
         var viewURL = document.location.protocol + "//" + document.location.host + "/product/" + _code;
         console.log('press v to get back to product view: ' + viewURL);
         $(document).on('keydown', function(event) {
-             if (event.key === 'v') {
-                 window.open(viewURL, "_blank"); // open a new window
-                 return;
-             }
+            if (event.key === 'v') {
+                window.open(viewURL, "_blank"); // open a new window
+                return;
+            }
         });
         return;
     }
@@ -420,6 +421,8 @@ textarea.monospace {
     font-family: Consolas, Lucida Console, monospace;
 }
 
+.products a.with_barcode { margin-top: 0; padding-top: 0; }
+
 `;
 
     // apply custom CSS
@@ -449,7 +452,7 @@ textarea.monospace {
     // *
     // Build variables
     if(pageType !== "list") {
-        var code, barcode;
+        var code;
         code = getURLParam("code")||$('span[property="food:code"]').html();
 
         if (code === undefined) {
@@ -562,6 +565,13 @@ textarea.monospace {
 
         // Add informations right after the barcode
         if ($("#barcode_paragraph") && code !== undefined) {
+
+            // Icon for toggling graphical barcode
+            $("#barcode_paragraph").append(' <span id="toggleBarcodeLink" class="productLink" title="Show/hide graphical barcode">📲</span>');
+            $("#toggleBarcodeLink").on("click", function(){
+                toggleSingleBarcode(code);
+            });
+
             // Find products from the same brand
             var sameBrandProducts = code.replace(/[0-9][0-9][0-9][0-9]$/gi, "xxxx");
             var sameBrandProductsURL = document.location.protocol +
@@ -711,21 +721,8 @@ textarea.monospace {
             ) {
                 // (Shift + B): toggle show/hide barcode
                 if (event.key === 'B') {
-                    if (barcode === true) {
-                        $("#barcode_draw").remove();
-                        barcode = false;
-                        return;
-                    }
-                    if (barcode === false || barcode === undefined) {
-                        $('<canvas id="barcode_draw"></svg>').insertAfter('#barcode');
-                        barcode = true;
-                        JsBarcode("#barcode_draw", code, {
-                            lineColor: "black",
-                            width: 3,
-                            height: 100,
-                            displayValue: true});
-                        return;
-                    }
+                    toggleSingleBarcode(code);
+                    return;
                 }
                 // (a): api page in a new window
                 if ((pageType === "product view" || pageType == "edit") && event.key === 'a') {
@@ -752,7 +749,8 @@ textarea.monospace {
                 if (pageType === "edit" && event.key === 'i') {
                     toggleIngredientsMode();
                     return;
-                }                // (?): open help box
+                }
+                // (?): open help box
                 if (event.key === '?' || event.key === 'h') {
                     showPowerUserInfo(help); // open a new window
                     toggleHelpers();
@@ -949,33 +947,57 @@ textarea.monospace {
 .products                 { /*display: table; /**/ border-collapse: collapse; /*float:none;/**/ }
 .products li              { display: table-row;  width: auto;    text-align: left; border: 1px solid black; float:none;  }
 
- .products > li > a,
- .products > li > a > div,
- .products > li > a > span,
- .ingr,
- .p_actions { display: table-cell; }
+.products > li > a,
+.products > li > a > div,
+.products > li > a > span,
+.ingr,
+.p_actions { display: table-cell; }
 
- .products > li > a { border: 1px solid black; }
- .ingr, .p_actions { border: 0px solid black;/**/ }
- .ingr { border-right: 0px; } .p_actions {border-left: 0px; }
+.products > li > a { border: 1px solid black; }
+.ingr, .p_actions { border: 0px solid black;/**/ }
+.ingr { border-right: 0px; } .p_actions {border-left: 0px; }
 
- .products > li > a        { display: table-cell; width:   30%;  vertical-align: middle; height: 6rem !important; }
- .products > li > a > div  { display: table-cell; max-width:   35% !important; } /* */
- .products > li > a > span { display: table-cell; width:   70%;  vertical-align: middle; padding-left: 1rem;} /* */
+.products > li > a        { display: table-cell; width:   30%;  vertical-align: middle; height: 6rem !important; }
+.products > li > a > div  { display: table-cell; max-width:   35% !important; } /* */
+.products > li > a > span { display: table-cell; width:   70%;  vertical-align: middle; padding-left: 1rem;} /* */
 
- .wrap_ingr                { width: 70% !important; position: relative; }
- .ingr                     { display: table-cell; /*width: 800px;/**/ height:8rem; margin: 0; vertical-align: middle; padding: 0 0.6rem 0 0.6rem;}
- .p_actions                 { display: table-cell; width: 100px;  vertical-align: middle; padding: 0.5rem; line-height: 2.6rem !important; width: 4rem !important; }
- .ingr, .p_actions > button { font-size: 0.9rem; vertical-align: middle; }
- .save_needs_clicking { background-color: #ff952b; }
- .p_actions > button { margin: 0 0 0 0; padding: 0.3rem 0.1rem 0.3rem 0.1rem; width: 6rem; }
- .ingr_del { background-color: #ff2c2c; }
+.wrap_ingr                { width: 70% !important; position: relative; }
+.ingr                     { display: table-cell; /*width: 800px;/**/ height:8rem; margin: 0; vertical-align: middle; padding: 0 0.6rem 0 0.6rem;}
+.p_actions                 { display: table-cell; width: 100px;  vertical-align: middle; padding: 0.5rem; line-height: 2.6rem !important; width: 4rem !important; }
+.ingr, .p_actions > button { font-size: 0.9rem; vertical-align: middle; }
+.save_needs_clicking { background-color: #ff952b; }
+.p_actions > button { margin: 0 0 0 0; padding: 0.3rem 0.1rem 0.3rem 0.1rem; width: 6rem; }
+.ingr_del { background-color: #ff2c2c; }
 ._lang { position: absolute; top:3rem; right:16px; font-size:3rem; opacity:0.4; }
 
 #timed_alert, div.timed_alert { position:fixed; top:0; right:0; font-size: 8rem }
 #timed_alert.failed, div.timed_alert.failed { color: red; }
 
 `;
+
+        // Help box based on page type: list
+        var listhelp = "<ul class='pus_menu'>" +
+            "<li>(?) or (h): this present help</li>" +
+            "<hr>" +
+            '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>' +
+            "<hr>" +
+            "<li>(Shift+L): List edit mode</li>" +
+            "<li>(Shift+b): Show/hide barcodes</li>" +
+            "</ul>";
+
+        // Help icon fixed
+        $('body').append('<button id="pwe_help">?</button>');
+
+        // User help dialog
+        $("#pwe_help").click(function(){
+            showPowerUserInfo(listhelp);
+            toggleIngredientsMonospace();
+        });
+
+        // detect product codes and add them as attributes
+        addCodesToProductList();
+
+
         // Show an easier to read number of products
         /*
         var xxxProducts = $(".button-group li div").text(); console.log(xxxProducts); // 1009326 products
@@ -993,13 +1015,26 @@ textarea.monospace {
                 // (Shift + L)
                 if (event.key === 'L' && listByRowsMode === false) {
                     listByRows();
+                    return;
+                }
 
+                // (?): open help box
+                if (event.key === '?' || event.key === 'h') {
+                    showPowerUserInfo(listhelp); // open a new window
+                    toggleIngredientsMonospace();
+                    return;
+                }
+
+                // (Shift + B) - show/hide barcodes
+                if (event.key === 'B') {
+                    toggleListBarcodes();
+                    return;
                 }
             }
 
         });
 
-    }
+    } // if list mode
 
     var langcodes_with_different_countrycodes = [ "af", "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
 
@@ -1396,6 +1431,130 @@ textarea.monospace {
 
         });
     }
+
+
+    /**
+     * Show/hide a graphical barcode on the product view
+     */
+    function showSingleBarcode(code) {
+        if ($("#barcode_draw").length) { return; }
+
+        $('<svg id="barcode_draw"></svg>').insertAfter('#barcode_paragraph');
+
+        let barcode_format = 'CODE128';
+        switch (code.length) {
+            case 13:
+                barcode_format = 'EAN13';
+                break;
+            case 12:
+                barcode_format = 'UPC';
+                break;
+            case 8:
+                barcode_format = 'EAN8';
+                break;
+        }
+
+        JsBarcode("#barcode_draw", code, {
+            format: barcode_format,
+            lineColor: "black",
+            width: 3,
+            height: 60,
+            displayValue: true,
+        });
+    }
+
+    function hideSingleBarcode(code) {
+        $("#barcode_draw").remove();
+    }
+
+    function toggleSingleBarcode(code) {
+        if ($("#barcode_draw").length) {
+            hideSingleBarcode(code);
+        } else {
+            showSingleBarcode(code);
+        }
+    }
+
+
+    /**
+     * Show/hide graphical barcodes on the list view
+     */
+    function toggleListBarcodes() {
+        if ($("svg.list_barcode").length) {
+            hideListBarcodes();
+        } else {
+            showListBarcodes();
+        }
+    }
+
+    function showListBarcodes() {
+        $("ul.products li[data-code]").each(function(index, element) {
+            let code = $(this).attr('data-code');
+            if ($("#barcode_draw_" + code).length) { return; }
+
+            $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.product_link', this) );
+
+            let barcode_format = 'CODE128';
+
+            switch (code.length) {
+                case 13:
+                    barcode_format = 'EAN13';
+                    break;
+                case 12:
+                    barcode_format = 'UPC';
+                    break;
+                case 8:
+                    barcode_format = 'EAN8';
+                    break;
+            }
+
+            JsBarcode("#barcode_draw_" + code, code, {
+                format: barcode_format,
+                flat: true,
+                fontSize: 10,
+                lineColor: "black",
+                width: 1,
+                height: 40,
+                displayValue: true,
+            });
+
+            $('a.product_link', this).addClass('with_barcode');
+        });
+    }
+
+    function hideListBarcodes() {
+        $("svg.list_barcode").remove();
+        $('ul.products .with_barcode').removeClass('with_barcode');
+    }
+
+    /**
+     * The product list view has no easy way to get the barcode for each entry,
+     * so detect them from the link, and add an attribute to the LI tag recording the barcode for later use.
+     */
+    function addCodesToProductList() {
+        $("ul.products li").each(function() {
+            let product_url = $("a.product_link", this).attr('href'); // find URL within "this"
+            let product_code = product_url.match(/\/([0-9]+)\//); // find a number surrounded by slashes
+            if (product_code && product_code[1]) {
+                $(this).attr('data-code', product_code[1]);
+            }
+        });
+    }
+
+    /**
+     * Get an array of barcodes for the current list view.
+     * Read barcodes out of data attributes added by addCodesToProductList()
+     * @return {Array}
+     */
+    /*
+    function getCodesFromProductList() {
+        let product_codes = new Array();
+        $("ul.products li").each(function() {
+            product_codes.push($(this).attr('data-code'));
+        });
+        return product_codes;
+    }
+    */
 
 
     // ***
