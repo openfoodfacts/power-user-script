@@ -976,6 +976,26 @@ textarea.monospace {
 #timed_alert.failed, div.timed_alert.failed { color: red; }
 
 `;
+
+        // Help box based on page type: list
+        var listhelp = "<ul class='pus_menu'>" +
+            "<li>(?) or (h): this present help</li>" +
+            "<hr>" +
+            '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>' +
+            "<hr>" +
+            "<li>(Shift+L): List edit mode</li>" +
+            "</ul>";
+
+        // Help icon fixed
+        $('body').append('<button id="pwe_help">?</button>');
+
+        // User help dialog
+        $("#pwe_help").click(function(){
+            showPowerUserInfo(listhelp);
+            toggleIngredientsMonospace();
+        });
+
+
         // Show an easier to read number of products
         /*
         var xxxProducts = $(".button-group li div").text(); console.log(xxxProducts); // 1009326 products
@@ -993,7 +1013,14 @@ textarea.monospace {
                 // (Shift + L)
                 if (event.key === 'L' && listByRowsMode === false) {
                     listByRows();
+                    return;
+                }
 
+                // (?): open help box
+                if (event.key === '?' || event.key === 'h') {
+                    showPowerUserInfo(listhelp); // open a new window
+                    toggleIngredientsMonospace();
+                    return;
                 }
             }
 
