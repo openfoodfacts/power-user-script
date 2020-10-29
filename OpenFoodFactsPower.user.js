@@ -22,6 +22,7 @@
 // @require     https://cdn.jsdelivr.net/npm/jsbarcode@latest/dist/JsBarcode.all.min.js
 // @author      charles@openfoodfacts.org
 // ==/UserScript==
+/* eslint-env jquery */
 
 // Product Opener (Open Food Facts web app) uses:
 // * jQuery 2.1.4:
@@ -49,10 +50,10 @@
         var viewURL = document.location.protocol + "//" + document.location.host + "/product/" + _code;
         console.log('press v to get back to product view: ' + viewURL);
         $(document).on('keydown', function(event) {
-             if (event.key === 'v') {
-                 window.open(viewURL, "_blank"); // open a new window
-                 return;
-             }
+            if (event.key === 'v') {
+                window.open(viewURL, "_blank"); // open a new window
+                return;
+            }
         });
         return;
     }
@@ -746,7 +747,8 @@ textarea.monospace {
                 if (pageType === "edit" && event.key === 'i') {
                     toggleIngredientsMode();
                     return;
-                }                // (?): open help box
+                }
+                // (?): open help box
                 if (event.key === '?' || event.key === 'h') {
                     showPowerUserInfo(help); // open a new window
                     toggleHelpers();
@@ -943,27 +945,27 @@ textarea.monospace {
 .products                 { /*display: table; /**/ border-collapse: collapse; /*float:none;/**/ }
 .products li              { display: table-row;  width: auto;    text-align: left; border: 1px solid black; float:none;  }
 
- .products > li > a,
- .products > li > a > div,
- .products > li > a > span,
- .ingr,
- .p_actions { display: table-cell; }
+.products > li > a,
+.products > li > a > div,
+.products > li > a > span,
+.ingr,
+.p_actions { display: table-cell; }
 
- .products > li > a { border: 1px solid black; }
- .ingr, .p_actions { border: 0px solid black;/**/ }
- .ingr { border-right: 0px; } .p_actions {border-left: 0px; }
+.products > li > a { border: 1px solid black; }
+.ingr, .p_actions { border: 0px solid black;/**/ }
+.ingr { border-right: 0px; } .p_actions {border-left: 0px; }
 
- .products > li > a        { display: table-cell; width:   30%;  vertical-align: middle; height: 6rem !important; }
- .products > li > a > div  { display: table-cell; max-width:   35% !important; } /* */
- .products > li > a > span { display: table-cell; width:   70%;  vertical-align: middle; padding-left: 1rem;} /* */
+.products > li > a        { display: table-cell; width:   30%;  vertical-align: middle; height: 6rem !important; }
+.products > li > a > div  { display: table-cell; max-width:   35% !important; } /* */
+.products > li > a > span { display: table-cell; width:   70%;  vertical-align: middle; padding-left: 1rem;} /* */
 
- .wrap_ingr                { width: 70% !important; position: relative; }
- .ingr                     { display: table-cell; /*width: 800px;/**/ height:8rem; margin: 0; vertical-align: middle; padding: 0 0.6rem 0 0.6rem;}
- .p_actions                 { display: table-cell; width: 100px;  vertical-align: middle; padding: 0.5rem; line-height: 2.6rem !important; width: 4rem !important; }
- .ingr, .p_actions > button { font-size: 0.9rem; vertical-align: middle; }
- .save_needs_clicking { background-color: #ff952b; }
- .p_actions > button { margin: 0 0 0 0; padding: 0.3rem 0.1rem 0.3rem 0.1rem; width: 6rem; }
- .ingr_del { background-color: #ff2c2c; }
+.wrap_ingr                { width: 70% !important; position: relative; }
+.ingr                     { display: table-cell; /*width: 800px;/**/ height:8rem; margin: 0; vertical-align: middle; padding: 0 0.6rem 0 0.6rem;}
+.p_actions                 { display: table-cell; width: 100px;  vertical-align: middle; padding: 0.5rem; line-height: 2.6rem !important; width: 4rem !important; }
+.ingr, .p_actions > button { font-size: 0.9rem; vertical-align: middle; }
+.save_needs_clicking { background-color: #ff952b; }
+.p_actions > button { margin: 0 0 0 0; padding: 0.3rem 0.1rem 0.3rem 0.1rem; width: 6rem; }
+.ingr_del { background-color: #ff2c2c; }
 ._lang { position: absolute; top:3rem; right:16px; font-size:3rem; opacity:0.4; }
 
 #timed_alert, div.timed_alert { position:fixed; top:0; right:0; font-size: 8rem }
