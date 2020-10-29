@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-10-26T09:44
+// @version     2020-10-28T21:38
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -19,7 +19,7 @@
 // @grant       GM_getResourceText
 // @require     http://code.jquery.com/jquery-latest.min.js
 // @require     http://code.jquery.com/ui/1.12.1/jquery-ui.min.js
-// @require     https://cdn.jsdelivr.net/jsbarcode/3.6.0/JsBarcode.all.min.js
+// @require     https://cdn.jsdelivr.net/npm/jsbarcode@latest/dist/JsBarcode.all.min.js
 // @author      charles@openfoodfacts.org
 // ==/UserScript==
 
@@ -30,7 +30,7 @@
 // * jQuery-UI 1.12.1:
 //   view-source:https://static.openfoodfacts.org/js/dist/jquery-ui.js
 //   http://code.jquery.com/ui/1.12.1/jquery-ui.min.js
-// * Tagify 3.6.3, in replacement of jQuery-Tags-Input 1.3.6 (no more maintained)
+// * Tagify 3.x:
 //   https://github.com/yairEO/tagify
 
 (function() {
@@ -40,7 +40,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-10-26T09:44 - mode: " + pageType);
+    console.log("2020-10-28T21:38 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -449,7 +449,7 @@ textarea.monospace {
     // *
     // Build variables
     if(pageType !== "list") {
-        var code, barcode;
+        var code;
         code = getURLParam("code")||$('span[property="food:code"]').html();
 
         if (code === undefined) {
@@ -562,6 +562,13 @@ textarea.monospace {
 
         // Add informations right after the barcode
         if ($("#barcode_paragraph") && code !== undefined) {
+
+            // Icon for toggling graphical barcode
+            $("#barcode_paragraph").append(' <span id="toggleBarcodeLink" class="productLink" title="Show/hide graphical barcode">📲</span>');
+            $("#toggleBarcodeLink").on("click", function(){
+                toggleSingleBarcode(code);
+            });
+
             // Find products from the same brand
             var sameBrandProducts = code.replace(/[0-9][0-9][0-9][0-9]$/gi, "xxxx");
             var sameBrandProductsURL = document.location.protocol +
@@ -711,21 +718,8 @@ textarea.monospace {
             ) {
                 // (Shift + B): toggle show/hide barcode
                 if (event.key === 'B') {
-                    if (barcode === true) {
-                        $("#barcode_draw").remove();
-                        barcode = false;
-                        return;
-                    }
-                    if (barcode === false || barcode === undefined) {
-                        $('<canvas id="barcode_draw"></svg>').insertAfter('#barcode');
-                        barcode = true;
-                        JsBarcode("#barcode_draw", code, {
-                            lineColor: "black",
-                            width: 3,
-                            height: 100,
-                            displayValue: true});
-                        return;
-                    }
+                    toggleSingleBarcode(code);
+                    return;
                 }
                 // (a): api page in a new window
                 if ((pageType === "product view" || pageType == "edit") && event.key === 'a') {
@@ -1422,6 +1416,49 @@ textarea.monospace {
             }
 
         });
+    }
+
+
+    /**
+     * Show/hide a graphical barcode on the product view
+     */
+    function showSingleBarcode(code) {
+        if ($("#barcode_draw").length) { return; }
+
+        $('<svg id="barcode_draw"></svg>').insertAfter('#barcode_paragraph');
+
+        let barcode_format = 'CODE128';
+        switch (code.length) {
+            case 13:
+                barcode_format = 'EAN13';
+                break;
+            case 12:
+                barcode_format = 'UPC';
+                break;
+            case 8:
+                barcode_format = 'EAN8';
+                break;
+        }
+
+        JsBarcode("#barcode_draw", code, {
+            format: barcode_format,
+            lineColor: "black",
+            width: 3,
+            height: 60,
+            displayValue: true,
+        });
+    }
+
+    function hideSingleBarcode(code) {
+        $("#barcode_draw").remove();
+    }
+
+    function toggleSingleBarcode(code) {
+        if ($("#barcode_draw").length) {
+            hideSingleBarcode(code);
+        } else {
+            showSingleBarcode(code);
+        }
     }
 
 
