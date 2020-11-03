@@ -1188,7 +1188,7 @@ textarea.monospace {
                                  '</button>'+
                                  "<button title=\"Edit in a new window\" "+
                                  "onclick=\"window.open('"+editIngUrl+"','_blank');\">"+
-                                 'Edit [🡕]'+
+                                 'Edit [↗]'+
                                  '</button>'+
 
                                  "<button title=\"Ingredients analysis\" "+
