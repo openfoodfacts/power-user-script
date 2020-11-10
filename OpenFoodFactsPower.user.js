@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-11-03T16:00
+// @version     2020-11-10T01:29
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -43,7 +43,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-11-03T16:00 - mode: " + pageType);
+    console.log("2020-11-10T01:29 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -851,7 +851,7 @@ textarea.monospace {
             // Show results of the OCR
             $('body').on('DOMNodeInserted', '#ingredients_list', function(e) {
                 $(e.target).before( "<p>OCR results (not saved):</p>" );
-                $(e.target).before( "<textarea id=\"ingredientFromGCV\"></textarea>" );
+                $(e.target).before( "<textarea id=\"ingredientFromGCV\" lang=\"" + lc + "\"></textarea>" );
                 getIngredientsFromGCV(code,lc);
                 $(e.target).before( "<p>Text to be saved:</p>" );
             });
