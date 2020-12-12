@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-11-20T13:46
+// @version     2020-12-12T16:32
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -12,6 +12,7 @@
 // @include     http://*.productopener.localhost/*
 // @exclude     https://*.wiki.openfoodfacts.org/*
 // @exclude     https://wiki.openfoodfacts.org/*
+// @exclude     https://support.openfoodfacts.org/*
 // @exclude     https://translate.openfoodfacts.org/*
 // @exclude     https://donate.openfoodfacts.org/*
 // @exclude     https://hunger.openfoodfacts.org/*
