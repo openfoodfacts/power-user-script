@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2020-12-12T16:32
+* Exclude https://support.openffodfacts.org
 ### 2020-10-29T18:00
 * Add graphical barcodes to list view (shift-B) (Issue #26)
 ### 2020-10-17T08:30
