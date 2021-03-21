@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2020-12-12T16:32
+// @version     2021-03-21T20:44
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -44,7 +44,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2020-11-20T13:46 - mode: " + pageType);
+    console.log("2021-03-21T20:44 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -397,18 +397,23 @@ input.show_comparison {
     display: inline;
 }
 
+/* so we can absolutely position the edit link */
+ul[id^='products_'].search_results > li {
+    position: relative;
+}
+
 .pus_edit_link {
     display: inline !important; /**/
     z-index: -2;/**/
-    position: relative;
-    bottom: 7rem;
-    border: 3px solid;
-    right: 0rem;
+    position: absolute;
+    bottom: 1rem;
+    border: 2px solid;
+    right: 1rem;
 }
 
 .product_link {
     z-index: 2;
-    background-color: white;
+    /* background-color: white; */
 }
 
 .pus_edit_link:hover {
@@ -424,7 +429,7 @@ textarea.monospace {
     font-family: Consolas, Lucida Console, monospace;
 }
 
-.products a.with_barcode { margin-top: 0; padding-top: 0; }
+.ul[id^='products_'].search_results a.with_barcode { margin-top: 0; padding-top: 0; }
 
 `;
 
@@ -533,21 +538,6 @@ textarea.monospace {
                 urlToIngredient = tds.children().attr("href"); // /category/gouda/ingredient/dairy
             }
             $(this).find('td').children().after(' <a href="'+ urlToIngredient +'" target="_blank"><span class="hidden"> ↗ ↗ ↗ </span></a>');
-        });
-    }
-
-
-    // Add a button to go straight to edit rather than the product page then edit
-    if (pageType === "list") {
-        $( "ul.products > li a" ).each(function() {
-            $(this).addClass("product_link");
-            var href = $(this).attr("href");
-            //console.log("href:" + href);
-            var productCode = href.split("/")[2];
-            //console.log("productCode:" + productCode);
-            $(this).after('<a class="pus_edit_link" href="'+
-                          "/cgi/product.pl?type=edit&code=" + productCode + '" target="_blank">🖉</a>');
-
         });
     }
 
@@ -944,29 +934,30 @@ textarea.monospace {
     // * "list" mode (when a page contains a list of products (home page, facets, search results...)
     // *
     if (pageType === "list") {
+        // CSS injected by listByRows() when switching to list edit mode.
         var css_4_list =`
 /*  */
 #main_column              { height:auto !important; } /* Because main_column has an inline style with "height: 1220px" */
-.products                 { /*display: table; /**/ border-collapse: collapse; /*float:none;/**/ }
-.products li              { display: table-row;  width: auto;    text-align: left; border: 1px solid black; float:none;  }
+ul#products_match_all                 { /*display: table; /**/ border-collapse: collapse; /*float:none;/**/ }
+ul#products_match_all li              { position: static; display: table-row;  width: auto;    text-align: left; border: 1px solid black; float:none;  }
 
-.products > li > a,
-.products > li > a > div,
-.products > li > a > span,
+ul#products_match_all > li > a,
+ul#products_match_all > li > a > div,
+ul#products_match_all > li > a > span,
 .ingr,
 .p_actions { display: table-cell; }
 
-.products > li > a { border: 1px solid black; }
+ul#products_match_all > li > a { border: 1px solid black; }
 .ingr, .p_actions { border: 0px solid black;/**/ }
 .ingr { border-right: 0px; } .p_actions {border-left: 0px; }
 
-.products > li > a        { display: table-cell; width:   30%;  vertical-align: middle; height: 6rem !important; }
-.products > li > a > div  { display: table-cell; max-width:   35% !important; } /* */
-.products > li > a > span { display: table-cell; width:   70%;  vertical-align: middle; padding-left: 1rem;} /* */
+ul#products_match_all > li > a        { display: table-cell; width:   30%;  vertical-align: middle; height: 6rem !important; }
+ul#products_match_all > li > a > div  { display: table-cell; max-width:   35% !important; } /* */
+ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vertical-align: middle; padding-left: 1rem;} /* */
 
-.wrap_ingr                { width: 70% !important; position: relative; }
+.wrap_ingr                { position: relative; line-height: 1rem !important; }
 .ingr                     { display: table-cell; /*width: 800px;/**/ height:8rem; margin: 0; vertical-align: middle; padding: 0 0.6rem 0 0.6rem;}
-.p_actions                 { display: table-cell; width: 100px;  vertical-align: middle; padding: 0.5rem; line-height: 2.6rem !important; width: 4rem !important; }
+.p_actions                 { display: table-cell; vertical-align: middle; padding: 0.5rem; line-height: 2rem !important; width: 4rem !important; }
 .ingr, .p_actions > button { font-size: 0.9rem; vertical-align: middle; }
 .save_needs_clicking { background-color: #ff952b; }
 .p_actions > button { margin: 0 0 0 0; padding: 0.3rem 0.1rem 0.3rem 0.1rem; width: 6rem; }
@@ -1000,6 +991,14 @@ textarea.monospace {
         // detect product codes and add them as attributes
         addCodesToProductList();
 
+        // Add a button to go straight to edit rather than the product page then edit
+        $( "ul[id^='products_'].search_results > li a" ).each(function() {
+            $(this).addClass("product_link");
+            var productCode = $(this).parent().attr('data-code');
+            //console.log("productCode:" + productCode);
+            $(this).after('<a class="pus_edit_link" href="'+
+                          "/cgi/product.pl?type=edit&code=" + productCode + '" target="_blank">🖉</a>');
+        });
 
         // Show an easier to read number of products
         /*
@@ -1152,12 +1151,26 @@ textarea.monospace {
         $.getJSON( urlList + "&json=1", function(data) {
             console.log("getJSONList(urlList) > Data from products' page: " + urlList);
             console.log(data);
+
+            var data_by_code = {};
+            for (let aproduct of data.products) {
+                //console.log(aproduct);
+                data_by_code[aproduct.code] = aproduct;
+            }
+            //console.log(data_by_code);
+
             var local_code, editIngUrl;
-            $( ".products > li" ).each(function( index ) {
+            $( "ul#products_match_all > li" ).each(function( index ) {
                 //console.log( index + ": " + $( this ).text() );
                 //$( this ).find(">:first-child").append('<span class="ingr">'+data["products"][index]["ingredients_text"]+'</span>');
-                local_code = data.products[index].code;
-                var _lang = data.products[index].lang;
+                //local_code = data.products[index].code;
+                local_code = $(this).attr('data-code');
+                if (data_by_code[local_code] === undefined) {
+                    return;
+                }
+
+                //console.log("local_code: " + local_code );
+                var _lang = data_by_code[local_code].lang;
                 editIngUrl = document.location.protocol + "//" + document.location.host +
                              '/cgi/product.pl?type=edit&code=' + local_code + '#tabs_ingredients_image';
                 // Add ingredients form
@@ -1168,12 +1181,12 @@ textarea.monospace {
                 //       https://bugzilla.mozilla.org/show_bug.cgi?id=1073827#c33
                 //       about:config in Firefox
                 $("html").removeAttr("lang");
-                if (data.products[index].ingredients_text == null) {
-                    data.products[index].ingredients_text = '';
+                if (data_by_code[local_code].ingredients_text == null) {
+                    data_by_code[local_code].ingredients_text = '';
                 }
                 $( this ).append('<div class="wrap_ingr">'+
                                  '<textarea class="ingr" id="i'+local_code+'" lang="'+_lang+'">'+
-                                 data.products[index].ingredients_text+
+                                 data_by_code[local_code].ingredients_text+
                                  '</textarea>'+
                                  '<span class="_lang">'+ _lang +'</span>'+
                                  '</div>'
@@ -1500,11 +1513,11 @@ textarea.monospace {
     }
 
     function showListBarcodes() {
-        $("ul.products li[data-code]").each(function(index, element) {
+        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
             if ($("#barcode_draw_" + code).length) { return; }
 
-            $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.product_link', this) );
+            $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.list_product_a', this) );
 
             let barcode_format = 'CODE128';
 
@@ -1530,13 +1543,13 @@ textarea.monospace {
                 displayValue: true,
             });
 
-            $('a.product_link', this).addClass('with_barcode');
+            $('a.list_product_a', this).addClass('with_barcode');
         });
     }
 
     function hideListBarcodes() {
         $("svg.list_barcode").remove();
-        $('ul.products .with_barcode').removeClass('with_barcode');
+        $('ul[id^="products_"].search_results .with_barcode').removeClass('with_barcode');
     }
 
     /**
@@ -1544,8 +1557,10 @@ textarea.monospace {
      * so detect them from the link, and add an attribute to the LI tag recording the barcode for later use.
      */
     function addCodesToProductList() {
-        $("ul.products li").each(function() {
-            let product_url = $("a.product_link", this).attr('href'); // find URL within "this"
+        //console.log("in addCodesToProductList()");
+        $("ul[id^='products_'].search_results li").each(function() {
+            //console.log(this);
+            let product_url = $("a.list_product_a", this).attr('href'); // find URL within "this"
             let product_code = product_url.match(/\/([0-9]+)\//); // find a number surrounded by slashes
             if (product_code && product_code[1]) {
                 $(this).attr('data-code', product_code[1]);
@@ -1805,6 +1820,7 @@ textarea.monospace {
 
     /**
      * isPageType: Detects which kind of page has been loaded
+     * See also https://github.com/openfoodfacts/openfoodfacts-server/pull/4533/files
      *
      * @returns  {String} - Type of page: api|saved-product page|edit|list|search form|product view
      */
@@ -1825,24 +1841,21 @@ textarea.monospace {
         }
 
         // Detect page containing a list of products (home page, search results...)
-        // TODO: delete $(".products")[0] after transition
-        if ($(".products")[0] || $(".list_of_products_page")[0]) return "list";
+        if ($("body").hasClass("list_of_products_page")) return "list";
 
         // Detect search form
         var regex_search = RegExp('cgi/search.pl$');
         if(regex_search.test(document.URL) === true) return "search form";
 
         // Detect recentchanges
-        regex_search = RegExp('cgi/recent_changes.pl');
-        if(regex_search.test(document.URL) === true) return "recent changes";
+        if ($("body").hasClass("recent_changes_page")) return "recent changes";
 
         //Detect if in the list of ingredients
         regex_search = RegExp('ingredients');
         if(regex_search.test(document.URL) === true) return "ingredients";
 
-
         // Finally, it's a product view
-        if($("body").attr("typeof") === "food:foodProduct") return "product view";
+        if ($("body").hasClass("product_page")) return "product view";
     }
 
 
