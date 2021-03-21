@@ -397,18 +397,23 @@ input.show_comparison {
     display: inline;
 }
 
+/* so we can absolutely position the edit link */
+ul[id^='products_'].search_results > li {
+    position: relative;
+}
+
 .pus_edit_link {
     display: inline !important; /**/
     z-index: -2;/**/
-    position: relative;
-    bottom: 7rem;
-    border: 3px solid;
-    right: 0rem;
+    position: absolute;
+    bottom: 1rem;
+    border: 2px solid;
+    right: 1rem;
 }
 
 .product_link {
     z-index: 2;
-    background-color: white;
+    /* background-color: white; */
 }
 
 .pus_edit_link:hover {
@@ -533,21 +538,6 @@ textarea.monospace {
                 urlToIngredient = tds.children().attr("href"); // /category/gouda/ingredient/dairy
             }
             $(this).find('td').children().after(' <a href="'+ urlToIngredient +'" target="_blank"><span class="hidden"> ↗ ↗ ↗ </span></a>');
-        });
-    }
-
-
-    // Add a button to go straight to edit rather than the product page then edit
-    if (pageType === "list") {
-        $( "ul.products > li a" ).each(function() {
-            $(this).addClass("product_link");
-            var href = $(this).attr("href");
-            //console.log("href:" + href);
-            var productCode = href.split("/")[2];
-            //console.log("productCode:" + productCode);
-            $(this).after('<a class="pus_edit_link" href="'+
-                          "/cgi/product.pl?type=edit&code=" + productCode + '" target="_blank">🖉</a>');
-
         });
     }
 
@@ -1000,6 +990,14 @@ textarea.monospace {
         // detect product codes and add them as attributes
         addCodesToProductList();
 
+        // Add a button to go straight to edit rather than the product page then edit
+        $( "ul[id^='products_'].search_results > li a" ).each(function() {
+            $(this).addClass("product_link");
+            var productCode = $(this).parent().attr('data-code');
+            //console.log("productCode:" + productCode);
+            $(this).after('<a class="pus_edit_link" href="'+
+                          "/cgi/product.pl?type=edit&code=" + productCode + '" target="_blank">🖉</a>');
+        });
 
         // Show an easier to read number of products
         /*
