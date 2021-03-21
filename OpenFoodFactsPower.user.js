@@ -934,29 +934,30 @@ textarea.monospace {
     // * "list" mode (when a page contains a list of products (home page, facets, search results...)
     // *
     if (pageType === "list") {
+        // CSS injected by listByRows() when switching to list edit mode.
         var css_4_list =`
 /*  */
 #main_column              { height:auto !important; } /* Because main_column has an inline style with "height: 1220px" */
-.products                 { /*display: table; /**/ border-collapse: collapse; /*float:none;/**/ }
-.products li              { display: table-row;  width: auto;    text-align: left; border: 1px solid black; float:none;  }
+ul#products_match_all                 { /*display: table; /**/ border-collapse: collapse; /*float:none;/**/ }
+ul#products_match_all li              { position: static; display: table-row;  width: auto;    text-align: left; border: 1px solid black; float:none;  }
 
-.products > li > a,
-.products > li > a > div,
-.products > li > a > span,
+ul#products_match_all > li > a,
+ul#products_match_all > li > a > div,
+ul#products_match_all > li > a > span,
 .ingr,
 .p_actions { display: table-cell; }
 
-.products > li > a { border: 1px solid black; }
+ul#products_match_all > li > a { border: 1px solid black; }
 .ingr, .p_actions { border: 0px solid black;/**/ }
 .ingr { border-right: 0px; } .p_actions {border-left: 0px; }
 
-.products > li > a        { display: table-cell; width:   30%;  vertical-align: middle; height: 6rem !important; }
-.products > li > a > div  { display: table-cell; max-width:   35% !important; } /* */
-.products > li > a > span { display: table-cell; width:   70%;  vertical-align: middle; padding-left: 1rem;} /* */
+ul#products_match_all > li > a        { display: table-cell; width:   30%;  vertical-align: middle; height: 6rem !important; }
+ul#products_match_all > li > a > div  { display: table-cell; max-width:   35% !important; } /* */
+ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vertical-align: middle; padding-left: 1rem;} /* */
 
-.wrap_ingr                { width: 70% !important; position: relative; }
+.wrap_ingr                { position: relative; line-height: 1rem !important; }
 .ingr                     { display: table-cell; /*width: 800px;/**/ height:8rem; margin: 0; vertical-align: middle; padding: 0 0.6rem 0 0.6rem;}
-.p_actions                 { display: table-cell; width: 100px;  vertical-align: middle; padding: 0.5rem; line-height: 2.6rem !important; width: 4rem !important; }
+.p_actions                 { display: table-cell; vertical-align: middle; padding: 0.5rem; line-height: 2rem !important; width: 4rem !important; }
 .ingr, .p_actions > button { font-size: 0.9rem; vertical-align: middle; }
 .save_needs_clicking { background-color: #ff952b; }
 .p_actions > button { margin: 0 0 0 0; padding: 0.3rem 0.1rem 0.3rem 0.1rem; width: 6rem; }
@@ -1150,12 +1151,26 @@ textarea.monospace {
         $.getJSON( urlList + "&json=1", function(data) {
             console.log("getJSONList(urlList) > Data from products' page: " + urlList);
             console.log(data);
+
+            var data_by_code = {};
+            for (let aproduct of data.products) {
+                //console.log(aproduct);
+                data_by_code[aproduct.code] = aproduct;
+            }
+            //console.log(data_by_code);
+
             var local_code, editIngUrl;
-            $( ".products > li" ).each(function( index ) {
+            $( "ul#products_match_all > li" ).each(function( index ) {
                 //console.log( index + ": " + $( this ).text() );
                 //$( this ).find(">:first-child").append('<span class="ingr">'+data["products"][index]["ingredients_text"]+'</span>');
-                local_code = data.products[index].code;
-                var _lang = data.products[index].lang;
+                //local_code = data.products[index].code;
+                local_code = $(this).attr('data-code');
+                if (data_by_code[local_code] === undefined) {
+                    return;
+                }
+
+                //console.log("local_code: " + local_code );
+                var _lang = data_by_code[local_code].lang;
                 editIngUrl = document.location.protocol + "//" + document.location.host +
                              '/cgi/product.pl?type=edit&code=' + local_code + '#tabs_ingredients_image';
                 // Add ingredients form
@@ -1166,12 +1181,12 @@ textarea.monospace {
                 //       https://bugzilla.mozilla.org/show_bug.cgi?id=1073827#c33
                 //       about:config in Firefox
                 $("html").removeAttr("lang");
-                if (data.products[index].ingredients_text == null) {
-                    data.products[index].ingredients_text = '';
+                if (data_by_code[local_code].ingredients_text == null) {
+                    data_by_code[local_code].ingredients_text = '';
                 }
                 $( this ).append('<div class="wrap_ingr">'+
                                  '<textarea class="ingr" id="i'+local_code+'" lang="'+_lang+'">'+
-                                 data.products[index].ingredients_text+
+                                 data_by_code[local_code].ingredients_text+
                                  '</textarea>'+
                                  '<span class="_lang">'+ _lang +'</span>'+
                                  '</div>'
