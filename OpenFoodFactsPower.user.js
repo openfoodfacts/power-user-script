@@ -424,7 +424,7 @@ textarea.monospace {
     font-family: Consolas, Lucida Console, monospace;
 }
 
-.products a.with_barcode { margin-top: 0; padding-top: 0; }
+.ul[id^='products_'].search_results a.with_barcode { margin-top: 0; padding-top: 0; }
 
 `;
 
@@ -1500,11 +1500,11 @@ textarea.monospace {
     }
 
     function showListBarcodes() {
-        $("ul.products li[data-code]").each(function(index, element) {
+        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
             if ($("#barcode_draw_" + code).length) { return; }
 
-            $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.product_link', this) );
+            $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.list_product_a', this) );
 
             let barcode_format = 'CODE128';
 
@@ -1530,13 +1530,13 @@ textarea.monospace {
                 displayValue: true,
             });
 
-            $('a.product_link', this).addClass('with_barcode');
+            $('a.list_product_a', this).addClass('with_barcode');
         });
     }
 
     function hideListBarcodes() {
         $("svg.list_barcode").remove();
-        $('ul.products .with_barcode').removeClass('with_barcode');
+        $('ul[id^="products_"].search_results .with_barcode').removeClass('with_barcode');
     }
 
     /**
