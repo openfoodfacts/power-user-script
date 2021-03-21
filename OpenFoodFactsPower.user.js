@@ -1544,8 +1544,10 @@ textarea.monospace {
      * so detect them from the link, and add an attribute to the LI tag recording the barcode for later use.
      */
     function addCodesToProductList() {
-        $("ul.products li").each(function() {
-            let product_url = $("a.product_link", this).attr('href'); // find URL within "this"
+        //console.log("in addCodesToProductList()");
+        $("ul[id^='products_'].search_results li").each(function() {
+            //console.log(this);
+            let product_url = $("a.list_product_a", this).attr('href'); // find URL within "this"
             let product_code = product_url.match(/\/([0-9]+)\//); // find a number surrounded by slashes
             if (product_code && product_code[1]) {
                 $(this).attr('data-code', product_code[1]);
