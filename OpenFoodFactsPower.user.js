@@ -1805,6 +1805,7 @@ textarea.monospace {
 
     /**
      * isPageType: Detects which kind of page has been loaded
+     * See also https://github.com/openfoodfacts/openfoodfacts-server/pull/4533/files
      *
      * @returns  {String} - Type of page: api|saved-product page|edit|list|search form|product view
      */
@@ -1825,24 +1826,21 @@ textarea.monospace {
         }
 
         // Detect page containing a list of products (home page, search results...)
-        // TODO: delete $(".products")[0] after transition
-        if ($(".products")[0] || $(".list_of_products_page")[0]) return "list";
+        if ($("body").hasClass("list_of_products_page")) return "list";
 
         // Detect search form
         var regex_search = RegExp('cgi/search.pl$');
         if(regex_search.test(document.URL) === true) return "search form";
 
         // Detect recentchanges
-        regex_search = RegExp('cgi/recent_changes.pl');
-        if(regex_search.test(document.URL) === true) return "recent changes";
+        if ($("body").hasClass("recent_changes_page")) return "recent changes";
 
         //Detect if in the list of ingredients
         regex_search = RegExp('ingredients');
         if(regex_search.test(document.URL) === true) return "ingredients";
 
-
         // Finally, it's a product view
-        if($("body").attr("typeof") === "food:foodProduct") return "product view";
+        if ($("body").hasClass("product_page")) return "product view";
     }
 
 
