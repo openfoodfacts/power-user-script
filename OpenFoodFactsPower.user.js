@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2021-03-21T20:44
+// @version     2021-03-22T19:18
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -44,7 +44,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2021-03-21T20:44 - mode: " + pageType);
+    console.log("2021-03-22T19:18 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -1148,7 +1148,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         // https://world.dev.openfoodfacts.org/quality/ingredients-100-percent-unknown
         // https://fr.openfoodfacts.org/quality/ingredients-100-percent-unknown/quality/ingredients-ingredient-tag-length-greater-than-50/200 (
         var ingr = "";
-        $.getJSON( urlList + "&json=1", function(data) {
+        $.getJSON( urlList + "&json=1&page_size=100", function(data) {
             console.log("getJSONList(urlList) > Data from products' page: " + urlList);
             console.log(data);
 
