@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2021-03-22T19:18
+// @version     2021-03-24T20:50
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -44,7 +44,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2021-03-22T19:18 - mode: " + pageType);
+    console.log("2021-03-24T20:50 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -1561,7 +1561,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $("ul[id^='products_'].search_results li").each(function() {
             //console.log(this);
             let product_url = $("a.list_product_a", this).attr('href'); // find URL within "this"
-            let product_code = product_url.match(/\/([0-9]+)\//); // find a number surrounded by slashes
+            let product_code = product_url.match(/\/([0-9]+)(\/|$)/); // find a number surrounded by slashes
             if (product_code && product_code[1]) {
                 $(this).attr('data-code', product_code[1]);
             }
@@ -1834,7 +1834,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         if(regex_pro.test(document.URL) === true) proPlatform = true;
 
         // Detect "edit" mode.
-        var regex = RegExp('product.pl');
+        var regex = RegExp('product\\.pl');
         if(regex.test(document.URL) === true) {
             if (!$("#sorted_langs").length) return "saved-product page"; // Detect "Changes saved." page
             else return "edit";
