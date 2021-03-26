@@ -27,6 +27,7 @@ Just click on the Raw button and your script manager will ask you if you want to
 
 # Changelog
 ### 2021-03-26T10:48
+* Add ->OPF button in list mode (to move products to Open Products Facts)
 * Recent changes link displays 100# instead of 900#
 ### 2021-03-25T18:18
 * Exclude https://analytics.openfoodfacts.org/
