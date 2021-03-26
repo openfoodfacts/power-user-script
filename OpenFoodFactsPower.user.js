@@ -1215,6 +1215,12 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                                  ' id="p_actions_obf_'+local_code+'" value="'+local_code+'">'+
                                  '->OBF'+
                                  '</button>'+
+
+                                 "<button title=\"Move to open products\" "+
+                                 ' id="p_actions_opf_'+local_code+'" value="'+local_code+'">'+
+                                 '->OPF'+
+                                 '</button>'+
+
                                  '</div>');
 
                 $("#i"+local_code).attr('lang', _lang);
@@ -1246,6 +1252,31 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                     $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
                     var _d = $.getJSON(_url, function() {
                         console.log("getJSONList(urlList) > Move to OBF");
+                    })
+                        .done(function(jqm2) {
+                            console.log(jqm2.status_verbose);
+                            console.log(jqm2);
+                            $("#timed_alert_" + _code).html('Moved!');
+                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
+                        })
+                        .fail(function() {
+                            console.log("getJSONList(urlList) > fail");
+                            $("#timed_alert_" + _code).html('Failed!');
+                            $("#timed_alert_" + _code).addClass('failed');
+                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
+                        });
+                });
+
+                //Move product to OPF
+                // TODO: factorise the code
+                $("#p_actions_opf_"+local_code).click(function(){
+                    var _code = $(this).attr("value");
+                    var _url = encodeURI(document.location.protocol + "//" + document.location.host +
+                                         "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=opf");
+                    console.log("api call-> "+_url);
+                    $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
+                    var _d = $.getJSON(_url, function() {
+                        console.log("getJSONList(urlList) > Move to OPF");
                     })
                         .done(function(jqm2) {
                             console.log(jqm2.status_verbose);
