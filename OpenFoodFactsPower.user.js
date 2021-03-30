@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2021-03-30T02:36
+// @version     2021-03-30T04:48
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -45,7 +45,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2021-03-30T02:36 - mode: " + pageType);
+    console.log("2021-03-30T04:48 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -1272,7 +1272,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                                          "&ingredients_text_" + encodeURIComponent(_lang) +
                                          "=" + encodeURIComponent($("#i" + _code).val());
                     console.log("getJSONList(urlList) > "+_url);
-                    $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Saving</div>');
+                    $("body").append('<div id="timed_alert_save_' + _code + '" class="timed_alert">Saving</div>');
                     var _d = $.getJSON(_url, function() {
                         console.log("getJSONList(urlList) > Save product ingredients");
                     })
@@ -1280,14 +1280,14 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                             console.log(jqm2.status_verbose);
                             console.log(jqm2);
                             $("#p_actions_sav_"+_code).removeClass("save_needs_clicking");
-                            $("#timed_alert_" + _code).html('Saved!');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
+                            $("#timed_alert_save_" + _code).html('Saved!');
+                            $("#timed_alert_save_" + _code).fadeOut(3000, function () { $(this).remove(); });
                         })
                         .fail(function() {
                             console.log("getJSONList(urlList) > fail");
-                            $("#timed_alert_" + _code).html('Failed!');
-                            $("#timed_alert_" + _code).addClass('failed');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
+                            $("#timed_alert_save_" + _code).html('Failed!');
+                            $("#timed_alert_save_" + _code).addClass('failed');
+                            $("#timed_alert_save_" + _code).fadeOut(3000, function () { $(this).remove(); });
                         });
                 });
 
@@ -2044,7 +2044,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         var _url = encodeURI(document.location.protocol + "//" + document.location.host +
                              "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=" + newSite);
         console.log("api call-> "+_url);
-        $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
+        $("body").append('<div id="timed_alert_move_' + _code + '" class="timed_alert">Moving</div>');
         var _d = $.getJSON(_url, function() {
             console.log("getJSONList(urlList) > Move to " + newSite );
         })
@@ -2052,18 +2052,18 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             console.log(jqm2.status_verbose);
             console.log(jqm2);
             if (jqm2.status == 1 || jqm2.status_verbose == 'not modified') {
-                $("#timed_alert_" + _code).html('Moved!');
+                $("#timed_alert_move_" + _code).html('Moved!');
             } else {
-                $("#timed_alert_" + _code).html('Failed!');
-                $("#timed_alert_" + _code).addClass('failed');
+                $("#timed_alert_move_" + _code).html('Failed!');
+                $("#timed_alert_move_" + _code).addClass('failed');
             }
-            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
+            $("#timed_alert_move_" + _code).fadeOut(3000, function () { $(this).remove(); });
         })
         .fail(function() {
             console.log("getJSONList(urlList) > fail");
-            $("#timed_alert_" + _code).html('Failed!');
-            $("#timed_alert_" + _code).addClass('failed');
-            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
+            $("#timed_alert_move_" + _code).html('Failed!');
+            $("#timed_alert_move_" + _code).addClass('failed');
+            $("#timed_alert_move_" + _code).fadeOut(3000, function () { $(this).remove(); });
         });
     }
 
