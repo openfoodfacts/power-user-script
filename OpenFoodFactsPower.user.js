@@ -118,7 +118,7 @@
     //               https://addons.mozilla.org/en-US/firefox/addon/languagetool/
     //     * Inline edit of ingredients in list mode
     //   * Firefox: Nutrition facts picture takes all the place available
-    //   * Option to set ingredient textareas to fixed width font, to make it easier to see bad OCR, 
+    //   * Option to set ingredient textareas to fixed width font, to make it easier to see bad OCR,
     //     such as when it confuses "m" and "rn" (e.g. corn), lowercase l/L and uppercase i/I, etc.
     //
     // * FEATURES
@@ -1854,7 +1854,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * isPageType: Detects which kind of page has been loaded
      * See also https://github.com/openfoodfacts/openfoodfacts-server/pull/4533/files
      *
-     * @returns  {String} - Type of page: api|saved-product page|edit|list|search form|product view
+     * @returns  {String} - Type of page: api|saved-product page|edit|list|search form|product view|error page
      */
     function isPageType() {
         // Detect API page. Example: https://world.openfoodfacts.org/api/v0/product/3599741003380.json
@@ -1868,9 +1868,13 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         // Detect "edit" mode.
         var regex = RegExp('product\\.pl');
         if(regex.test(document.URL) === true) {
+            if ($("body").hasClass("error_page")) return "error page"; // perhaps a more specific test for product-not-found?
             if (!$("#sorted_langs").length) return "saved-product page"; // Detect "Changes saved." page
             else return "edit";
         }
+
+        // Detect other error pages
+        if ($("body").hasClass("error_page")) return "error page";
 
         // Detect page containing a list of products (home page, search results...)
         if ($("body").hasClass("list_of_products_page")) return "list";
