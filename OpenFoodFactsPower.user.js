@@ -1221,6 +1221,11 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                                  '->OPF'+
                                  '</button>'+
 
+                                 "<button title=\"Move to open pet food\" "+
+                                 ' id="p_actions_opff_'+local_code+'" value="'+local_code+'">'+
+                                 '->OPetFF'+
+                                 '</button>'+
+
                                  '</div>');
 
                 $("#i"+local_code).attr('lang', _lang);
@@ -1245,51 +1250,17 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
                 //Move product to OBF
                 $("#p_actions_obf_"+local_code).click(function(){
-                    var _code = $(this).attr("value");
-                    var _url = encodeURI(document.location.protocol + "//" + document.location.host +
-                                         "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=obf");
-                    console.log("api call-> "+_url);
-                    $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
-                    var _d = $.getJSON(_url, function() {
-                        console.log("getJSONList(urlList) > Move to OBF");
-                    })
-                        .done(function(jqm2) {
-                            console.log(jqm2.status_verbose);
-                            console.log(jqm2);
-                            $("#timed_alert_" + _code).html('Moved!');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
-                        })
-                        .fail(function() {
-                            console.log("getJSONList(urlList) > fail");
-                            $("#timed_alert_" + _code).html('Failed!');
-                            $("#timed_alert_" + _code).addClass('failed');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
-                        });
+                    moveProductToSite( $(this).attr("value"), 'obf' );
                 });
 
                 //Move product to OPF
-                // TODO: factorise the code
                 $("#p_actions_opf_"+local_code).click(function(){
-                    var _code = $(this).attr("value");
-                    var _url = encodeURI(document.location.protocol + "//" + document.location.host +
-                                         "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=opf");
-                    console.log("api call-> "+_url);
-                    $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
-                    var _d = $.getJSON(_url, function() {
-                        console.log("getJSONList(urlList) > Move to OPF");
-                    })
-                        .done(function(jqm2) {
-                            console.log(jqm2.status_verbose);
-                            console.log(jqm2);
-                            $("#timed_alert_" + _code).html('Moved!');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
-                        })
-                        .fail(function() {
-                            console.log("getJSONList(urlList) > fail");
-                            $("#timed_alert_" + _code).html('Failed!');
-                            $("#timed_alert_" + _code).addClass('failed');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
-                        });
+                    moveProductToSite( $(this).attr("value"), 'opf' );
+                });
+
+                //Move product to OPFF
+                $("#p_actions_opff_"+local_code).click(function(){
+                    moveProductToSite( $(this).attr("value"), 'opff' );
                 });
 
                 // Save ingredients
@@ -2052,6 +2023,47 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             console.log("productExists( "+urlToCheck+" ) > always - xhr.status: " + xhr.status);
             //console.log("productExists( "+urlToCheck+" ) > always - getAllResponseHeaders(): " + xhr.getAllResponseHeaders());
             if(xhr.status) $(id).text(xhr.status);
+        });
+    }
+
+
+    /**
+     * Move products between sites
+     */
+    function moveProductToSite(_code, newSite) {
+        if (/^(obf|off|opf|opff)$/.test(newSite) !== true) {
+            console.log("moveProductToSite() > invalid site: " + newSite);
+            return false;
+        }
+
+        if (!_code) {
+            console.log("moveProductToSite() > missing barcode");
+            return false;
+        }
+
+        var _url = encodeURI(document.location.protocol + "//" + document.location.host +
+                             "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=" + newSite);
+        console.log("api call-> "+_url);
+        $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
+        var _d = $.getJSON(_url, function() {
+            console.log("getJSONList(urlList) > Move to " + newSite );
+        })
+        .done(function(jqm2) {
+            console.log(jqm2.status_verbose);
+            console.log(jqm2);
+            if (jqm2.status == 1 || jqm2.status_verbose == 'not modified') {
+                $("#timed_alert_" + _code).html('Moved!');
+            } else {
+                $("#timed_alert_" + _code).html('Failed!');
+                $("#timed_alert_" + _code).addClass('failed');
+            }
+            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
+        })
+        .fail(function() {
+            console.log("getJSONList(urlList) > fail");
+            $("#timed_alert_" + _code).html('Failed!');
+            $("#timed_alert_" + _code).addClass('failed');
+            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
         });
     }
 
