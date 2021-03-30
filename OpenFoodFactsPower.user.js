@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2021-03-26T10:48
+// @version     2021-03-30T02:36
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -45,7 +45,7 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2021-03-26T10:48 - mode: " + pageType);
+    console.log("2021-03-30T02:36 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -118,7 +118,7 @@
     //               https://addons.mozilla.org/en-US/firefox/addon/languagetool/
     //     * Inline edit of ingredients in list mode
     //   * Firefox: Nutrition facts picture takes all the place available
-    //   * Option to set ingredient textareas to fixed width font, to make it easier to see bad OCR, 
+    //   * Option to set ingredient textareas to fixed width font, to make it easier to see bad OCR,
     //     such as when it confuses "m" and "rn" (e.g. corn), lowercase l/L and uppercase i/I, etc.
     //
     // * FEATURES
@@ -1221,6 +1221,11 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                                  '->OPF'+
                                  '</button>'+
 
+                                 "<button title=\"Move to open pet food\" "+
+                                 ' id="p_actions_opff_'+local_code+'" value="'+local_code+'">'+
+                                 '->OPetFF'+
+                                 '</button>'+
+
                                  '</div>');
 
                 $("#i"+local_code).attr('lang', _lang);
@@ -1245,51 +1250,17 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
                 //Move product to OBF
                 $("#p_actions_obf_"+local_code).click(function(){
-                    var _code = $(this).attr("value");
-                    var _url = encodeURI(document.location.protocol + "//" + document.location.host +
-                                         "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=obf");
-                    console.log("api call-> "+_url);
-                    $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
-                    var _d = $.getJSON(_url, function() {
-                        console.log("getJSONList(urlList) > Move to OBF");
-                    })
-                        .done(function(jqm2) {
-                            console.log(jqm2.status_verbose);
-                            console.log(jqm2);
-                            $("#timed_alert_" + _code).html('Moved!');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
-                        })
-                        .fail(function() {
-                            console.log("getJSONList(urlList) > fail");
-                            $("#timed_alert_" + _code).html('Failed!');
-                            $("#timed_alert_" + _code).addClass('failed');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
-                        });
+                    moveProductToSite( $(this).attr("value"), 'obf' );
                 });
 
                 //Move product to OPF
-                // TODO: factorise the code
                 $("#p_actions_opf_"+local_code).click(function(){
-                    var _code = $(this).attr("value");
-                    var _url = encodeURI(document.location.protocol + "//" + document.location.host +
-                                         "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=opf");
-                    console.log("api call-> "+_url);
-                    $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
-                    var _d = $.getJSON(_url, function() {
-                        console.log("getJSONList(urlList) > Move to OPF");
-                    })
-                        .done(function(jqm2) {
-                            console.log(jqm2.status_verbose);
-                            console.log(jqm2);
-                            $("#timed_alert_" + _code).html('Moved!');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
-                        })
-                        .fail(function() {
-                            console.log("getJSONList(urlList) > fail");
-                            $("#timed_alert_" + _code).html('Failed!');
-                            $("#timed_alert_" + _code).addClass('failed');
-                            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
-                        });
+                    moveProductToSite( $(this).attr("value"), 'opf' );
+                });
+
+                //Move product to OPFF
+                $("#p_actions_opff_"+local_code).click(function(){
+                    moveProductToSite( $(this).attr("value"), 'opff' );
                 });
 
                 // Save ingredients
@@ -1854,7 +1825,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * isPageType: Detects which kind of page has been loaded
      * See also https://github.com/openfoodfacts/openfoodfacts-server/pull/4533/files
      *
-     * @returns  {String} - Type of page: api|saved-product page|edit|list|search form|product view
+     * @returns  {String} - Type of page: api|saved-product page|edit|list|search form|product view|error page
      */
     function isPageType() {
         // Detect API page. Example: https://world.openfoodfacts.org/api/v0/product/3599741003380.json
@@ -1868,9 +1839,13 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         // Detect "edit" mode.
         var regex = RegExp('product\\.pl');
         if(regex.test(document.URL) === true) {
+            if ($("body").hasClass("error_page")) return "error page"; // perhaps a more specific test for product-not-found?
             if (!$("#sorted_langs").length) return "saved-product page"; // Detect "Changes saved." page
             else return "edit";
         }
+
+        // Detect other error pages
+        if ($("body").hasClass("error_page")) return "error page";
 
         // Detect page containing a list of products (home page, search results...)
         if ($("body").hasClass("list_of_products_page")) return "list";
@@ -2048,6 +2023,47 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             console.log("productExists( "+urlToCheck+" ) > always - xhr.status: " + xhr.status);
             //console.log("productExists( "+urlToCheck+" ) > always - getAllResponseHeaders(): " + xhr.getAllResponseHeaders());
             if(xhr.status) $(id).text(xhr.status);
+        });
+    }
+
+
+    /**
+     * Move products between sites
+     */
+    function moveProductToSite(_code, newSite) {
+        if (/^(obf|off|opf|opff)$/.test(newSite) !== true) {
+            console.log("moveProductToSite() > invalid site: " + newSite);
+            return false;
+        }
+
+        if (!_code) {
+            console.log("moveProductToSite() > missing barcode");
+            return false;
+        }
+
+        var _url = encodeURI(document.location.protocol + "//" + document.location.host +
+                             "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=" + newSite);
+        console.log("api call-> "+_url);
+        $("body").append('<div id="timed_alert_' + _code + '" class="timed_alert">Moving</div>');
+        var _d = $.getJSON(_url, function() {
+            console.log("getJSONList(urlList) > Move to " + newSite );
+        })
+        .done(function(jqm2) {
+            console.log(jqm2.status_verbose);
+            console.log(jqm2);
+            if (jqm2.status == 1 || jqm2.status_verbose == 'not modified') {
+                $("#timed_alert_" + _code).html('Moved!');
+            } else {
+                $("#timed_alert_" + _code).html('Failed!');
+                $("#timed_alert_" + _code).addClass('failed');
+            }
+            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
+        })
+        .fail(function() {
+            console.log("getJSONList(urlList) > fail");
+            $("#timed_alert_" + _code).html('Failed!');
+            $("#timed_alert_" + _code).addClass('failed');
+            $("#timed_alert_" + _code).fadeOut(3000, function () { $(this).remove(); });
         });
     }
 
