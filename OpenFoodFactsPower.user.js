@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2021-03-30T04:48
+// @version     2021-04-01T19:09
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -45,7 +45,8 @@
     var version_date;
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    console.log("2021-03-30T04:48 - mode: " + pageType);
+    const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
+    console.log("2021-04-01T19:09 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -589,20 +590,20 @@ textarea.monospace {
                         '">DDG</a>]');
             // Link to Open Beauty Facts
             var obfLink = 'https://world.openbeautyfacts.org/product/' + code;
-            productExists("https://cors-anywhere.herokuapp.com/"+obfLink,"#obfLinkStatus","","");
+            productExists(corsProxyURL+obfLink,"#obfLinkStatus","","");
             $("#barcode_paragraph")
                 .append(' <span id="obfLink" class="productLink">[<a href="' + obfLink +
                         '">obf.org</a>] (<span id="obfLinkStatus"></span>)');
             // Link to Open Pet Food Facts
             var opffLink = 'https://world.openpetfoodfacts.org/product/' + code;
-            productExists("https://cors-anywhere.herokuapp.com/"+opffLink,"#opffLinkStatus","","");
+            productExists(corsProxyURL+opffLink,"#opffLinkStatus","","");
             $("#barcode_paragraph")
                 .append(' <span id="opffLink" class="productLink">[<a href="' + opffLink +
                         '">opff.org</a>] (<span id="opffLinkStatus"></span>)');
             // Link to .pro.openfoodfacts.dev
             //var proDevLink = 'https://off:off@world.pro.openfoodfacts.dev/product/' + code;
             var proDevLink = 'https://world.pro.openfoodfacts.dev/product/' + code;
-            productExists("https://cors-anywhere.herokuapp.com/"+proDevLink,"#proDevLinkStatus","off","off");
+            productExists(corsProxyURL+proDevLink,"#proDevLinkStatus","off","off");
             $("#barcode_paragraph")
                 .append(' <span id="devProPlatform" class="productLink">[<a href="' + proDevLink +
                         '">.pro.off.dev</a>] (<span id="proDevLinkStatus"></span>)');
@@ -1636,7 +1637,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         //   * https://crossorigin.me/ => GET only // 2020-04-10: site down?
         //   * https://cors.io? => sometimes down (3 days after first tries); can be installed on Heroku
         //   * https://cors-anywhere.herokuapp.com/ => ok
-        var googleScriptURL = "https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbwi9tIOPc7zh2NggDuq8geTSZqdZ470unBWUi4KV4AwYzCTNO8/exec";
+        var googleScriptURL = corsProxyURL+"https://script.google.com/macros/s/AKfycbwi9tIOPc7zh2NggDuq8geTSZqdZ470unBWUi4KV4AwYzCTNO8/exec";
         var flagWindow =
             '<div id="flag_dialog" title="Dialog Form">' +
             '<form name="flag_form">' +
