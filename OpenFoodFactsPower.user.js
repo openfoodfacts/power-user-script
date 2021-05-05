@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2021-04-01T19:09
+// @version     2021-05-05T11:10
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -11,6 +11,7 @@
 // @include     https://*.openfoodfacts.dev/*
 // @include     http://*.productopener.localhost/*
 // @exclude     https://analytics.openfoodfacts.org/*
+// @exclude     https://api.folksonomy.openfoodfacts.org/*
 // @exclude     https://*.wiki.openfoodfacts.org/*
 // @exclude     https://wiki.openfoodfacts.org/*
 // @exclude     https://support.openfoodfacts.org/*
@@ -29,14 +30,14 @@
 /* eslint-env jquery */
 
 // Product Opener (Open Food Facts web app) uses:
-// * jQuery 2.1.4:
-//   view-source:https://static.openfoodfacts.org/js/dist/jquery.js
-//   http://code.jquery.com/jquery-2.1.4.min.js
-// * jQuery-UI 1.12.1:
-//   view-source:https://static.openfoodfacts.org/js/dist/jquery-ui.js
-//   http://code.jquery.com/ui/1.12.1/jquery-ui.min.js
-// * Tagify 3.x:
-//   https://github.com/yairEO/tagify
+// * jQuery 2.1.4:                view-source:https://static.openfoodfacts.org/js/dist/jquery.js
+//                                http://code.jquery.com/jquery-2.1.4.min.js
+// * jQuery-UI 1.12.1:            view-source:https://static.openfoodfacts.org/js/dist/jquery-ui.js
+//                                http://code.jquery.com/ui/1.12.1/jquery-ui.min.js
+// * Tagify 3.x:                  view-source:https://static.openfoodfacts.org/js/dist/tagify.min.js
+//                                https://github.com/yairEO/tagify
+// * Foundation 5 CSS Framework:  https://sudheerdev.github.io/Foundation5CheatSheet/
+//                                See also: https://github.com/openfoodfacts/openfoodfacts-server/pull/2987
 
 (function() {
     'use strict';
@@ -46,7 +47,7 @@
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
-    console.log("2021-04-01T19:09 - mode: " + pageType);
+    console.log("2021-05-05T11:10 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
