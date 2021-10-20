@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2021-10-20T16:31
+* Add "n" keyboard shortcut in list mode to reload the list without cache (&nocache=1 parameter)
 ### 2021-03-30T02:36
 * Add ->OPetFF button in list mode (to move products to Open Pet Food Facts), and improve error handling
 ### 2021-03-26T10:48

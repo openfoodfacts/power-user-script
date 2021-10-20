@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2021-05-05T11:10
+// @version     2021-10-20T16:31
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -47,7 +47,7 @@
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
-    console.log("2021-05-05T11:10 - mode: " + pageType);
+    console.log("2021-10-20T16:31 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -114,6 +114,7 @@
     //   * keyboard shortcuts to help modify data without a mouse: P(roduct), Q(uality), B(rands), C(ategories), L(abels), I(ngredients), (e)N(ergy), F(ibers)
     //   * Quick links in the sidebar: page translation, category translation, Recent Changes, Hunger Game, categorization opportunities...
     //   * dedicated to list screens (facets, search results...):
+    //     * "n" keyboard shortcut to reload the list without cache (&nocache=1 parameter), if it's not already the case
     //     * [alpha] keyboard shortcut to list products as a table containing ingredients and options to edit or delete ingredients
     //               (shift+L) ["L" for "list"]
     //               The LanguageTool Firefox extension is recommanded because it detects automatically the language of each field.
@@ -722,7 +723,7 @@ textarea.monospace {
                 }
                 // (a): api page in a new window
                 if ((pageType === "product view" || pageType == "edit") && event.key === 'a') {
-                    window.open(apiProductURL, "_blank"); // edit in current window
+                    window.open(apiProductURL, "_blank"); // open in an other window
                     return;
                 }
                 // (e): edit current product in current window
@@ -980,6 +981,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             "<hr>" +
             "<li>(Shift+L): List edit mode</li>" +
             "<li>(Shift+b): Show/hide barcodes</li>" +
+            "<li>(n): reload the page without cache (add &nocache=1)</li>" +
             "</ul>";
 
         // Help icon fixed
@@ -1020,6 +1022,13 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 // (Shift + L)
                 if (event.key === 'L' && listByRowsMode === false) {
                     listByRows();
+                    return;
+                }
+
+                // (n): reload and add &nocache=1 if not already the case
+                if (event.key === 'n') {
+                    let nocache = ((/\&nocache=1/.test(window.location)) ? "" : "&nocache=1");
+                    window.open(window.location + nocache, "_self"); // reload in current window
                     return;
                 }
 
