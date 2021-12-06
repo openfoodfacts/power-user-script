@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2021-10-20T16:31
+// @version     2021-12-06T13:55
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -834,6 +834,18 @@ textarea.monospace {
             '</p>' : ""));
 
 
+        // For each different brand, if any, add a deep link to Hunger Game
+        // TODO: make this a parameter which can be saved from a session to another; something like:
+        //       readParameter(isLinkToHungerGameForEachBrand)
+        let isLinkToHungerGameForEachBrand = true;
+        if(isLinkToHungerGameForEachBrand) {
+            $('[itemprop="brand"]').each(function() {
+                const brand = normalizeTagName($(this).text());
+                $(this).after(' <sup>[<a href="https://hunger.openfoodfacts.org/questions?value_tag=' + brand + '&type=brand" title="Hunger Game">Hunger Game</a>]</sup>');
+            });
+        }
+
+
         // If ingredients are already entered, show results of the OCR
         if($("#editingredients")[0]) {
             // Looking for ingredients language
@@ -1433,7 +1445,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 $('.note').hide();
                 $('.example').hide();
             }
-            //$('#textbox1').val(this.checked);
         });
     }
 
@@ -1984,12 +1995,14 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     /**
      * normalizeTagName: returns a normalized version of a tag
      *
-     * @param    {string} tagName: tag to normalize;  eg. "Cereal bars"
-     * @returns  {String} normalized tagName;         eg. "cereal-bars"
+     * @param    {string} tagName: tag to normalize;  eg. "Cereal bars", "Marque Repère", "Trader Joe's"
+     * @returns  {String} normalized tagName;         eg. "cereal-bars", "marque-repere", "trader-joe-s"
      */
     function normalizeTagName(tagName) {
         tagName = tagName.toLowerCase();
-        tagName = tagName.replace(/ /mg, "-");
+        tagName = tagName.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Accentued chars
+        tagName = tagName.replace(/[ '"&]/mg, "-");   // "Kellog's" => kellog-s
+        tagName = tagName.replace(/-+/mg, "-");       // "Elle & Vire" => "elle-vire"
         console.log("normalizeTagName() - tagName: " + tagName);
         return tagName;
     }
