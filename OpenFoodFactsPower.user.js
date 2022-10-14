@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2022-10-14T09:20
+// @version     2022-10-14T15:24
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -54,7 +54,7 @@
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
-    console.log("2022-10-14T09:20 - mode: " + pageType);
+    console.log("2022-10-14T15:24 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -1877,7 +1877,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         if ($("body").hasClass("error_page")) return "error page";
 
         // Detect page containing a list of products (home page, search results...)
-        if ($("body").hasClass("list_of_products_page")) return "list";
+        if ($("body").hasClass("products_page") || $("body").hasClass("list_of_products_page")) return "list";
 
         // Detect search form
         var regex_search = RegExp('cgi/search.pl$');
