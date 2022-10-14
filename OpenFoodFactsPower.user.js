@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2022-10-14T16:02
+// @version     2022-10-14T16:27
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -54,7 +54,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
-    log("2022-10-14T16:02 - mode: " + pageType);
+    log("2022-10-14T16:27 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -962,6 +962,7 @@ textarea.monospace {
 /*  */
 #main_column              { height:auto !important; } /* Because main_column has an inline style with "height: 1220px" */
 ul#products_match_all                 { /*display: table; /**/ border-collapse: collapse; /*float:none;/**/ }
+ul.search_results                     { display: block; }
 ul#products_match_all li              { position: static; display: table-row;  width: auto;    text-align: left; border: 1px solid black; float:none;  }
 
 ul#products_match_all > li > a,
@@ -976,6 +977,7 @@ ul#products_match_all > li > a { border: 1px solid black; }
 
 ul#products_match_all > li > a        { display: table-cell; width:   30%;  vertical-align: middle; height: 6rem !important; }
 ul#products_match_all > li > a > div  { display: table-cell; max-width:   35% !important; } /* */
+.list_product_name                    { height: auto; }
 ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vertical-align: middle; padding-left: 1rem;} /* */
 
 .wrap_ingr                { position: relative; line-height: 1rem !important; }
