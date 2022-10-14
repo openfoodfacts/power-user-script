@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2021-12-06T13:55
+// @version     2022-10-14T09:20
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -19,6 +19,12 @@
 // @exclude     https://donate.openfoodfacts.org/*
 // @exclude     https://hunger.openfoodfacts.org/*
 // @exclude     https://monitoring.openfoodfacts.org/*
+// @exclude     https://forum.openfoodfacts.org/*
+// @exclude     https://*blog.openfoodfacts.org/*
+// @exclude     https://*connect.openfoodfacts.org/*
+// @exclude     https://*connect-test.openfoodfacts.org/*
+// @exclude     http://mirabelle.openfoodfacts.org/*
+// @exclude     https://link.openfoodfacts.org/*
 // @icon        http://world.openfoodfacts.org/favicon.ico
 // @updateURL   https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
 // @grant       GM_getResourceText
@@ -37,6 +43,7 @@
 // * Tagify 3.x:                  view-source:https://static.openfoodfacts.org/js/dist/tagify.min.js
 //                                https://github.com/yairEO/tagify
 // * Foundation 5 CSS Framework:  https://sudheerdev.github.io/Foundation5CheatSheet/
+//                                https://get.foundation/sites/docs-v5/
 //                                See also: https://github.com/openfoodfacts/openfoodfacts-server/pull/2987
 
 (function() {
@@ -47,7 +54,7 @@
     var proPlatform = false; // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
-    console.log("2021-10-20T16:31 - mode: " + pageType);
+    console.log("2022-10-14T09:20 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
