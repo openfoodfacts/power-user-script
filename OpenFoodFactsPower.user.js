@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2022-10-14T15:24
+// @version     2022-10-14T16:02
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -23,8 +23,7 @@
 // @exclude     https://*blog.openfoodfacts.org/*
 // @exclude     https://*connect.openfoodfacts.org/*
 // @exclude     https://*connect-test.openfoodfacts.org/*
-// @exclude     http://mirabelle.openfoodfacts.org/*
-// @exclude     https://link.openfoodfacts.org/*
+//
 // @icon        http://world.openfoodfacts.org/favicon.ico
 // @updateURL   https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
 // @grant       GM_getResourceText
@@ -49,19 +48,20 @@
 (function() {
     'use strict';
 
+    const log_to_console = true; // true if you want to log activity
     var version_user;
     var version_date;
-    var proPlatform = false; // TODO: to be included in isPageType()
+    var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
-    console.log("2022-10-14T15:24 - mode: " + pageType);
+    log("2022-10-14T16:02 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
         // TODO: allow keyboard shortcut to get back to product view?
         var _code = window.location.href.match(/\/product\/(.*)\.json$/)[1];
         var viewURL = document.location.protocol + "//" + document.location.host + "/product/" + _code;
-        console.log('press v to get back to product view: ' + viewURL);
+        log('press v to get back to product view: ' + viewURL);
         $(document).on('keydown', function(event) {
             if (event.key === 'v') {
                 window.open(viewURL, "_blank"); // open a new window
@@ -483,12 +483,12 @@ textarea.monospace {
                 code = code2[1];
             }
         }
-        //console.log("code2: "+ code2);
+        //log("code2: "+ code2);
 
-        console.log("code: "+ code);
+        log("code: "+ code);
         // build API product link; example: https://world.openfoodfacts.org/api/v0/product/737628064502.json
         var apiProductURL = "/api/v0/product/" + code + ".json";
-        console.log("API: " + apiProductURL);
+        log("API: " + apiProductURL);
         // build edit url
         var editURL = document.location.protocol + "//" + document.location.host + "/cgi/product.pl?type=edit&code=" + code;
     }
@@ -501,7 +501,7 @@ textarea.monospace {
     // Add quick links in the sidebar: page translation, category translation, Recent Changes...
     if (pageType !== "api") {
         var pageLanguage = $("html").attr('lang');      // Get page language
-        console.log("Page language: " + pageLanguage);
+        log("Page language: " + pageLanguage);
         if(pageLanguage === "en") {                     // Delete page language if "en" because we can't make the difference bewteen "en-GB" and "en-US"
             pageLanguage = "";
         }
@@ -563,7 +563,7 @@ textarea.monospace {
         // Add product public link if we are on the pro platform
         if(proPlatform) {
             var publicURL = document.URL.replace(/\.pro\./gi, ".");
-            console.log("publicURL: "+publicURL);
+            log("publicURL: "+publicURL);
             $(".sidebar p:first").after('<p>> <a href="'+publicURL+'">Product public URL</a></p>');
         }
 
@@ -621,7 +621,7 @@ textarea.monospace {
             var sameBrandProductsJSON = sameBrandProductsURL + "&json=1";
             $.getJSON(sameBrandProductsJSON, function(data) {
                 var nbOfSameBrandProducts = data.count;
-                console.log("nbOfSameBrandProducts: " + nbOfSameBrandProducts);
+                log("nbOfSameBrandProducts: " + nbOfSameBrandProducts);
                 if($("#going-further")) $("#going-further").append('<li><span><a href="' +
                                      sameBrandProductsURL +
                                      '">' + nbOfSameBrandProducts +
@@ -706,7 +706,7 @@ textarea.monospace {
             //Ingredients analysis check - opens in new window
             $('body').append('<button id="ing_analysis">Ingredients analysis</button>');
             $("#ing_analysis").click(function(){
-                //console.log("analyse");
+                //log("analyse");
                 Copydata();
                 submitToPopup(analyse_form);
             });
@@ -716,7 +716,7 @@ textarea.monospace {
 
         // Keyboard actions
         $(document).on('keydown', function(event) {
-            // console.log(event);
+            log(event);
             // If the key is not pressed inside a input field (ex. search product field)
             if (
                 !$(event.target).is(':input')
@@ -782,7 +782,7 @@ textarea.monospace {
                     $.each(array_langs,function(i){
                         options_langs += '<option value="'+(array_langs[i])+'">'+(array_langs[i])+'</option>';
                     });
-                    console.log("options_langs: "+options_langs);
+                    log("options_langs: "+options_langs);
                     var transfer = "<div id=\"dialog\" title=\"Dialog Form\">" +
                         '<form action="' + transferServiceURL + '" method="get">' +
                         "<label>Source language:</label>" +
@@ -802,7 +802,7 @@ textarea.monospace {
                             "?ol=" + $("#transfer_ol").val() +
                             "&fl=" + $("#transfer_fl").val() +
                             "&code=" + code;
-                        console.log("transfert url: "+url);
+                        log("transfert url: "+url);
                         $.ajax({url: url, success: function(result){
                             $("#transfer_result").html(result);
                         }});
@@ -830,7 +830,7 @@ textarea.monospace {
         // Showing it directly on the product page, for emerging categories.
         // https://world.openfoodfacts.org/cgi/search.pl?action=process&sort_by=unique_scans_n&page_size=20&action=display&tagtype_0=states&tag_contains_0=contains&tag_0=categories%20to%20be%20completed&search_terms=lasagne
         var productName = $('h1[property="food:name"]').html().match(/(.*?)(( - .*)|$)/)[1]; // h1[property="food:name"] => Cerneaux noix de pécan - Vahiné - 50 g ℮
-        console.log("productName: " + productName);
+        log("productName: " + productName);
         var SearchUncategorizedProductsOpportunitiesDeepLink = encodeURI(productName);
         $("#hungerGameLink").after(
             ((SearchUncategorizedProductsOpportunitiesDeepLink) ? '<p>'+
@@ -858,9 +858,9 @@ textarea.monospace {
             // Looking for ingredients language
             var regex1 = new RegExp(/\((..)\)/);
             var ingredientsButton = $("#editingredients").html();
-            //console.log($("#editingredients").html());
+            //log($("#editingredients").html());
             var lc = regex1.exec(ingredientsButton)[1];
-            console.log("Ingredients language: "+lc);
+            log("Ingredients language: "+lc);
 
             // Show results of the OCR
             $('body').on('DOMNodeInserted', '#ingredients_list', function(e) {
@@ -906,7 +906,7 @@ textarea.monospace {
 
         // TODO: add ingredients picture aside ingredients text area
         var ingredientsImage = $("#display_ingredients_es img");
-        console.log("ingredientsImage: "+ ingredientsImage);
+        log("ingredientsImage: "+ ingredientsImage);
         $("#ingredients_text_es").after(ingredientsImage);
         $("#ingredients_text_es").css({
             "width": "50%",
@@ -1019,16 +1019,16 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $( "ul[id^='products_'].search_results > li a" ).each(function() {
             $(this).addClass("product_link");
             var productCode = $(this).parent().attr('data-code');
-            //console.log("productCode:" + productCode);
+            //log("productCode:" + productCode);
             $(this).after('<a class="pus_edit_link" href="'+
                           "/cgi/product.pl?type=edit&code=" + productCode + '" target="_blank">🖉</a>');
         });
 
         // Show an easier to read number of products
         /*
-        var xxxProducts = $(".button-group li div").text(); console.log(xxxProducts); // 1009326 products
-        var nbOfProducts = parseInt(xxxProducts.match(/(\d+)/g)[0]); //console.log(nbOfProducts); // 1009326
-        nbOfProducts = nbOfProducts.toLocaleString(); //console.log(nbOfProducts); // 1 009 326
+        var xxxProducts = $(".button-group li div").text(); log(xxxProducts); // 1009326 products
+        var nbOfProducts = parseInt(xxxProducts.match(/(\d+)/g)[0]); //log(nbOfProducts); // 1009326
+        nbOfProducts = nbOfProducts.toLocaleString(); //log(nbOfProducts); // 1 009 326
         $(".button-group li div").text(xxxProducts.replace(/(\d+)(.*)/, nbOfProducts+"$2")); // 1 009 326 products /**/
 
 
@@ -1074,9 +1074,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     //Copy data from the list textarea to the ingredients_text in the hidden form so it can be passed to the analyser
     //As the list can contain different languages we take the language from the textarea
     function CopyListData(_code, lang){
-        console.log("Lang:" + lang);
+        log("Lang:" + lang);
         var cd = $("#i" + _code).val();
-        console.log("Language Text:"+cd);
+        log("Language Text:"+cd);
         var country = lang;
 
         // handle languages where the language code and country code differ.
@@ -1092,7 +1092,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
         //As target language can be different from the page language we have to create the full URL
         var URL = "//" + country + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
-        console.log("CopyListData() analyse url="+URL);
+        log("CopyListData() analyse url="+URL);
         analyse_form.action = URL;
         //analyse_form.setAttribute("action", URL);
         $("#ingredients_text").val(cd);
@@ -1105,9 +1105,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         var pageLanguage = $("html").attr('lang');      // Get page language
         var country = lang;
 
-        //console.log("Lang:" + lang);
+        //log("Lang:" + lang);
         var cd = $("#ingredients_text_"+lang).val();
-        //console.log("Language Text:"+cd);
+        //log("Language Text:"+cd);
 
         // handle languages where the language code and country code differ.
         if (langcodes_with_different_countrycodes.includes(lang)) {
@@ -1129,13 +1129,13 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         //As target language can be different from the page language we have to create the full URL
         var URL = "//" + country + ".openfoodfacts.org/cgi/test_ingredients_analysis.pl";
         //analyse_form.setAttribute("action", "/cgi/test_ingredients_analysis.pl");
-        console.log("Copydata() analyse url="+URL);
+        log("Copydata() analyse url="+URL);
         analyse_form.setAttribute("action", URL);
         $("#ingredients_text").val(cd);
     }
 
     function submitToPopup(f) {
-        console.log("submitToPopup");
+        log("submitToPopup");
         var w = window.open('', 'form-target', 'width=800','height=800');
         f.target = 'form-target';
         f.submit();
@@ -1148,9 +1148,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * @return  : none
      */
     function listByRows() {
-        console.log("listByRows() > List by rows -------------");
+        log("listByRows() > List by rows -------------");
         listByRowsMode = true;
-        console.log("listByRows() > listByRowsMode: " + listByRowsMode);
+        log("listByRows() > listByRowsMode: " + listByRowsMode);
         var s = document.createElement('style');
         s.type = 'text/css';
         s.innerHTML = css_4_list;
@@ -1158,7 +1158,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
         var urlList = document.URL;
         var prods = getJSONList(urlList);
-        //console.log(prods);
+        //log(prods);
 
         $(".pus_edit_link").remove();
         $(".off").hide();
@@ -1180,19 +1180,19 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         // https://fr.openfoodfacts.org/quality/ingredients-100-percent-unknown/quality/ingredients-ingredient-tag-length-greater-than-50/200 (
         var ingr = "";
         $.getJSON( urlList + "&json=1&page_size=100", function(data) {
-            console.log("getJSONList(urlList) > Data from products' page: " + urlList);
-            console.log(data);
+            log("getJSONList(urlList) > Data from products' page: " + urlList);
+            log(data);
 
             var data_by_code = {};
             for (let aproduct of data.products) {
-                //console.log(aproduct);
+                //log(aproduct);
                 data_by_code[aproduct.code] = aproduct;
             }
-            //console.log(data_by_code);
+            //log(data_by_code);
 
             var local_code, editIngUrl;
             $( "ul#products_match_all > li" ).each(function( index ) {
-                //console.log( index + ": " + $( this ).text() );
+                //log( index + ": " + $( this ).text() );
                 //$( this ).find(">:first-child").append('<span class="ingr">'+data["products"][index]["ingredients_text"]+'</span>');
                 //local_code = data.products[index].code;
                 local_code = $(this).attr('data-code');
@@ -1200,7 +1200,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                     return;
                 }
 
-                //console.log("local_code: " + local_code );
+                //log("local_code: " + local_code );
                 var _lang = data_by_code[local_code].lang;
                 editIngUrl = document.location.protocol + "//" + document.location.host +
                              '/cgi/product.pl?type=edit&code=' + local_code + '#tabs_ingredients_image';
@@ -1261,7 +1261,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 $("#i"+local_code).attr('lang', _lang);
                 // Edit ingredient field inline
                 //$("#i"+local_code).dblclick(function() {
-                //    console.log("dblclick on: "+$(this).attr("id"));
+                //    log("dblclick on: "+$(this).attr("id"));
                 //});
 
                 $("#i"+local_code).on("change", function() {
@@ -1271,7 +1271,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
                 //Ingredients analysis check - opens in new window
                 $("#p_actions_analysis_"+local_code).click(function(){
-                    //console.log("analyse");
+                    //log("analyse");
                     var _code = $(this).attr("value");
 
                     CopyListData(_code, _lang);
@@ -1301,20 +1301,20 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                                          "/cgi/product_jqm2.pl?code=" + encodeURIComponent(_code) +
                                          "&ingredients_text_" + encodeURIComponent(_lang) +
                                          "=" + encodeURIComponent($("#i" + _code).val());
-                    console.log("getJSONList(urlList) > "+_url);
+                    log("getJSONList(urlList) > "+_url);
                     $("body").append('<div id="timed_alert_save_' + _code + '" class="timed_alert">Saving</div>');
                     var _d = $.getJSON(_url, function() {
-                        console.log("getJSONList(urlList) > Save product ingredients");
+                        log("getJSONList(urlList) > Save product ingredients");
                     })
                         .done(function(jqm2) {
-                            console.log(jqm2.status_verbose);
-                            console.log(jqm2);
+                            log(jqm2.status_verbose);
+                            log(jqm2);
                             $("#p_actions_sav_"+_code).removeClass("save_needs_clicking");
                             $("#timed_alert_save_" + _code).html('Saved!');
                             $("#timed_alert_save_" + _code).fadeOut(3000, function () { $(this).remove(); });
                         })
                         .fail(function() {
-                            console.log("getJSONList(urlList) > fail");
+                            log("getJSONList(urlList) > fail");
                             $("#timed_alert_save_" + _code).html('Failed!');
                             $("#timed_alert_save_" + _code).addClass('failed');
                             $("#timed_alert_save_" + _code).fadeOut(3000, function () { $(this).remove(); });
@@ -1326,17 +1326,17 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                     //deleteProductField(productCode, field);
                     var _code = $(this).attr("value");
                     var _url = document.location.protocol + "//" + document.location.host + "/cgi/product_jqm2.pl?code=" + _code + "&ingredients_text=";
-                    console.log("getJSONList(urlList) > "+_url);
+                    log("getJSONList(urlList) > "+_url);
                     var _d = $.getJSON(_url, function() {
-                        console.log("getJSONList(urlList) > Delete product ingredients");
+                        log("getJSONList(urlList) > Delete product ingredients");
                     })
                         .done(function(jqm2) {
-                            console.log(jqm2.status_verbose);
-                            console.log(jqm2);
+                            log(jqm2.status_verbose);
+                            log(jqm2);
                             $("#i"+_code).empty();
                         })
                         .fail(function() {
-                            console.log("getJSONList(urlList) > fail");
+                            log("getJSONList(urlList) > fail");
                         });
                 });
             });
@@ -1348,7 +1348,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
     // Show pop-up
     function showPowerUserInfo(message) {
-        console.log("showPowerUserInfo(message) > "+$("#power-user-help"));
+        log("showPowerUserInfo(message) > "+$("#power-user-help"));
         // Inspiration: http://christianelagace.com
         // If not already exists, create div for popup
         if($("#power-user-help").length === 0) {
@@ -1382,7 +1382,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
     function toggleIngredientsMode() {
         //
-        console.log("Ingredients mode");
+        log("Ingredients mode");
         $('.example, .note').hide();
         //$("div").attr("style", "padding-top: 0.1rem!important; padding-bottom: 0.1rem!important; margin-top: 0.1rem!important; margin-bottom: 0.1rem!important");
         $("#main_column, #main_column label, #main_column input").attr("style", "padding-top: 0.1rem!important; padding-bottom: 0.1rem!important; margin-top: 0.1rem!important; margin-bottom: 0.1rem!important");
@@ -1431,7 +1431,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function toggleHelpers() {
 
         // read setting from local storage
-        console.log("toggleHelpers() > Helpers: " + getLocalStorage("pus-helpers"));
+        log("toggleHelpers() > Helpers: " + getLocalStorage("pus-helpers"));
         if(getLocalStorage("pus-helpers") === "unchecked") {
             $('#pus-helpers').removeAttr('checked'); // set checkbox state
             $('.note').hide();
@@ -1442,13 +1442,13 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $('#pus-helpers').change(function() {
             if(this.checked) {
                 localStorage.setItem('pus-helpers', "checked");
-                console.log("toggleHelpers() > Show helpers");
+                log("toggleHelpers() > Show helpers");
                 $('.note').show();
                 $('.example').show();
             }
             else {
                 localStorage.setItem('pus-helpers', "unchecked");
-                console.log("toggleHelpers() > Hide helpers");
+                log("toggleHelpers() > Hide helpers");
                 $('.note').hide();
                 $('.example').hide();
             }
@@ -1464,7 +1464,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function toggleIngredientsMonospace() {
 
         // read setting from local storage
-        console.log("toggleIngredientsMonospace() > Monospace: " + getLocalStorage("pus-ingredients-font"));
+        log("toggleIngredientsMonospace() > Monospace: " + getLocalStorage("pus-ingredients-font"));
         if(getLocalStorage("pus-ingredients-font") === "monospace") {
             $('#pus-ingredients-font').prop("checked", true); // set checkbox state
             $("textarea[id^='ingredients_text_']").addClass("monospace"); // edit view
@@ -1475,13 +1475,13 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $('#pus-ingredients-font').change(function() {
             if(this.checked) {
                 localStorage.setItem('pus-ingredients-font', "monospace");
-                console.log("toggleIngredientsMonospace() > monospace font");
+                log("toggleIngredientsMonospace() > monospace font");
                 $("textarea[id^='ingredients_text_']").addClass("monospace"); // edit view
                 $("div.wrap_ingr > textarea.ingr").addClass("monospace"); // list view
             }
             else {
                 localStorage.setItem('pus-ingredients-font', "default");
-                console.log("toggleIngredientsMonospace() > default font");
+                log("toggleIngredientsMonospace() > default font");
                 $("textarea[id^='ingredients_text_']").removeClass("monospace"); // edit view
                 $("div.wrap_ingr > textarea.ingr").removeClass("monospace"); // list view
             }
@@ -1589,9 +1589,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * so detect them from the link, and add an attribute to the LI tag recording the barcode for later use.
      */
     function addCodesToProductList() {
-        //console.log("in addCodesToProductList()");
+        //log("in addCodesToProductList()");
         $("ul[id^='products_'].search_results li").each(function() {
-            //console.log(this);
+            //log(this);
             let product_url = $("a.list_product_a", this).attr('href'); // find URL within "this"
             let product_code = product_url.match(/\/([0-9]+)(\/|$)/); // find a number surrounded by slashes
             if (product_code && product_code[1]) {
@@ -1629,19 +1629,19 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         var rev = getURLParam("rev");
         if (rev !== null) {
             version_date = $("#rev_summary > p > time > time").attr("datetime");
-            console.log("version_date: "); console.log(version_date);
+            log("version_date: "); log(version_date);
             flagRevision(rev);
         }
         else {
             var _url = "/api/v0/product/" + code + ".json";
             $.getJSON(_url, function(data) {
                 rev = data.product.rev;
-                console.log("rev: "); console.log(rev);
+                log("rev: "); log(rev);
                 version_user = data.product.last_editor;
-                console.log("version_user: "); console.log(version_user);
+                log("version_user: "); log(version_user);
                 var last_modified_t = new Date(data.product.last_modified_t*1000);
                 version_date = last_modified_t.toISOString();
-                console.log("version_date: "); console.log(version_date);
+                log("version_date: "); log(version_date);
                 flagRevision(rev);
             });
         }
@@ -1705,9 +1705,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         showPowerUserInfo(flagWindow); // open a new window
 
         const form = document.forms['flag_form'];
-        console.log(form);
+        log(form);
         form.addEventListener('submit', e => {
-            console.log("Submited rev "+rev);
+            log("Submited rev "+rev);
             e.preventDefault();  // Do not submit the form
             fetch(googleScriptURL, {
                 method: 'POST',
@@ -1715,7 +1715,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 body: new FormData(form)
             })
             .then(function(response) {
-                console.log('Success!', response);
+                log('Success!', response);
                 var spreadsheetURL = 'https://docs.google.com/spreadsheets/d/1DE85Or0QiYwIXcG4vSVZyFSLMKvmJqOXM5ooJzxZr6Y/';
                 $("#flag_result").append('<p style="margin-top:1rem;font-weight: bold;">' +
                                          '✅ Version ' +
@@ -1745,8 +1745,8 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function addQualityTags() {
         $.getJSON(apiProductURL, function(data) {
             var qualityErrorsTagsArray = data.product.data_quality_errors_tags;
-            console.log("addQualityTags() > qualityErrorsTagsArray: ");
-            console.log(qualityErrorsTagsArray);
+            log("addQualityTags() > qualityErrorsTagsArray: ");
+            log(qualityErrorsTagsArray);
             //var list = '<ul><li>' + arr.join('</li><li>') + '</li></ul>';
             var list = (qualityErrorsTagsArray.length === 0 ?
                         ('<span style="color: green">No quality errors</span>') :
@@ -1754,8 +1754,8 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             $("#issues").append('<li id="qualityErrorsTags">Quality error tags: ' + list + '</li>');
 
             var qualityWarningsTagsArray = data.product.data_quality_warnings_tags;
-            console.log("addQualityTags() > qualityWarningsTagsArray: ");
-            console.log(qualityWarningsTagsArray);
+            log("addQualityTags() > qualityWarningsTagsArray: ");
+            log(qualityWarningsTagsArray);
             //var list = '<ul><li>' + arr.join('</li><li>') + '</li></ul>';
             list = (qualityWarningsTagsArray.length === 0 ?
                         ('<span style="color: green">No quality warnings</span>') :
@@ -1774,14 +1774,14 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function addStateTags() { // TODO: merge with addQualityTags function?
         $.getJSON(apiProductURL, function(data) {
             var stateTagsArray = data.product.states_tags;
-            console.log("addStateTags() > stateTagsArray: ");
-            console.log(stateTagsArray);
+            log("addStateTags() > stateTagsArray: ");
+            log(stateTagsArray);
             //var list = '<ul><li>' + arr.join('</li><li>') + '</li></ul>';
             var filteredStateTagsArray = keepMatching(stateTagsArray, /(.*)to-be(.*)/);
             var finalArray = replaceInsideArray(filteredStateTagsArray, /en\:/, '');
             finalArray = replaceInsideArray(finalArray, /to-be-completed/, '');
             finalArray = replaceInsideArray(finalArray, /\-/g, ' ');
-            console.log(finalArray);
+            log(finalArray);
             var list = stateTagsArray.join(' ◼ ');
             $("#issues").append('<li><span>To be completed (from "State tags"): ' + list +
                                     ' </span>' +
@@ -1798,10 +1798,10 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function isNbOfSimilarNamedProductsWithoutACategory() {
         // Get URL
         var url = getSimilarlyNamedProductsWithoutCategorySearchURL();
-        console.log("isNbOfSimilarNamedProductsWithoutACategory() > url: " + url);
+        log("isNbOfSimilarNamedProductsWithoutACategory() > url: " + url);
         $.getJSON(url + "&json=1", function(data) {
             var nbOfSimilarNamedProductsWithoutACategory = data.count;
-            console.log("isNbOfSimilarNamedProductsWithoutACategory() > nbOfSimilarNamedProductsWithoutACategory: " + nbOfSimilarNamedProductsWithoutACategory);
+            log("isNbOfSimilarNamedProductsWithoutACategory() > nbOfSimilarNamedProductsWithoutACategory: " + nbOfSimilarNamedProductsWithoutACategory);
             $("#going-further").append('<li><span id="nbOfSimilarNamedProductsWithoutACategory"><a href="' +
                                        url +
                                        '">' + nbOfSimilarNamedProductsWithoutACategory +
@@ -1828,8 +1828,8 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             document.location.protocol + "//" + document.location.host +
             "/cgi/search.pl?search_terms=" + productName +
             "&tagtype_0=states&tag_contains_0=contains&tag_0=categories to be completed&sort_by=unique_scans_n");
-        console.log("getSimilarlyNamedProductsWithoutCategorySearchURL() > productName: "+productName);
-        console.log("getSimilarlyNamedProductsWithoutCategorySearchURL() > similarProductsSearchURL: "+similarProductsSearchURL);
+        log("getSimilarlyNamedProductsWithoutCategorySearchURL() > productName: "+productName);
+        log("getSimilarlyNamedProductsWithoutCategorySearchURL() > similarProductsSearchURL: "+similarProductsSearchURL);
         return similarProductsSearchURL;
     }
 
@@ -1902,9 +1902,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * @returns  {Array} - array of all languages available for a product; ex. ["de","fr","en"]
      */
     function detectLanguages() {
-        console.log("detectLanguages() > detectLanguages: ");
+        log("detectLanguages() > detectLanguages: ");
         var array = $("#sorted_langs").val().split(",");
-        console.log(array);
+        log(array);
         return array;
     }
 
@@ -1920,7 +1920,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         var ingredientsURL = document.location.protocol + "//" + document.location.host +
                 "/cgi/ingredients.pl?code=" + code +
                 "&id=ingredients_" + lc + "&process_image=1&ocr_engine=google_cloud_vision";
-        console.log("getIngredientsFromGCV(code,lc) > ingredientsURL: "+ingredientsURL);
+        log("getIngredientsFromGCV(code,lc) > ingredientsURL: "+ingredientsURL);
         $.getJSON(ingredientsURL, function(json) {
             $("#ingredientFromGCV").append(json.ingredients_text_from_image);
         });
@@ -1994,7 +1994,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function getConnectedUserID() {
         // Extract connected user_id by reading <span id="user_id">charlesnepote</span>
         var user_name = $("#user_id").text();
-        console.log("getConnectedUserID() > user_name: "); console.log(user_name);
+        log("getConnectedUserID() > user_name: "); log(user_name);
         return user_name;
     }
 
@@ -2010,7 +2010,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         tagName = tagName.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Accentued chars
         tagName = tagName.replace(/[ '"&]/mg, "-");   // "Kellog's" => kellog-s
         tagName = tagName.replace(/-+/mg, "-");       // "Elle & Vire" => "elle-vire"
-        console.log("normalizeTagName() - tagName: " + tagName);
+        log("normalizeTagName() - tagName: " + tagName);
         return tagName;
     }
 
@@ -2025,7 +2025,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * @returns  none
      */
     function productExists(urlToCheck,id,userName,passWord){
-        //console.log("productExists( "+urlToCheck+" )");
+        //log("productExists( "+urlToCheck+" )");
         $.ajax({
             url: urlToCheck,
             type: "GET",
@@ -2036,23 +2036,23 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 "Authorization": "Basic " + btoa(userName + ":" + passWord)
             },
             success: function(data, textStatus, xhr) {
-                console.log("productExists( "+urlToCheck+" ) > success - xhr.status: " + xhr.status);
+                log("productExists( "+urlToCheck+" ) > success - xhr.status: " + xhr.status);
                 if(xhr.status) $(id).text(xhr.status);
             },
             statusCode: {
                 404: function(xhr, textStatus) {
-                    console.log( "productExists( "+urlToCheck+" ) > 404 > " + xhr.status);
+                    log( "productExists( "+urlToCheck+" ) > 404 > " + xhr.status);
                     if(xhr.status) $(id).text(xhr.status);
                 },
                 200: function(xhr, textStatus) {
-                    console.log( "productExists( "+urlToCheck+" ) > 200 > " + xhr.status);
+                    log( "productExists( "+urlToCheck+" ) > 200 > " + xhr.status);
                     if(xhr.status) $(id).text(xhr.status);
                 }
             }
         })
             .always(function (xhr, textStatus) {
-            console.log("productExists( "+urlToCheck+" ) > always - xhr.status: " + xhr.status);
-            //console.log("productExists( "+urlToCheck+" ) > always - getAllResponseHeaders(): " + xhr.getAllResponseHeaders());
+            log("productExists( "+urlToCheck+" ) > always - xhr.status: " + xhr.status);
+            //log("productExists( "+urlToCheck+" ) > always - getAllResponseHeaders(): " + xhr.getAllResponseHeaders());
             if(xhr.status) $(id).text(xhr.status);
         });
     }
@@ -2063,25 +2063,25 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      */
     function moveProductToSite(_code, newSite) {
         if (/^(obf|off|opf|opff)$/.test(newSite) !== true) {
-            console.log("moveProductToSite() > invalid site: " + newSite);
+            log("moveProductToSite() > invalid site: " + newSite);
             return false;
         }
 
         if (!_code) {
-            console.log("moveProductToSite() > missing barcode");
+            log("moveProductToSite() > missing barcode");
             return false;
         }
 
         var _url = encodeURI(document.location.protocol + "//" + document.location.host +
                              "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=" + newSite);
-        console.log("api call-> "+_url);
+        log("api call-> "+_url);
         $("body").append('<div id="timed_alert_move_' + _code + '" class="timed_alert">Moving</div>');
         var _d = $.getJSON(_url, function() {
-            console.log("getJSONList(urlList) > Move to " + newSite );
+            log("getJSONList(urlList) > Move to " + newSite );
         })
         .done(function(jqm2) {
-            console.log(jqm2.status_verbose);
-            console.log(jqm2);
+            log(jqm2.status_verbose);
+            log(jqm2);
             if (jqm2.status == 1 || jqm2.status_verbose == 'not modified') {
                 $("#timed_alert_move_" + _code).html('Moved!');
             } else {
@@ -2091,12 +2091,24 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             $("#timed_alert_move_" + _code).fadeOut(3000, function () { $(this).remove(); });
         })
         .fail(function() {
-            console.log("getJSONList(urlList) > fail");
+            log("getJSONList(urlList) > fail");
             $("#timed_alert_move_" + _code).html('Failed!');
             $("#timed_alert_move_" + _code).addClass('failed');
             $("#timed_alert_move_" + _code).fadeOut(3000, function () { $(this).remove(); });
         });
     }
 
+    /***
+     * Log things
+     * @param    {string} id: HTML id where to publish the result; example: "obfLinkStatus"
+     * @returns  none
+     */
+    function log(thing) {
+        // Log data if "log" variable set to true,
+        // and add "[PUS]" to allow filtering in the browser console
+        if (log_to_console) {
+            console.log("[PUS]", thing);
+        }
+    }
 
 })();
