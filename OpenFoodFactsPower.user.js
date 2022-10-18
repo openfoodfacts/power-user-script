@@ -1127,7 +1127,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         var prods = getJSONList(urlList);
         //log(prods);
 
-        $(".pus_edit_link").remove();
         $(".off").hide();
         $(".app").hide();
         $(".project").hide();
