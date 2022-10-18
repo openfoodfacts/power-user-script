@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2022-10-14T16:27
+// @version     2022-10-18T18:40
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -54,7 +54,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
-    log("2022-10-14T16:27 - mode: " + pageType);
+    log("2022-10-18T18:40 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -112,7 +112,9 @@
     //   * zoom every images with mouse wheel; see http://www.jacklmoore.com/zoom/
     //   * show/hide barcode; keyboard shortcut (shift+B)
     //     * see https://github.com/openfoodfacts/openfoodfacts-server/issues/1728
-    //   * Edit mode: show hide help comments for each field (see help screen)
+    //   * Edit mode:
+    //     * show hide help comments for each field (see help screen)
+    //     * Firefox: Nutrition facts picture takes all the place available
     //   * Ingredient lists: external link for each ingredient (appear when hovering rows)
     //   * keyboard shortcut to API product page (a)
     //   * keyboard shortcut to get back to view mode (v)
@@ -127,7 +129,6 @@
     //               The LanguageTool Firefox extension is recommanded because it detects automatically the language of each field.
     //               https://addons.mozilla.org/en-US/firefox/addon/languagetool/
     //     * Inline edit of ingredients in list mode
-    //   * Firefox: Nutrition facts picture takes all the place available
     //   * Option to set ingredient textareas to fixed width font, to make it easier to see bad OCR,
     //     such as when it confuses "m" and "rn" (e.g. corn), lowercase l/L and uppercase i/I, etc.
     //
@@ -161,7 +162,6 @@
 
     // TODO
     // * FEATURES
-    //   * Easily delete nutrition facts (Tacite, Teolemon, Sebleouf)
     //   * identify problematic fields based on quality feedbacks; https://world.openfoodfacts.org/api/v0/product/7502271153193.json
     //     * see "data_quality_errors_tags" array
     //   * Add automatic detection of nutriments, see: https://robotoff.openfoodfacts.org/api/v1/predict/nutrient?ocr_url=https://static.openfoodfacts.org/images/products/841/037/511/0228/nutrition_pt.12.json
@@ -406,33 +406,6 @@ input.show_comparison {
 
 .ingredient_td:hover .hidden {
     display: inline;
-}
-
-/* so we can absolutely position the edit link */
-ul[id^='products_'].search_results > li {
-    position: relative;
-}
-
-.pus_edit_link {
-    display: inline !important; /**/
-    z-index: -2;/**/
-    position: absolute;
-    bottom: 1rem;
-    border: 2px solid;
-    right: 1rem;
-}
-
-.product_link {
-    z-index: 2;
-    /* background-color: white; */
-}
-
-.pus_edit_link:hover {
-    z-index: 5;
-}
-
-.product_link:hover + .pus_edit_link {
-    z-index: 5;
 }
 
 /* ingredients box alternative font */
@@ -1017,14 +990,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         // detect product codes and add them as attributes
         addCodesToProductList();
 
-        // Add a button to go straight to edit rather than the product page then edit
-        $( "ul[id^='products_'].search_results > li a" ).each(function() {
-            $(this).addClass("product_link");
-            var productCode = $(this).parent().attr('data-code');
-            //log("productCode:" + productCode);
-            $(this).after('<a class="pus_edit_link" href="'+
-                          "/cgi/product.pl?type=edit&code=" + productCode + '" target="_blank">🖉</a>');
-        });
 
         // Show an easier to read number of products
         /*
