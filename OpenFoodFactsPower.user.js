@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2022-10-19T14:59
+// @version     2022-10-19T15:11
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -53,8 +53,8 @@
     var version_date;
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
-    log("2022-10-19T14:59 - mode: " + pageType);
+    const corsProxyURL = "";
+    log("2022-10-19T15:11 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -313,7 +313,8 @@ margin-bottom: 0.2rem !important;
 border-bottom: 1px solid lightgrey; }
 
 /* Special background color for all input fieds */
-textarea, .tagify, input[type=text], input.nutriment_value { background-color: LightYellow !important; }
+textarea, .tagify, input[type=text] { background-color: LightYellow !important; }
+input.nutriment_value { background-color: LightYellow; }
 textarea:focus, .tagify__input:focus, .tagify:focus, input[type=text]:focus, input.nutriment_value:focus { background-color: lightblue !important; }
 
 /* Small enhancements */
@@ -888,8 +889,108 @@ textarea.monospace {
         });
         // //$("#display_ingredients_es img").clone().after("#ingredients_text_es");
 
+
+        // Check fibers' field
+        checkFiber($("#nutriment_fiber").attr("value"));
+        $("#nutriment_fiber").on("input", function() {
+            checkFiber($(this).val());
+        });
+
+    /***
+     * checkFiber
+     *
+     * @param {string} f: value of fiber
+     * @returns: none
+     */
+    function checkFiber(f) {
+        log("fiber val: " + f);
+        if (f.length == 0) {
+            log("fiber empty!");
+            $("#nutriment_fiber").css({"background-color": "orange"});
+            if($('#fiber_help').length == 0) {
+                $("#nutriment_fiber").after('<strong id="fiber_help" href="#fiber_help" title="Put a hyphen (-) if no fibers are on the packaging"> (?) </strong>');
+                $('#fiber_help').css('cursor', 'pointer');
+                //fiber_help = fiber_help + 1;
+            }
+        }
+        else {
+            $("#nutriment_fiber").css({"background-color": "LightYellow"});
+            if($('#fiber_help').length != 0) {
+                $("#fiber_help").remove();
+            }
+        }
     }
 
+
+        // Test if #nutriment_energy-kj > 3800
+        var kj   = $("#nutriment_energy-kj").attr("value");
+        var kcal = $("#nutriment_energy-kcal").attr("value");
+        var kj_help = 0;
+        log("kj: "+kj+" - kcal:"+kcal);
+        checkKJ(kj, kcal);
+        $("#nutriment_energy-kj").on("input", function() {
+            log("kj val: " + $(this).val());
+            $("#nutriment_energy-kj").attr("value", $(this).val());
+            kj = $(this).val();
+            log("kj = " + kj + " - kcal = " + kcal);
+            checkKJ(kj, kcal);
+        });
+        $("#nutriment_energy-kcal").on("input", function() {
+            log("kcal val: " + $(this).val());
+            $("#nutriment_energy-kcal").attr("value", $(this).val());
+            kcal = $(this).val();
+            log("kj = " + kj + " - kcal = " + kcal);
+            checkKJ(kj, kcal);
+        });
+
+    }
+
+
+    /***
+     * checkKJ
+     *
+     * @param j: KJ
+     * @param c: kCal
+     * @return
+     */
+    function checkKJ(j, c) {
+        // CAREFUL: all of this might be false is values are per serving!!!!
+        log("checkKJ(" + j + ", " + c + ")");
+        if (kj > 3800) {
+            log("kj > 3800");
+            $("#nutriment_energy-kj").css({"background-color": "orange"});
+            if($('#kj_help').length == 0) {
+                $("#nutriment_energy-kj").after('<strong id="kj_help" href="#kjtokcal" title="kj can\'t be greater than 3800"> (?) </strong>');
+                kj_help = kj_help + 1;
+            }
+        }
+        else {
+            kj_help > 0 ? kj_help = kj_help - 1:false;
+            kj_help == 0 ? $("#kj_help").remove():false;
+        }
+        if (parseInt(j) < parseInt(c)) {
+            log("kj < kcal: " + j + " < " + c);
+            $("#nutriment_energy-kj").css({"background-color": "orange"});
+            $("#nutriment_energy-kcal").css({"background-color": "orange"});
+            if($('#kjtokcal').length == 0) {
+                $("#nutriment_energy-kj").after('<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>');
+            }
+            $('#kjtokcal').css('cursor', 'pointer');
+            $("#kjtokcal").click(function(){
+                $("#nutriment_energy-kj").attr("value", c);
+                $("#nutriment_energy-kcal").attr("value", j);
+                kj   = $("#nutriment_energy-kj").attr("value");
+                kcal = $("#nutriment_energy-kcal").attr("value");
+                checkKJ(kj, kcal);
+            });
+        }
+        else {
+            log("ok");
+            $("#nutriment_energy-kj").css({"background-color": "LightYellow"});
+            $("#nutriment_energy-kcal").css({"background-color": "LightYellow"});
+            $("#kjtokcal").remove();
+        }
+    }
 
 
     // ***
