@@ -26,6 +26,13 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2022-10-19T15:11
+* Categories, brands and labels' facets: added Hunger Game deep link as a button right after the title
+* Edition:
+  * Quick and dirty hack to control and manage kj/kcal inversion
+  * Control fiber field
+* Remove "edit" button feature in list mode (added in Product Opener)
+* Fix some regresions due to Open Food Facts redesign of 2022-10
 ### 2021-12-06T13:55
 * Add a deep link to Hunger Game for brand on product's page
 ### 2021-10-20T16:31
