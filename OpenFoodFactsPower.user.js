@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2022-10-18T18:40
+// @version     2022-10-19T14:59
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -54,7 +54,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "https://cors-anywhere.herokuapp.com/";
-    log("2022-10-18T18:40 - mode: " + pageType);
+    log("2022-10-19T14:59 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -478,7 +478,9 @@ textarea.monospace {
         if(pageLanguage === "en") {                     // Delete page language if "en" because we can't make the difference bewteen "en-GB" and "en-US"
             pageLanguage = "";
         }
+
         // Non contextual links
+        // TODO: no more displayed since OFF redesign in 2022-10; put it elsewhere
         $(".sidebar p:first").after(
             '<p>'+
             '> <a href="https://crowdin.com/project/openfoodfacts/'+pageLanguage+'">' +
@@ -495,19 +497,18 @@ textarea.monospace {
             'Hunger Game</a>' +
             '</p>'
         );
+
         // Hunger Game contextual link
-    // TODO: display a number of opportunities.
-        var tagName;
+        // TODO: display a number of opportunities.
         var hungerGameDeepLink =
             ($("div[itemtype='https://schema.org/Brand']").length) ? "questions?type=brand&value_tag=" + normalizeTagName($("h1[itemprop='name']").text())
             : (/label\/(.*)$/.test(document.URL) === true) ? "questions?type=label&value_tag=en:" +  normalizeTagName(RegExp.$1)
             : (($("div[itemtype='https://schema.org/Thing']").length) ? "questions?type=category&value_tag=en:" +  normalizeTagName($("h1[itemprop='name']").text())
             : "");
-        $("#hungerGameLink").after(
-            ((hungerGameDeepLink) ? '<p>'+
-            '> <a href="https://hunger.openfoodfacts.org/' + hungerGameDeepLink + '">' +
-            'Hunger Game (deep)</a>' +
-            '</p>' : "")
+        $("h1[itemprop='name']").append(
+            (hungerGameDeepLink ?
+                ' <sup><a class="button tiny round secondary label" href="https://hunger.openfoodfacts.org/' + hungerGameDeepLink + '">' +
+                'Hunger Game</a></sup>' : "")
         );
     }
 
