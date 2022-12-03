@@ -483,7 +483,7 @@ textarea.monospace {
 
         // Non contextual links
         // TODO: no more displayed since OFF redesign in 2022-10; put it elsewhere
-        $(".sidebar p:first").after(
+        $("#match").before(
             '<p>'+
             '> <a href="https://crowdin.com/project/openfoodfacts/'+pageLanguage+'">' +
             'Help page translation</a></p>'+
