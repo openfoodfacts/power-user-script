@@ -491,21 +491,26 @@ textarea.monospace {
 
         // Non contextual links
         // TODO: no more displayed since OFF redesign in 2022-10; put it elsewhere
-        $(".sidebar p:first").after(
-            '<p>'+
-            '> <a href="https://crowdin.com/project/openfoodfacts/'+pageLanguage+'">' +
-            'Help page translation</a></p>'+
-            '<p>'+
-            '> <a href="/categories?translate=1">' +
-            'Help category translations</a></p>'+
-            '<p>'+
-            '> <a href="/cgi/recent_changes.pl?&page=1&page_size=100">' +
-            'Recent Changes</a>' +
-            '</p>' +
-            '<p id="hungerGameLink">'+
-            '> <a href="https://hunger.openfoodfacts.org">' +
-            'Hunger Game</a>' +
-            '</p>'
+        $("#match").before(
+            `
+            <section class="row" id="match"><div class="large-12 column"><div class="card"><div class="card-section">
+            <p><a class="button tiny round secondary label" href="https://crowdin.com/project/openfoodfacts/$pageLanguage">
+            Help page translation
+            </a> 
+					  &nbsp;
+            <a class="button tiny round secondary label" href="/categories?translate=1">
+                Help category translations</a>
+            &nbsp;
+            <a class="button tiny round secondary label" href="/cgi/recent_changes.pl?&page=1&page_size=100">
+              Recent Changes
+            </a>
+            &nbsp;
+            <p id="hungerGameLink"><a class="button tiny round secondary label" href="https://hunger.openfoodfacts.org">
+              Hunger Game
+            </a></p>
+            </p>
+            </div></div></div></section>`
+        );
         );
 
         // Hunger Game contextual link
