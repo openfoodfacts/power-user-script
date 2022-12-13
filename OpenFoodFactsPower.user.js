@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2022-11-08T11:20
+// @version     2022-12-08T08:20
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -24,6 +24,7 @@
 // @exclude     https://*blog.openfoodfacts.org/*
 // @exclude     https://*connect.openfoodfacts.org/*
 // @exclude     https://*connect-test.openfoodfacts.org/*
+// @exclude     https://mirabelle.openfoodfacts.org/*
 //
 // @icon        http://world.openfoodfacts.org/favicon.ico
 // @updateURL   https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
@@ -55,7 +56,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2022-11-08T11:20 - mode: " + pageType);
+    log("2022-12-08T08:20 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -165,15 +166,14 @@
     // * FEATURES
     //   * identify problematic fields based on quality feedbacks; https://world.openfoodfacts.org/api/v0/product/7502271153193.json
     //     * see "data_quality_errors_tags" array
+    //   * On the fly quality checks in the product edit form (javascript): https://github.com/openfoodfacts/openfoodfacts-server/issues/1905
     //   * Add automatic detection of nutriments, see: https://robotoff.openfoodfacts.org/api/v1/predict/nutrient?ocr_url=https://static.openfoodfacts.org/images/products/841/037/511/0228/nutrition_pt.12.json
     //   * Easily delete ingredients when too buggy
-    //   * Add a shortcut to move a product to OBF, OPF
     //   * Add few informations on the confirmation page:
     //     * Nutri-Score and NOVA if just calculated?
     //     * unknown ingredients
     //   * Product of a brand from a particular country, that are not present in this country (see @teolemon)
     //   * Keyboard shortcut to get back to view mode (v) => target=_self + prevent leaving page if changes are not saved
-    //   * On the fly quality checks in the product edit form (javascript): https://github.com/openfoodfacts/openfoodfacts-server/issues/1905
     //   * Mass edit (?) -- see https://github.com/roiKosmic/OFFMassUpdate/blob/master/js/content_script.js
     //   * Mass edit with regexp (with preview)
     //   * Mass deletion of a tag?
@@ -319,7 +319,15 @@ input.nutriment_value { background-color: LightYellow; }
 textarea:focus, .tagify__input:focus, .tagify:focus, input[type=text]:focus, input.nutriment_value:focus { background-color: lightblue !important; }
 
 /* Small enhancements */
-p { margin-bottom: 0.6rem !important; }
+p { margin-bottom: 0.6rem; }
+input[type=text] { margin: 1px 0; } /* reduce vertical space between fields and notes */
+.note, .example { margin: 1px 0; }
+label { margin-top: 10px; }
+.data_table { margin-top: 7px; }
+td { line-height: 1rem; }
+input[type="checkbox"], input[type="radio"] { margin: 0; }
+.data_table td, .data_table th { padding: .1rem .1rem .1rem .4rem; }
+/*.data_table label { display: table-cell; }*/
 
 #image_box_front { margin-bottom: 1rem !important; }
 
@@ -502,7 +510,7 @@ textarea.monospace {
 
         // Hunger Game contextual link
         // TODO: display a number of opportunities.
-        var hungerGameDeepLink =
+        /*var hungerGameDeepLink =
             ($("div[itemtype='https://schema.org/Brand']").length) ? "questions?type=brand&value_tag=" + normalizeTagName($("h1[itemprop='name']").text())
             : (/label\/(.*)$/.test(document.URL) === true) ? "questions?type=label&value_tag=en:" +  normalizeTagName(RegExp.$1)
             : (($("div[itemtype='https://schema.org/Thing']").length) ? "questions?type=category&value_tag=en:" +  normalizeTagName($("h1[itemprop='name']").text())
@@ -511,7 +519,7 @@ textarea.monospace {
             (hungerGameDeepLink ?
                 ' <sup><a class="button tiny round secondary label" href="https://hunger.openfoodfacts.org/' + hungerGameDeepLink + '">' +
                 'Hunger Game</a></sup>' : "")
-        );
+        );*/
     }
 
 
@@ -955,7 +963,7 @@ textarea.monospace {
      * @return
      */
     function checkKJ(j, c) {
-        // CAREFUL: all of this might be false is values are per serving!!!!
+        // CAREFUL: all of this might be false if values are per serving!!!!
         log("checkKJ(" + j + ", " + c + ")");
         if (kj > 3800) {
             log("kj > 3800");
@@ -999,13 +1007,15 @@ textarea.monospace {
     // *
     var nbOfSameBrandProducts;
     if(pageType === "saved-product page") {
-        $("#main_column").append('<p id="furthermore"><strong>Going further:</strong></p>' +
-                                 '<ul id="going-further">' +
-                                 '</ul>');
-        $("#furthermore").before('<p id="product_issues"><strong>Product issues:</strong></p>' +
-                                 '<ul id="issues" style="margin-bottom: 0.2rem">' +
-                                 '</ul>');
-        $("#issues").after('<p>→ <a href="'+editURL+'">Re-edit current product</a></p>');
+        $("#main_column").append(
+            '<div id="product_issues" class="row"><strong>Product issues:</strong></div>' +
+            '<ul id="issues" class="row" style="margin-bottom: 0.2rem; padding-left: 1rem;">' +
+            '</ul>' +
+            '<div class="row">→ <a href="'+editURL+'">Re-edit current product</a></div>' +
+            '<div id="furthermore" class="row" style="margin-top: 10px;"><strong>Going further:</strong></div>' +
+            '<ul id="going-further" class="row" style="padding-left: 1rem;">' +
+            '</ul>'
+        );
         isNbOfSimilarNamedProductsWithoutACategory();
         addQualityTags();
         addStateTags();
@@ -2066,6 +2076,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         log("getConnectedUserID() > user_name: "); log(user_name);
         return user_name;
     }
+
 
 
     /**
