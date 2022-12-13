@@ -26,6 +26,11 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2022-12-08T08:20
+* Delete hunger games links which are now in Product Opener.
+* CSS tweaks:
+  * nutrition facts table more condensed
+  * products issues are well displayed
 ### 2022-10-19T15:11
 * Categories, brands and labels' facets: added Hunger Game deep link as a button right after the title
 * Edition:
