@@ -494,7 +494,7 @@ textarea.monospace {
         $("#match").before(
             `
             <section class="row" id="match"><div class="large-12 column"><div class="card"><div class="card-section">
-            <p><a class="button tiny round secondary label" href="https://crowdin.com/project/openfoodfacts/$pageLanguage">
+            <p><a class="button tiny round secondary label" href="https://crowdin.com/project/openfoodfacts/${pageLanguage}">
             Help page translation
             </a> 
 					  &nbsp;
@@ -510,7 +510,6 @@ textarea.monospace {
             </a></p>
             </p>
             </div></div></div></section>`
-        );
         );
 
         // Hunger Game contextual link
