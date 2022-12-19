@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2022-12-19T08:20
+* fix nutrition image size on Chrome and Safari
 ### 2022-12-08T08:20
 * Delete hunger games links which are now in Product Opener.
 * CSS tweaks:
