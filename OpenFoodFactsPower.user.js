@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2022-12-19T08:20
+// @version     2022-12-22T15:20
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -56,7 +56,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2022-12-19T08:20 - mode: " + pageType);
+    log("2022-12-22T15:20 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -377,6 +377,7 @@ input.show_comparison {
     font-size:1.5rem;
     background-color:red;
     border-radius: 0 10px 10px 0;
+    z-index: 200;
 }
 
 #ing_analysis {
@@ -384,10 +385,34 @@ input.show_comparison {
     left:0%;
     top:5rem;
     padding:0 0.7rem 0 0.7rem;
-    font-size:1.5rem;
+    font-size:1.2rem;
+    width: 8rem;
     background-color:red;
     border-radius: 0 10px 10px 0;
+    z-index: 200;
 }
+
+/* ---------------- Height of input fields ------------------------- */
+.tagify__input { margin: 4 px; } /* instead of 5px */
+
+
+/* ---------------- Nutrition facts ------------------------- */
+
+label[for="serving_size"] {
+    float: left;
+    margin-left: 10px;
+}
+
+#serving_size {
+    width: 30%;
+}
+
+input.nutriment_value { height: 1.9rem !important; }
+select.nutriment_unit {
+    height: 1.9rem !important;
+    padding: .1rem .3rem !important;
+}
+
 
 /* Let nutrition image as tall as Nutrition facts table */
 #nutrition_image_copy {
@@ -495,7 +520,7 @@ textarea.monospace {
             <section class="row" id="match"><div class="large-12 column"><div class="card"><div class="card-section">
             <p><a class="button tiny round secondary label" href="https://crowdin.com/project/openfoodfacts/${pageLanguage}">
             Help page translation
-            </a> 
+            </a>
 					  &nbsp;
             <a class="button tiny round secondary label" href="/categories?translate=1">
                 Help category translations</a>
@@ -635,7 +660,8 @@ textarea.monospace {
             "<li>(?) or (h): this present help</li>" +
             "<hr id='nav_keys'>" +
             ((pageType === "edit") ?
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label for="pus-helpers">Field helpers</label></li>':
+               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label for="pus-helpers">Field helpers</label></li>' +
+               '<li><input class="pus-checkbox" type="checkbox" id="pus-dist-free"><label for="pus-dist-free">Distraction free mode</label></li>':
                "") +
             ((pageType === "edit" || pageType === "list") ?
                '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>':
@@ -686,6 +712,7 @@ textarea.monospace {
             togglePowerUserInfo(help);
             toggleHelpers();
             toggleIngredientsMonospace();
+            toggleDFMode();
         });
 
         if (pageType === "edit"){
@@ -746,6 +773,7 @@ textarea.monospace {
                     togglePowerUserInfo(help);
                     toggleHelpers();
                     toggleIngredientsMonospace();
+                    toggleDFMode();
                     return;
                 }
                 // (S): Flag a product
@@ -890,6 +918,7 @@ textarea.monospace {
         // Toggle helpers based on previous selection if any
         toggleHelpers();
         toggleIngredientsMonospace();
+        toggleDFMode();
 
         // TODO: add ingredients picture aside ingredients text area
         var ingredientsImage = $("#display_ingredients_es img");
@@ -1084,15 +1113,15 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 `;
 
         // Help box based on page type: list
-        var listhelp = "<ul class='pus_menu'>" +
-            "<li>(?) or (h): this present help</li>" +
-            "<hr>" +
-            '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>' +
-            "<hr>" +
-            "<li>(Shift+L): List edit mode</li>" +
-            "<li>(Shift+b): Show/hide barcodes</li>" +
-            "<li>(n): reload the page without cache (add &nocache=1)</li>" +
-            "</ul>";
+        var listhelp = `<ul class="pus_menu">
+            <li>(?) or (h): this present help</li>
+            <hr>
+            <li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>
+            <hr>
+            <li>(Shift+L): List edit mode</li>
+            <li>(Shift+b): Show/hide barcodes</li>
+            <li>(n): reload the page without cache (add &nocache=1)</li>
+            </ul>`;
 
         // Help icon fixed
         $('body').append('<button id="pwe_help">?</button>');
@@ -1510,6 +1539,39 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * Hide/show example text below editing fields,
      * and store the setting from the popup checkbox in local storage.
      */
+    function toggleDFMode() {
+
+        // read setting from local storage
+        log("toggleDFMode() > DFMode: " + getLocalStorage("pus-dist-free"));
+        if(getLocalStorage("pus-dist-free") === "checked") {
+            $('#pus-dist-free').removeAttr('checked'); // set checkbox state
+            $('#offNav').hide();
+            $('#prodNav').css("margin-top", "0px");
+        }
+
+        // hide/unhide field helpers on toggling the checkbox
+        $('#pus-dist-free').change(function() {
+            if(this.checked) {
+                localStorage.setItem('pus-dist-free', "checked");
+                log("toggleDFMode() > DFMode on");
+                $('#offNav').hide();
+                $('#prodNav').css("margin-top", "0px");
+            }
+            else {
+                localStorage.setItem('pus-dist-free', "unchecked");
+                log("toggleDFMode() > DFMode off");
+                $('#offNav').show();
+                $('#prodNav').css("margin-top", "82px");
+            }
+        });
+    }
+
+
+
+    /**
+     * Hide/show example text below editing fields,
+     * and store the setting from the popup checkbox in local storage.
+     */
     function toggleHelpers() {
 
         // read setting from local storage
@@ -1818,13 +1880,19 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
 
+
     /**
      * Display the quality tags in "product issues" section (#issues id)
      * Examples:
+     * * Quality error tags: No quality errors
+     * * Quality warnings tags: en:ecoscore-origins-of-ingredients-origins-are-100-percent-unknown ◼ en:ecoscore-packaging-packaging-data-missing
+     *
+     * See also: https://github.com/openfoodfacts/openfoodfacts-server/issues/7718
      *
      * @returns none
      */
     function addQualityTags() {
+        // TODO: use fetch instead of $.getJSON (faster + no dependencies)
         $.getJSON(apiProductURL, function(data) {
             var qualityErrorsTagsArray = data.product.data_quality_errors_tags;
             log("addQualityTags() > qualityErrorsTagsArray: ");
@@ -1851,9 +1919,12 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * Display the "to be completed" state tags in "product issues" section (#issues id)
      * Examples: "To be completed (from "State tags"): ingredients ◼ characteristics ◼ categories ◼ packaging ◼ quantity ◼ photos to be validated
      *
+     * See also: https://github.com/openfoodfacts/openfoodfacts-server/issues/7718
+     *
      * @returns none
      */
     function addStateTags() { // TODO: merge with addQualityTags function?
+        // TODO: use fetch instead of $.getJSON (faster + no dependencies)
         $.getJSON(apiProductURL, function(data) {
             var stateTagsArray = data.product.states_tags;
             log("addStateTags() > stateTagsArray: ");
