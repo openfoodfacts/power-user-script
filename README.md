@@ -26,6 +26,9 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2022-12-22T15:30
+* Distraction free mode: Open Food Facts top bar is hidden. Option to check or uncheck (by default) in the settings.
+* The nutrition facts form has many improvements: now fits in one screen on a HD display at 100%.
 ### 2022-12-19T08:20
 * fix nutrition image size on Chrome and Safari
 ### 2022-12-08T08:20
