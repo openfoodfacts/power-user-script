@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2022-12-22T15:30
+// @version     2023-03-20T12:38
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -58,7 +58,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2022-12-22T15:30 - mode: " + pageType);
+    log("2023-03-20T12:38 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -490,9 +490,16 @@ textarea.monospace {
             var code2 = $('link[rel="canonical"]').attr("href").match('product/\([0-9]+\)');
             if (code2 && code2[1]) {
                 code = code2[1];
+                //log("code2: "+ code2);
             }
         }
-        //log("code2: "+ code2);
+
+        // Horrible hack to prevent issue introduced by https://github.com/openfoodfacts/openfoodfacts-server/pull/8223
+        // might be removed when https://github.com/openfoodfacts/openfoodfacts-server/pull/8032 will be in production
+        if (pageType === "saved-product page") {
+            //log(document.getElementsByClassName('if-empty-dnone')[0].nextElementSibling.nextElementSibling.children[0].href);
+            code = document.getElementsByClassName('if-empty-dnone')[0].nextElementSibling.nextElementSibling.children[0].href.match(/\/product\/(.*)\//)[1];
+        }
 
         log("code: "+ code);
         // build API product link; example: https://world.openfoodfacts.org/api/v0/product/737628064502.json
