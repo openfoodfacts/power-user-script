@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2023-03-20T12:38
+* Hack to prevent product opener regression in saved-product page
 ### 2022-12-22T15:30
 * Distraction free mode: Open Food Facts top bar is hidden. Option to check or uncheck (by default) in the settings.
 * The nutrition facts form has many improvements: now fits in one screen on a HD display at 100%.
