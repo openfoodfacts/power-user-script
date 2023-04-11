@@ -485,7 +485,8 @@ textarea.monospace {
     // *
     // Build variables
     if(pageType !== "list") {
-        var code;
+        log("This is not a list.");
+	var code;
         code = getURLParam("code")||$('span[property="food:code"]').html();
 
         if (code === undefined) {
@@ -500,10 +501,9 @@ textarea.monospace {
         }
 
         // Horrible hack to prevent issue introduced by https://github.com/openfoodfacts/openfoodfacts-server/pull/8223
-        // might be removed when https://github.com/openfoodfacts/openfoodfacts-server/pull/8032 will be in production
         if (pageType === "saved-product page") {
-            //log(document.getElementsByClassName('if-empty-dnone')[0].nextElementSibling.nextElementSibling.children[0].href);
-            code = document.getElementsByClassName('if-empty-dnone')[0].nextElementSibling.nextElementSibling.children[0].href.match(/\/product\/(.*)\//)[1];
+            //log(document.getElementById('changes_saved').getElementsByClassName("warning")[0].href.match(/code=(.*)/)[1]);
+            code = document.getElementById('changes_saved').getElementsByClassName("warning")[0].href.match(/code=(.*)/)[1];
         }
 
         log("code: "+ code);
