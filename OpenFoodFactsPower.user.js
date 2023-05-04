@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2023-05-04T21:39
+// @version     2023-05-04T23:39
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2023-05-04T21:39 - mode: " + pageType);
+    log("2023-05-04T23:39 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -1003,6 +1003,29 @@ textarea.monospace {
 
 
     /***
+     * reverseKJKcal
+     *
+     * @param j: KJ
+     * @param c: kCal
+     * @return
+     */
+    function reverseKJKcal() {
+        log("reverseKJKcal()");
+        // Read the values
+        let joules = document.getElementById('nutriment_energy-kj').value;
+        let calories = document.getElementById('nutriment_energy-kcal').value;
+        // Change the values
+        document.getElementById("nutriment_energy-kj").value = calories;
+        document.getElementById("nutriment_energy-kcal").value = joules;
+        // After change, check if kJ and Kcal are coherent
+        let kj = document.getElementById('nutriment_energy-kj').value;
+        let kcal = document.getElementById('nutriment_energy-kcal').value;
+        checkKJ(kj, kcal);
+    }
+
+
+
+    /***
      * checkKJ
      *
      * @param j: KJ
@@ -1010,6 +1033,14 @@ textarea.monospace {
      * @return
      */
     function checkKJ(j, c) {
+        // If not already displayed, add the small icon to allow changing kJ to Kcal: ⇅
+        if($('#kjtokcal').length == 0) {
+            $("#nutriment_energy-kj").after('<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>');
+                    $('#kjtokcal').css('cursor', 'pointer');
+            $("#kjtokcal").click(function(){
+                reverseKJKcal();
+            });
+        }
         // CAREFUL: all of this might be false if values are per serving!!!!
         log("checkKJ(" + j + ", " + c + ")");
         if (kj > 3800) {
