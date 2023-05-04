@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2023-04-11T17:08
+// @version     2023-05-04T21:39
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2023-04-11T17:08 - mode: " + pageType);
+    log("2023-05-04T21:39 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -416,6 +416,7 @@ select.nutriment_unit {
     padding: .1rem .3rem !important;
 }
 
+#nutriment_fruits-vegetables-nuts-estimate_tr :first-child { max-inline-size: 25em; }
 
 /* ---- Edit mode: Nutrition image as tall as Nutrition facts table ---- */
 /*      Works with Firefox, Chrome at least */
@@ -1054,13 +1055,20 @@ textarea.monospace {
     var nbOfSameBrandProducts;
     if(pageType === "saved-product page") {
         $("#main_column").append(
-            '<div id="product_issues" class="row"><strong>Product issues:</strong></div>' +
+            '<section id="power_user_script" class="row">' +
+            '<div class="card-section">' +
+            '<div id="product_issues" class="panel_card radius">' +
+            '<h2 class="panel_title_card text-medium">Power User Script</h2>' +
+            '<p><strong>Product issues:</strong></p>' +
             '<ul id="issues" class="row" style="margin-bottom: 0.2rem; padding-left: 1rem;">' +
             '</ul>' +
             '<div class="row">→ <a href="'+editURL+'">Re-edit current product</a></div>' +
             '<div id="furthermore" class="row" style="margin-top: 10px;"><strong>Going further:</strong></div>' +
             '<ul id="going-further" class="row" style="padding-left: 1rem;">' +
-            '</ul>'
+            '</ul>' +
+            '</div>' +
+            '</div>' +
+            '</section>'
         );
         isNbOfSimilarNamedProductsWithoutACategory();
         addQualityTags();
@@ -1260,12 +1268,16 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $("#ingredients_text").val(cd);
     }
 
+
+
     function submitToPopup(f) {
         log("submitToPopup");
         var w = window.open('', 'form-target', 'width=800','height=800');
         f.target = 'form-target';
         f.submit();
     }
+
+
 
     /***
      * listByRows
@@ -1295,6 +1307,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
 
     /***
+     * getJSONList
      *
      * @param   : var, url of the list; example: https://world.openfoodfacts.org/cgi/search.pl?search_terms=banania&search_simple=1
      * @return  : object, JSON list of products
@@ -1493,6 +1506,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         //$("#power-user-help").prev().addClass('ui-state-information');
         return popup;
     }
+
 
     // Toggle popup
     function togglePowerUserInfo(message) {
@@ -1737,10 +1751,12 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
     }
 
+
     function hideListBarcodes() {
         $("svg.list_barcode").remove();
         $('ul[id^="products_"].search_results .with_barcode').removeClass('with_barcode');
     }
+
 
     /**
      * The product list view has no easy way to get the barcode for each entry,
@@ -1757,6 +1773,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             }
         });
     }
+
 
     /**
      * Get an array of barcodes for the current list view.
@@ -1911,10 +1928,11 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             var qualityErrorsTagsArray = data.product.data_quality_errors_tags;
             log("addQualityTags() > qualityErrorsTagsArray: ");
             log(qualityErrorsTagsArray);
-            //var list = '<ul><li>' + arr.join('</li><li>') + '</li></ul>';
             var list = (qualityErrorsTagsArray.length === 0 ?
                         ('<span style="color: green">No quality errors</span>') :
-                        ('<span style="color: red">' + qualityErrorsTagsArray.join(' ◼ ') + '</span>'));
+                        //('<span style="color: red">' + qualityErrorsTagsArray.join(' ◼ ') + '</span>')
+			('')
+		       );
             $("#issues").append('<li id="qualityErrorsTags">Quality error tags: ' + list + '</li>');
 
             var qualityWarningsTagsArray = data.product.data_quality_warnings_tags;
@@ -2265,6 +2283,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             $("#timed_alert_move_" + _code).fadeOut(3000, function () { $(this).remove(); });
         });
     }
+
 
     /***
      * Log things
