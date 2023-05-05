@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2023-05-04T23:39
+* Button ⇅ to reverse kj/kcal
 ### 2023-03-20T12:38
 * Hack to prevent product opener regression in saved-product page
 ### 2022-12-22T15:30
