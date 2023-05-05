@@ -1035,8 +1035,8 @@ textarea.monospace {
     function checkKJ(j, c) {
         // If not already displayed, add the small icon to allow changing kJ to Kcal: ⇅
         if($('#kjtokcal').length == 0) {
-            $("#nutriment_energy-kj").after('<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>');
-                    $('#kjtokcal').css('cursor', 'pointer');
+            $("#nutriment_energy-kj").after('<strong id="kjtokcal" href="#kjtokcal" style="font-size: 1.2em;" title="Reverse the kj/kcal values"> ⇅ </strong>');
+            $('#kjtokcal').css('cursor', 'pointer');
             $("#kjtokcal").click(function(){
                 reverseKJKcal();
             });
@@ -1059,7 +1059,7 @@ textarea.monospace {
             log("kj < kcal: " + j + " < " + c);
             $("#nutriment_energy-kj").css({"background-color": "orange"});
             $("#nutriment_energy-kcal").css({"background-color": "orange"});
-            if($('#kjtokcal').length == 0) {
+            /*if($('#kjtokcal').length == 0) {
                 $("#nutriment_energy-kj").after('<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>');
             }
             $('#kjtokcal').css('cursor', 'pointer');
@@ -1069,13 +1069,12 @@ textarea.monospace {
                 kj   = $("#nutriment_energy-kj").attr("value");
                 kcal = $("#nutriment_energy-kcal").attr("value");
                 checkKJ(kj, kcal);
-            });
+            });/**/
         }
         else {
             log("ok");
             $("#nutriment_energy-kj").css({"background-color": "LightYellow"});
             $("#nutriment_energy-kcal").css({"background-color": "LightYellow"});
-            $("#kjtokcal").remove();
         }
     }
 
