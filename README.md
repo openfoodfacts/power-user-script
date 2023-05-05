@@ -28,6 +28,7 @@ Just click on the Raw button and your script manager will ask you if you want to
 # Changelog
 ### 2023-05-04T23:39
 * Button ⇅ to reverse kj/kcal
+* "No quality errors" is back
 ### 2023-03-20T12:38
 * Hack to prevent product opener regression in saved-product page
 ### 2022-12-22T15:30
