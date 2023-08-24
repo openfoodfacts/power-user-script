@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2023-05-04T23:39
+// @version     2023-08-22T19:17
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2023-05-04T23:39 - mode: " + pageType);
+    log("2023-08-22T19:17 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -487,7 +487,7 @@ textarea.monospace {
     // Build variables
     if(pageType !== "list") {
         log("This is not a list.");
-	var code;
+        var code;
         code = getURLParam("code")||$('span[property="food:code"]').html();
 
         if (code === undefined) {
@@ -945,6 +945,12 @@ textarea.monospace {
         });
         // //$("#display_ingredients_es img").clone().after("#ingredients_text_es");
 
+
+        // Check serving size field
+        checkServingSize(document.getElementById("serving_size").value);
+        document.getElementById("serving_size").addEventListener("input", function() {
+            checkServingSize(this.value);
+        });
 
         // Check fibers' field
         checkFiber($("#nutriment_fiber").attr("value"));
@@ -2314,6 +2320,48 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
     }
 
+
+    /* *****************************************************************************************
+     * Edition context. Below are functions which are useful in edition mode.
+     */
+
+    /***
+     * checkServingSize: check if serving size contains a right value; otherwise, highlight the field
+     *                   and add a interrogation mark associated with a tooltip.
+     *
+     * @param {string} servingSize: value of the servingSize
+     * @returns: none
+     */
+    function checkServingSize(servingSize) {
+        log("checkServingSize - serving size val: " + servingSize);
+        const servingSizeElement = document.getElementById("serving_size");
+        if (servingSize.length == 0) {
+            servingSizeElement.style.setProperty("background-color", "LightYellow", "important");
+            document.getElementById("serving_size_help") != null ? document.getElementById("serving_size_help").remove() : false;
+            return;
+        }
+        const regex = /\d+(\.\d+)? ?(kg|g|dg|cg|mg|mcg|l|dl|cl|ml|fl|oz)(\W+.*)?$/gi; // Examples matching: 60 g, 12 oz, 20cl, 2 fl oz
+        if (regex.test(servingSize) === false) {
+            log("checkServingSize - serving size is not correct!");
+            servingSizeElement.style.setProperty("background-color", "orange", "important");
+            servingSizeElement.style.setProperty("display", "inline");
+            if(document.getElementById("serving_size_help") == null) {
+                const servingSizeHelp = '<strong id="serving_size_help" href="#serving_size_help" title="Serving size needs a value. Leave it empty otherwise."> (?) <br></strong>';
+                servingSizeElement.insertAdjacentHTML("afterend", servingSizeHelp);
+                document.getElementById("serving_size_help").style.setProperty("cursor", "pointer");
+            }
+        }
+        else {
+            servingSizeElement.style.setProperty("background-color", "LightYellow", "important");
+            document.getElementById("serving_size_help") != null ? document.getElementById("serving_size_help").remove() : false;
+        }
+    }
+
+
+
+    /* *****************************************************************************************
+     * Functions which are useful in any context
+     */
 
     /***
      * Log things
