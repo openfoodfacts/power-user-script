@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2023-08-24T18:49
+// @version     2023-08-24T18:56
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2023-08-24T18:49 - mode: " + pageType);
+    log("2023-08-24T18:56 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -112,6 +112,7 @@
     //   * better distinguished sections
     //   * fields highlighted, current field highlighted
     //   * less margins for some elements
+    //   * Smaller fixed validation bar
     // * UI
     //   * help screen called with button [?] or keyboard shortcut (?) or (h)
     //   * zoom every images with mouse wheel; see http://www.jacklmoore.com/zoom/
@@ -120,6 +121,7 @@
     //   * Edit mode:
     //     * show hide help comments for each field (see help screen)
     //     * Firefox: Nutrition facts picture takes all the place available
+    //     * Add "History" anchor in the nav bar
     //   * Ingredient lists: external link for each ingredient (appear when hovering rows)
     //   * keyboard shortcut to API product page (a)
     //   * keyboard shortcut to get back to view mode (v)
@@ -150,6 +152,8 @@
     //   * help screen: add "Similarly named products without a category" link
     //   * help screen: add "Product code search on Google" link
     //   * help screen: add links to Google/Yandex Reverse Image search (thanks Tacite for suggestion)
+    //   * Edit mode:
+    //     * Check serving size field
     //   * Add fiew informations on the confirmation page:
     //     * Products issues:
     //       * To be completed (from "states_tags")
@@ -939,6 +943,12 @@ textarea.monospace {
         toggleHelpers();
         toggleIngredientsMonospace();
         toggleDFMode();
+
+        // Add "History" anchor in the nav bar
+        let newElement = document.createElement("li");
+        newElement.innerHTML += `<a class="nav-link scrollto button small round white-button" href="#history"><span>History</span></a>`;
+        newElement.className = "item-list";
+        document.querySelector('#navbar ul').append(newElement);
 
         // TODO: add ingredients picture aside ingredients text area
         var ingredientsImage = $("#display_ingredients_es img");
