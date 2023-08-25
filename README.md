@@ -26,6 +26,12 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2023-08-24T18:56
+* Add "History" anchor in the nav bar
+* Check serving size field
+* Colorize icon ⇅ when kJ/kcal values are not coherent (ratio is displayed inside ⇅ tooltip)
+* Small UI improvements (smaller fixed validation bar)
+* Better organization of the code; more code in vanilla JS (faster and less dependant from libraries)
 ### 2023-05-04T23:39
 * Button ⇅ to reverse kj/kcal
 * "No quality errors" is back
