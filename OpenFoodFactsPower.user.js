@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2023-08-24T18:56
+// @version     2023-08-25T10:22
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2023-08-24T18:56 - mode: " + pageType);
+    log("2023-08-25T10:22 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -154,6 +154,8 @@
     //   * help screen: add links to Google/Yandex Reverse Image search (thanks Tacite for suggestion)
     //   * Edit mode:
     //     * Check serving size field
+    //     * Add the ⇅ icon allowing to reverse kJ and kcals
+    //     * Colorize icon ⇅ when kJ/kcal values are not coherent (ratio is displayed inside ⇅ tooltip)
     //   * Add fiew informations on the confirmation page:
     //     * Products issues:
     //       * To be completed (from "states_tags")
@@ -360,6 +362,9 @@ input.show_comparison {
     margin: 0 0 0.2rem 0 !important;
 }
 
+
+/* ---------------- Power User Script UI --------------------------- */
+/* ------------------ Help box ------------------------------------- */
 .pus_menu {
     font-size: 0.9rem;
 }
@@ -376,6 +381,7 @@ input.show_comparison {
     color: #00f;
 }
 
+/* ------------------ Fixed menu buttons --------------------------- */
 #pwe_help {
     position:fixed;
     left:0%;
@@ -392,12 +398,14 @@ input.show_comparison {
     left:0%;
     top:5rem;
     padding:0 0.7rem 0 0.7rem;
-    font-size:1.2rem;
-    width: 8rem;
+    font-size:1.1rem;
+    width: 7rem;
     background-color:red;
     border-radius: 0 10px 10px 0;
     z-index: 200;
 }
+/* ---------------- /Power User Script UI -------------------------- */
+
 
 /* ---------------- Height of input fields ------------------------- */
 .tagify__input { margin: 4 px; } /* instead of 5px */
@@ -421,6 +429,7 @@ select.nutriment_unit {
 }
 
 #nutriment_fruits-vegetables-nuts-estimate_tr :first-child { max-inline-size: 25em; }
+
 
 /* ---- Edit mode: Nutrition image as tall as Nutrition facts table ---- */
 /*      Works with Firefox, Chrome at least */
@@ -973,137 +982,26 @@ textarea.monospace {
             checkFiber($(this).val());
         });
 
-    /***
-     * checkFiber
-     *
-     * @param {string} f: value of fiber
-     * @returns: none
-     */
-    function checkFiber(f) {
-        log("fiber val: " + f);
-        if (f.length == 0) {
-            log("fiber empty!");
-            $("#nutriment_fiber").css({"background-color": "orange"});
-            if($('#fiber_help').length == 0) {
-                $("#nutriment_fiber").after('<strong id="fiber_help" href="#fiber_help" title="Put a hyphen (-) if no fibers are on the packaging"> (?) </strong>');
-                $('#fiber_help').css('cursor', 'pointer');
-                //fiber_help = fiber_help + 1;
-            }
-        }
-        else {
-            $("#nutriment_fiber").css({"background-color": "LightYellow"});
-            if($('#fiber_help').length != 0) {
-                $("#fiber_help").remove();
-            }
-        }
-    }
-
-
-        // Test if #nutriment_energy-kj > 3800
-        var kj   = $("#nutriment_energy-kj").attr("value");
-        var kcal = $("#nutriment_energy-kcal").attr("value");
-        var kj_help = 0;
-        log("kj: "+kj+" - kcal:"+kcal);
-        checkKJ(kj, kcal);
+        // Check energy (kJ and kcal) now and for any change
+        checkKJ();
         $("#nutriment_energy-kj").on("input", function() {
-            log("kj val: " + $(this).val());
             $("#nutriment_energy-kj").attr("value", $(this).val());
-            kj = $(this).val();
-            log("kj = " + kj + " - kcal = " + kcal);
-            checkKJ(kj, kcal);
+            checkKJ();
         });
         $("#nutriment_energy-kcal").on("input", function() {
-            log("kcal val: " + $(this).val());
             $("#nutriment_energy-kcal").attr("value", $(this).val());
-            kcal = $(this).val();
-            log("kj = " + kj + " - kcal = " + kcal);
-            checkKJ(kj, kcal);
+            checkKJ();
         });
 
     }
 
-
-    /***
-     * reverseKJKcal
-     *
-     * @param j: KJ
-     * @param c: kCal
-     * @return
-     */
-    function reverseKJKcal() {
-        log("reverseKJKcal()");
-        // Read the values
-        let joules = document.getElementById('nutriment_energy-kj').value;
-        let calories = document.getElementById('nutriment_energy-kcal').value;
-        // Change the values
-        document.getElementById("nutriment_energy-kj").value = calories;
-        document.getElementById("nutriment_energy-kcal").value = joules;
-        // After change, check if kJ and Kcal are coherent
-        let kj = document.getElementById('nutriment_energy-kj').value;
-        let kcal = document.getElementById('nutriment_energy-kcal').value;
-        checkKJ(kj, kcal);
-    }
-
-
-
-    /***
-     * checkKJ
-     *
-     * @param j: KJ
-     * @param c: kCal
-     * @return
-     */
-    function checkKJ(j, c) {
-        // If not already displayed, add the small icon to allow changing kJ to Kcal: ⇅
-        if($('#kjtokcal').length == 0) {
-            $("#nutriment_energy-kj").after('<strong id="kjtokcal" href="#kjtokcal" style="font-size: 1.2em;" title="Reverse the kj/kcal values"> ⇅ </strong>');
-            $('#kjtokcal').css('cursor', 'pointer');
-            $("#kjtokcal").click(function(){
-                reverseKJKcal();
-            });
-        }
-        // CAREFUL: all of this might be false if values are per serving!!!!
-        log("checkKJ(" + j + ", " + c + ")");
-        if (kj > 3800) {
-            log("kj > 3800");
-            $("#nutriment_energy-kj").css({"background-color": "orange"});
-            if($('#kj_help').length == 0) {
-                $("#nutriment_energy-kj").after('<strong id="kj_help" href="#kjtokcal" title="kj can\'t be greater than 3800"> (?) </strong>');
-                kj_help = kj_help + 1;
-            }
-        }
-        else {
-            kj_help > 0 ? kj_help = kj_help - 1:false;
-            kj_help == 0 ? $("#kj_help").remove():false;
-        }
-        if (parseInt(j) < parseInt(c)) {
-            log("kj < kcal: " + j + " < " + c);
-            $("#nutriment_energy-kj").css({"background-color": "orange"});
-            $("#nutriment_energy-kcal").css({"background-color": "orange"});
-            /*if($('#kjtokcal').length == 0) {
-                $("#nutriment_energy-kj").after('<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>');
-            }
-            $('#kjtokcal').css('cursor', 'pointer');
-            $("#kjtokcal").click(function(){
-                $("#nutriment_energy-kj").attr("value", c);
-                $("#nutriment_energy-kcal").attr("value", j);
-                kj   = $("#nutriment_energy-kj").attr("value");
-                kcal = $("#nutriment_energy-kcal").attr("value");
-                checkKJ(kj, kcal);
-            });/**/
-        }
-        else {
-            log("ok");
-            $("#nutriment_energy-kj").css({"background-color": "LightYellow"});
-            $("#nutriment_energy-kcal").css({"background-color": "LightYellow"});
-        }
-    }
 
 
     // ***
     // * Saved product page
     // *
     var nbOfSameBrandProducts;
+
     if(pageType === "saved-product page") {
         $("#main_column").append(
             '<section id="power_user_script" class="row">' +
@@ -1570,6 +1468,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
 
+
     function toggleIngredientsMode() {
         //
         log("Ingredients mode");
@@ -1982,8 +1881,8 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             var list = (qualityErrorsTagsArray.length === 0 ?
                         ('<span style="color: green">No quality errors</span>') :
                         //('<span style="color: red">' + qualityErrorsTagsArray.join(' ◼ ') + '</span>')
-			('')
-		       );
+                        ('')
+                       );
             $("#issues").append('<li id="qualityErrorsTags">Quality error tags: ' + list + '</li>');
 
             var qualityWarningsTagsArray = data.product.data_quality_warnings_tags;
@@ -2370,6 +2269,115 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             servingSizeElement.style.setProperty("background-color", "LightYellow", "important");
             document.getElementById("serving_size_help") != null ? document.getElementById("serving_size_help").remove() : false;
         }
+    }
+
+
+
+    /***
+     * checkFiber
+     *
+     * @param {string} f: value of fiber
+     * @returns: none
+     */
+    function checkFiber(f) {
+        log("fiber val: " + f);
+        if (f.length == 0) {
+            log("fiber empty!");
+            $("#nutriment_fiber").css({"background-color": "orange"});
+            if($('#fiber_help').length == 0) {
+                $("#nutriment_fiber").after('<strong id="fiber_help" href="#fiber_help" title="Put a hyphen (-) if no fibers are on the packaging"> (?) </strong>');
+                $('#fiber_help').css('cursor', 'pointer');
+            }
+        }
+        else {
+            $("#nutriment_fiber").css({"background-color": "LightYellow"});
+            if($('#fiber_help').length != 0) {
+                $("#fiber_help").remove();
+            }
+        }
+    }
+
+
+
+    /***
+     * reverseKJKcal
+     *
+     * @returns  none
+     */
+    function reverseKJKcal() {
+        log("reverseKJKcal()");
+        // Read the values
+        let joules = document.getElementById('nutriment_energy-kj').value;
+        let calories = document.getElementById('nutriment_energy-kcal').value;
+        // Change the values
+        document.getElementById("nutriment_energy-kj").value = calories;
+        document.getElementById("nutriment_energy-kcal").value = joules;
+        // After change, check if kJ and Kcal are coherent
+        checkKJ();
+    }
+
+
+
+    /***
+     * checkKJ
+     *
+     * @returns  none
+     */
+    function checkKJ() {
+        // If not already displayed, add the small icon to allow changing kJ to Kcal: ⇅
+        if(!document.getElementById('kjtokcal')) {
+            const reverseIcon = '<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>';
+            document.getElementById("nutriment_energy-kj").insertAdjacentHTML("afterend", reverseIcon);
+            document.getElementById('kjtokcal').style.setProperty("cursor", "pointer");
+            document.getElementById("kjtokcal").addEventListener("click", function() {
+            //document.getElementById('kjtokcal').click(function(){
+                reverseKJKcal();
+            });
+        }
+        const j = document.getElementById('nutriment_energy-kj').value;
+        const c = document.getElementById('nutriment_energy-kcal').value;
+        log("checkKJ() - kJ: " + j + ", kcal: " + c);
+        // If either KJ or Kcal does not exist: compute the missing value
+        if (j == "" && c != "") {
+            const cj = (c * 4.4).toFixed();
+            document.getElementById('kjtokcal').title = "Reverse the kj/kcal values -- kcal: " + c + "; computed kJ: ~" + cj;
+        }
+        if (c == "" && j != "") {
+            const cc = (j / 4.4).toFixed();
+            document.getElementById('kjtokcal').title = "Reverse the kj/kcal values -- kJ: " + j + "; computed kcal: ~" + cc;
+        }
+        if (c != "" && j != "") {
+            const ratio = (j / c).toFixed(1);
+            document.getElementById("kjtokcal").title = "Reverse the kj/kcal values -- ratio Kj/kcal (should be 4.4): " + ratio;
+            (ratio >= 4.8 || ratio <= 4.0) ?
+                document.getElementById('kjtokcal').style.color = "red" : document.getElementById('kjtokcal').style.color = "black";
+        }
+        // CAREFUL: all of this might be false if values are per serving!!!!
+        /*
+        if (parseInt(j) < parseInt(c)) {
+            log("kj < kcal: " + j + " < " + c);
+            $("#nutriment_energy-kj").css({"background-color": "orange"});
+            $("#nutriment_energy-kcal").css({"background-color": "orange"});
+            /*if($('#kjtokcal').length == 0) {
+                $("#nutriment_energy-kj").after('<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>');
+            }
+            $('#kjtokcal').css('cursor', 'pointer');
+            $("#kjtokcal").click(function(){
+                $("#nutriment_energy-kj").attr("value", c);
+                $("#nutriment_energy-kcal").attr("value", j);
+                kj   = $("#nutriment_energy-kj").attr("value");
+                kcal = $("#nutriment_energy-kcal").attr("value");
+                checkKJ(kj, kcal);
+            });/*
+        }
+        log(typeof $("#nutriment_energy-kcal").attr("value") + ", " + typeof $("#nutriment_energy-kj").attr("value"));
+        if ($("#nutriment_energy-kcal").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutriment_energy-kcal").attr("value") < 910)) {
+            log("ok");
+            $("#nutriment_energy-kcal").css({"background-color": "LightYellow"});
+        }
+        if ($("#nutriment_energy-kj").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutriment_energy-kj").attr("value") < 3800)) {
+            $("#nutriment_energy-kj").css({"background-color": "LightYellow"});
+        }/**/
     }
 
 
