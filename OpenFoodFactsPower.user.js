@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2023-08-25T10:22
+// @version     2023-09-13T23:00
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2023-08-25T10:22 - mode: " + pageType);
+    log("2023-09-13T23:00 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -361,6 +361,15 @@ input.nutriment_value { margin: 0 0 0 0; }
 input.show_comparison {
     margin: 0 0 0.2rem 0 !important;
 }
+
+
+/* --------------- Let panels use less space ----------------------- */
+/* On the legacy website, in the "changes saved" page, the second panel is not seen without scrolling. */
+.card-section { padding-top: 12px; padding-bottom: 10px; }
+.panel_card { margin-bottom: 0.5rem !important }
+.panel_title_card { margin-top: 0px; }
+.panel_content_card { margin-top: 0px; }
+.panel_title, .panel_content { padding-top: 0px !important; padding-bottom: 0.2rem !important; }
 
 
 /* ---------------- Power User Script UI --------------------------- */
