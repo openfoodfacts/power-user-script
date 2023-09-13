@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2023-09-13T23:00
+* Let panels use less space
 ### 2023-08-24T18:56
 * Add "History" anchor in the nav bar
 * Check serving size field
