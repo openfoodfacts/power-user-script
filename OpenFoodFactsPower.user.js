@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2023-09-13T23:00
+// @version     2023-09-15T22:59
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2023-09-13T23:00 - mode: " + pageType);
+    log("2023-09-15T22:59 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -1002,6 +1002,15 @@ textarea.monospace {
             checkKJ();
         });
 
+        // Compute and display energy in realtime, based on fat, carbs, fibers, proteins, polyols and alcohol
+        const energySpan = '<span id="computed_kj" title="Energy computed from fat, carbs, fibers, proteins, polyols and alcohol" style="padding-left: 2em; color: #665;"></span>';
+        document.querySelector('[for="nutriment_energy-kj"]').insertAdjacentHTML('afterend', energySpan);
+        computeEnergy();
+        const ids = ["nutriment_fat", "nutriment_carbohydrates", "nutriment_proteins", "nutriment_polyols", "nutriment_fiber", "nutriment_alcohol"];
+        for (const id of ids) {
+            const element = document.getElementById(id);
+            element && element.addEventListener("input", computeEnergy);
+        }
     }
 
 
@@ -2247,6 +2256,46 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     /* *****************************************************************************************
      * Edition context. Below are functions which are useful in edition mode.
      */
+
+    /***
+     * computeEnergy:
+     *                The energy of a given product is computed based on INCO european regulation (see Annex XIV).
+     *                The formula is: ((carb - polyols)*17) + (polyols * 10) + (proteins * 17) + (fat * 37) + (fiber * 8) + (alcohol * 29)
+     *                or: ((carb - polyols)*4) + (polyols * 2.4) + (proteins * 4) + (fat * 9) + (fiber * 2) + (alcohol * 7)
+     *
+     * @param {string} servingSize: value of the servingSize
+     * @returns: none
+     */
+    function computeEnergy() {
+        //log("computeEnergy");
+        let fat = readAndNormalizeNutrient("nutriment_fat");
+        let carb = readAndNormalizeNutrient("nutriment_carbohydrates");
+        let proteins = readAndNormalizeNutrient("nutriment_proteins");
+        let polyols = readAndNormalizeNutrient("nutriment_polyols");
+        let fiber = readAndNormalizeNutrient("nutriment_fiber");
+        let alcohol = readAndNormalizeNutrient("nutriment_alcohol");
+        let computed_kj = ((carb - polyols)*17) + (polyols * 10) + (proteins * 17) + (fat * 37) + (fiber * 8) + (alcohol * 29);
+        computed_kj = computed_kj % 1 !== 0 ? computed_kj.toFixed(2) : computed_kj.toString();
+        // Display computed KJ near "Energy (kJ)*" label
+        document.getElementById("computed_kj").innerText = "["+computed_kj+"]";
+    }
+
+
+
+    /***
+     * readAndNormalizeNutrient: read nutrient from its field and remove "<" or "-"
+     *                           or return 0 to allow its use in computations.
+     *
+     * @param {string} nutrient: id of the nutrient
+     * @returns {int} value of the nutrient or 0
+     */
+    function readAndNormalizeNutrient(nutrient) {
+        let nutrientValue = (document.getElementById(nutrient) || {}).value || "0";
+        nutrientValue = (nutrientValue == "-") ? "0" : nutrientValue;
+        return parseFloat(nutrientValue.trim().replace("<", ""));
+    }
+
+
 
     /***
      * checkServingSize: check if serving size contains a right value; otherwise, highlight the field
