@@ -790,7 +790,7 @@ textarea.monospace {
                     return;
                 }
                 // (e): edit current product in current window
-                if (pageType === "product view" && event.key === 'e') {
+                if ((pageType === "product view" || pageType === "saved-product page") && event.key === 'e') {
                     window.open(editURL, "_self"); // edit in current window
                     return;
                 }
