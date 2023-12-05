@@ -1643,8 +1643,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             }else{
                  localStorage.setItem('pus-always-show-barcode', "never");
             }
-
-		    toggleListBarcodes();
+            toggleListBarcodes();
         });
     }
     
