@@ -1125,7 +1125,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
         // detect product codes and add them as attributes
         addCodesToProductList();
-
+        loadAlwaysShowBarcodesFromStorage();
 
         // Show an easier to read number of products
         /*
@@ -1632,12 +1632,29 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 	
     function toggleAlwaysShowBarcodes(){
-		let isChecked = getLocalStorage("pus-always-show-barcode");
-		$('#pus-always-show-barcode').prop("checked", isChecked);
-		
+        
+        if(getLocalStorage("pus-always-show-barcode") === "always"){
+            $('#pus-always-show-barcode').prop("checked", true);
+        }
+        
         $('#pus-always-show-barcode').change(function() {
-		    localStorage.setItem('pus-always-show-barcode', this.checked);
+            if(this.checked){
+                 localStorage.setItem('pus-always-show-barcode', "always");
+            }else{
+                 localStorage.setItem('pus-always-show-barcode', "never");
+            }
+
+		    toggleListBarcodes();
         });
+    }
+    
+    function loadAlwaysShowBarcodesFromStorage(){
+        $( window ).on( "load", function() {
+            if(getLocalStorage("pus-always-show-barcode") === "always"){
+                toggleListBarcodes();
+            }
+        });
+          
     }
 
 
