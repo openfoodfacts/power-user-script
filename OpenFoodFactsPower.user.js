@@ -1106,6 +1106,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             <li>(?) or (h): this present help</li>
             <hr>
             <li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>
+			<li><input class="pus-checkbox" type="checkbox" id="pus-always-show-barcode"><label for="pus-always-show-barcode">Always show barcodes</label></li>
             <hr>
             <li>(Shift+L): List edit mode</li>
             <li>(Shift+b): Show/hide barcodes</li>
@@ -1119,6 +1120,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $("#pwe_help").click(function(){
             togglePowerUserInfo(listhelp);
             toggleIngredientsMonospace();
+			toggleAlwaysShowBarcodes();
         });
 
         // detect product codes and add them as attributes
@@ -1626,6 +1628,15 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 $("div.wrap_ingr > textarea.ingr").removeClass("monospace"); // list view
             }
 
+        });
+    }
+	
+    function toggleAlwaysShowBarcodes(){
+		let isChecked = getLocalStorage("pus-always-show-barcode");
+		$('#pus-always-show-barcode').prop("checked", isChecked);
+		
+        $('#pus-always-show-barcode').change(function() {
+		    localStorage.setItem('pus-always-show-barcode', this.checked);
         });
     }
 
