@@ -1705,15 +1705,20 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                     break;
             }
 
-            JsBarcode("#barcode_draw_" + code, code, {
-                format: barcode_format,
-                flat: true,
-                fontSize: 10,
-                lineColor: "black",
-                width: 1,
-                height: 40,
-                displayValue: true,
-            });
+			try {            
+				JsBarcode("#barcode_draw_" + code, code, {
+					format: barcode_format,
+					flat: true,
+					fontSize: 10,
+					lineColor: "black",
+					width: 1,
+					height: 40,
+					displayValue: true,
+				});
+			}catch(error){
+                console.error(error);
+            }
+
 
             $('a.list_product_a', this).addClass('with_barcode');
         });
