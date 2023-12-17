@@ -1106,6 +1106,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             <li>(?) or (h): this present help</li>
             <hr>
             <li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>
+            <li><input class="pus-checkbox" type="checkbox" id="pus-always-show-barcode"><label for="pus-always-show-barcode">Always show barcodes</label></li>
             <hr>
             <li>(Shift+L): List edit mode</li>
             <li>(Shift+b): Show/hide barcodes</li>
@@ -1119,11 +1120,12 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $("#pwe_help").click(function(){
             togglePowerUserInfo(listhelp);
             toggleIngredientsMonospace();
+            toggleAlwaysShowBarcodes();
         });
 
         // detect product codes and add them as attributes
         addCodesToProductList();
-
+        loadAlwaysShowBarcodesFromStorage();
 
         // Show an easier to read number of products
         /*
@@ -1627,6 +1629,31 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             }
 
         });
+    }
+	
+    function toggleAlwaysShowBarcodes(){
+        
+        if(getLocalStorage("pus-always-show-barcode") === "always"){
+            $('#pus-always-show-barcode').prop("checked", true);
+        }
+        
+        $('#pus-always-show-barcode').change(function() {
+            if(this.checked){
+                 localStorage.setItem('pus-always-show-barcode', "always");
+            }else{
+                 localStorage.setItem('pus-always-show-barcode', "never");
+            }
+            toggleListBarcodes();
+        });
+    }
+    
+    function loadAlwaysShowBarcodesFromStorage(){
+        $( window ).on( "load", function() {
+            if(getLocalStorage("pus-always-show-barcode") === "always"){
+                toggleListBarcodes();
+            }
+        });
+          
     }
 
 
