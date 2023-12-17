@@ -779,7 +779,7 @@ textarea.monospace {
             });
             
             $('body').append('<button id="pwe_hide_text_fields">Hide fields</button>');
-            $("#pwe_help").click(function(){
+            $("#pwe_hide_text_fields").click(function(){
                 toggleHideTextFieldsPopUp();
             });
         }
@@ -1491,7 +1491,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         //$("#power-user-help").prev().addClass('ui-state-information');
         return popup;
     }
-
+    
     // Toggle popup
     function togglePowerUserInfo(message) {
         if ($("#power-user-help").dialog( "isOpen" ) === true) {
@@ -1503,7 +1503,74 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
     
     
-
+     function toggleHideTextFieldsPopUp() {
+         if($("#power-user-hide-fields-popup").dialog("isOpen") === true){
+             $("#power-user-hide-fields-popup").dialog("close");
+         }else{
+             return showPowerUserHideTextFieldsPopUp();
+         }
+     }
+     
+     function showPowerUserHideTextFieldsPopUp(){
+        if($("#power-user-hide-fields-popup").length === 0){
+            $('body').append('<div id="power-user-hide-fields-popup" title="Hide text fields"></div>');
+            $("#power-user-hide-fields-popup").dialog({autoOpen: false});
+        }
+        
+         var popUpContent = getPowerUserHideFieldsContent();
+            
+        $("#power-user-hide-fields-popup").html(popUpContent);
+            
+        let popup = $("#power-user-hide-fields-popup").dialog({
+            autoOpen: true,
+            width: 400,
+            dialogClass: 'dialogstyleperso',
+        }); 
+    }
+     
+     function getPowerUserHideFieldsContent(){
+         return `<ul class="pus_hide_menu">
+         <li>`+ getInputWithCheckbox('Hide misc card','test2','test3') + `
+         <ul><li>`+ getInputWithCheckbox('Barcode not correct','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Product taken off the market','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Withdrawal date','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Alert boxes','test2','test3') + `</li></ul>
+         </li>
+         <hr>
+         <li>`+ getInputWithCheckbox('Hide product picture card','test2','test3') + `</li>
+         <hr>
+         <li>`+ getInputWithCheckbox('Hide product characteristics card','test2','test3') + `
+         <ul><li>`+ getInputWithCheckbox('Product name','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Common name','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Quantity','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Brands','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Categories','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Labels, certifications, awards','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Manufacturing or processing places','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Traceability code','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Link to the product page...','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Best before date','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('City, state and country ','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Stores','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Countries where sold','test2','test3') + `</li></ul>
+         </li>
+         <hr>
+         <li>`+ getInputWithCheckbox('Hide ingredients card','test2','test3') + `
+         <ul><li>`+ getInputWithCheckbox('Origin of the product ','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Substances or products...','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Traces','test2','test3') + `</li></ul>
+         <ul><li>`+ getInputWithCheckbox('Origin of ingredients','test2','test3') + `</li></ul>
+         </li>
+         <hr>
+         <li>`+ getInputWithCheckbox('Hide nutrition card','test2','test3') + `</li>
+         <hr>
+         <li>`+ getInputWithCheckbox('Hide packaging card','test2','test3') + `</li>
+        </ul>`;
+     }
+     
+     function getInputWithCheckbox(labelValue, inputClass, inputId){
+         return '<input class="'+inputClass+'" type="checkbox" id="'+inputId+'"><label for="'+inputId+'">'+labelValue+'</label>';
+     }
 
 
     function toggleIngredientsMode() {
