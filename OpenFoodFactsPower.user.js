@@ -413,6 +413,17 @@ input.show_comparison {
     border-radius: 0 10px 10px 0;
     z-index: 200;
 }
+#pwe_hide_text_fields {
+    position:fixed;
+    left:0%;
+    top:8rem;
+    padding:0 0.7rem 0 0.7rem;
+    font-size:1.1rem;
+    background-color:red;
+    border-radius: 0 10px 10px 0;
+    z-index: 200;
+}
+
 /* ---------------- /Power User Script UI -------------------------- */
 
 
@@ -765,6 +776,11 @@ textarea.monospace {
                 //log("analyse");
                 Copydata();
                 submitToPopup(analyse_form);
+            });
+            
+            $('body').append('<button id="pwe_hide_text_fields">Hide fields</button>');
+            $("#pwe_help").click(function(){
+                toggleHideTextFieldsPopUp();
             });
         }
 
@@ -1476,7 +1492,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         return popup;
     }
 
-
     // Toggle popup
     function togglePowerUserInfo(message) {
         if ($("#power-user-help").dialog( "isOpen" ) === true) {
@@ -1486,6 +1501,8 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             return showPowerUserInfo(message);
         }
     }
+    
+    
 
 
 
