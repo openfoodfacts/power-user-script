@@ -1502,7 +1502,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         }
     }
     
-    
+    // Hide Text Fields
      function toggleHideTextFieldsPopUp() {
          if($("#power-user-hide-fields-popup").dialog("isOpen") === true){
              $("#power-user-hide-fields-popup").dialog("close");
@@ -1520,6 +1520,8 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
          var popUpContent = getPowerUserHideFieldsContent();
             
         $("#power-user-hide-fields-popup").html(popUpContent);
+
+        getHideFieldsCheckboxesFromStorage();
             
         let popup = $("#power-user-hide-fields-popup").dialog({
             autoOpen: true,
@@ -1530,47 +1532,116 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      
      function getPowerUserHideFieldsContent(){
          return `<ul class="pus_hide_menu">
-         <li>`+ getInputWithCheckbox('Hide misc card','test2','test3') + `
-         <ul><li>`+ getInputWithCheckbox('Barcode not correct','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Product taken off the market','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Withdrawal date','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Alert boxes','test2','test3') + `</li></ul>
+         <li>`+ createInputWithCheckbox('Hide misc card','pus-hide-misc-card') + `
+         <ul><li>`+ createInputWithCheckbox('Barcode not correct','pus-hide-barcode-not-correct') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Product taken off the market','pus-hide-product-taken-off') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Withdrawal date','pus-hide-withdrawal-date') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Alert boxes','pus-hide-alert-boxes') + `</li></ul>
          </li>
          <hr>
-         <li>`+ getInputWithCheckbox('Hide product picture card','test2','test3') + `</li>
+         <li>`+ createInputWithCheckbox('Hide product picture card','pus-hide-product-picture') + `</li>
          <hr>
-         <li>`+ getInputWithCheckbox('Hide product characteristics card','test2','test3') + `
-         <ul><li>`+ getInputWithCheckbox('Product name','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Common name','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Quantity','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Brands','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Categories','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Labels, certifications, awards','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Manufacturing or processing places','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Traceability code','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Link to the product page...','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Best before date','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('City, state and country ','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Stores','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Countries where sold','test2','test3') + `</li></ul>
+         <li>`+ createInputWithCheckbox('Hide product characteristics card','pus-hide-product-char') + `
+         <ul><li>`+ createInputWithCheckbox('Product name','pus-hide-product-name') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Common name','pus-hide-common-name') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Quantity','pus-hide-quantity') + `</li></ul>
+         
+         <ul><li>`+ createInputWithCheckbox('Link to the product page...','pus-hide-link-to-product') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Best before date','pus-hide-best-before') + `</li></ul>
          </li>
          <hr>
-         <li>`+ getInputWithCheckbox('Hide ingredients card','test2','test3') + `
-         <ul><li>`+ getInputWithCheckbox('Origin of the product ','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Substances or products...','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Traces','test2','test3') + `</li></ul>
-         <ul><li>`+ getInputWithCheckbox('Origin of ingredients','test2','test3') + `</li></ul>
+         <li>`+ createInputWithCheckbox('Hide ingredients card','pus-hide-ingredients') + `
+         <ul><li>`+ createInputWithCheckbox('Origin of the product ','pus-hide-origin-product') + `</li></ul>
+         
          </li>
          <hr>
-         <li>`+ getInputWithCheckbox('Hide nutrition card','test2','test3') + `</li>
+         <li>`+ createInputWithCheckbox('Hide nutrition card','pus-hide-nutrition') + `</li>
          <hr>
-         <li>`+ getInputWithCheckbox('Hide packaging card','test2','test3') + `</li>
+         <li>`+ createInputWithCheckbox('Hide packaging card','pus-hide-packaging') + `</li>
         </ul>`;
+
+        /** Cant hide because of tags having no id
+         * <ul><li>`+ createInputWithCheckbox('Brands','pus-hide-brands') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Categories','pus-hide-categories') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Labels, certifications, awards','pus-hide-labels') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Manufacturing or processing places','pus-hide-manufactoring') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Traceability code','pus-hide-traceability') + `</li></ul>
+         * 
+          <ul><li>`+ createInputWithCheckbox('City, state and country ','pus-hide-city-state') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Stores','pus-hide-stores') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Countries where sold','pus-hide-countries-sold') + `</li></ul>
+
+         <ul><li>`+ createInputWithCheckbox('Substances or products...','pus-hide-substances') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Traces','pus-hide-traces') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Origin of ingredients','pus-hide-origin-ingredients') + `</li></ul>
+         */
      }
      
-     function getInputWithCheckbox(labelValue, inputClass, inputId){
-         return '<input class="'+inputClass+'" type="checkbox" id="'+inputId+'"><label for="'+inputId+'">'+labelValue+'</label>';
+     //generetes an input and also manages, stores, retrieves the checked state.
+     function createInputWithCheckbox(labelValue, inputId){
+         let checkbox = '<input type="checkbox" id="'+inputId+'"><label for="'+inputId+'">'+labelValue+'</label>';
+         return checkbox
      }
+
+     function getHideFieldsCheckboxesFromStorage(){
+        getHideFieldCheckboxFromStorage('pus-hide-misc-card',['#misc']);
+        getHideFieldCheckboxFromStorage('pus-hide-barcode-not-correct',['#label_new_code','#new_code']);
+        getHideFieldCheckboxFromStorage('pus-hide-product-taken-off',['#obsolete','label[for="obsolete"]']);
+        getHideFieldCheckboxFromStorage('pus-hide-withdrawal-date',['#obsolete_since_date','label[for="obsolete_since_date"]']);
+        getHideFieldCheckboxFromStorage('pus-hide-alert-boxes',['#warning_3rd_party_content','#licence_accept']);
+        getHideFieldCheckboxFromStorage('pus-hide-product-picture',['#product_image']);
+        getHideFieldCheckboxFromStorage('pus-hide-product-char',['#product_characteristics']);
+        getHideFieldCheckboxFromStorage('pus-hide-product-name',['[id^="product_name_"]','label[for^="product_name_"]']);
+        getHideFieldCheckboxFromStorage('pus-hide-common-name',['[id^="generic_name_"]','label[for^="generic_name_"]']);
+        getHideFieldCheckboxFromStorage('pus-hide-quantity',['#quantity','label[for="quantity"]']);
+        //getHideFieldCheckboxFromStorage('pus-hide-brands',['tags','label[for="brands"]']);
+        //getHideFieldCheckboxFromStorage('pus-hide-categories',['#misc','#product_image']);
+        //getHideFieldCheckboxFromStorage('pus-hide-labels',['#misc','#product_image']);
+        //getHideFieldCheckboxFromStorage('pus-hide-manufactoring',['#misc','#product_image']);
+        //getHideFieldCheckboxFromStorage('pus-hide-traceability',['#misc','#product_image']);
+        getHideFieldCheckboxFromStorage('pus-hide-link-to-product',['#link','label[for="link"]']);
+        getHideFieldCheckboxFromStorage('pus-hide-best-before',['#expiration_date','label[for="expiration_date"]']);
+        //getHideFieldCheckboxFromStorage('pus-hide-city-state',['#misc','#product_image']);
+        //getHideFieldCheckboxFromStorage('pus-hide-stores',['#misc','#product_image']);
+        //getHideFieldCheckboxFromStorage('pus-hide-countries-sold',['#misc','#product_image']);
+        getHideFieldCheckboxFromStorage('pus-hide-ingredients',['#ingredients']);
+        getHideFieldCheckboxFromStorage('pus-hide-origin-product',['[id^="origin_"]','label[for^="origin_"]']);
+        //getHideFieldCheckboxFromStorage('pus-hide-substances',['#misc','#product_image']);
+        //getHideFieldCheckboxFromStorage('pus-hide-traces',['#misc','#product_image']);
+        //getHideFieldCheckboxFromStorage('pus-hide-origin-ingredients',['#misc','#product_image']);
+        getHideFieldCheckboxFromStorage('pus-hide-nutrition',['#nutrition']);
+        getHideFieldCheckboxFromStorage('pus-hide-packaging',['#packaging_section']);
+     }
+
+     function getHideFieldCheckboxFromStorage(checkboxId,hideFieldsIds){
+        if(getLocalStorage(checkboxId) === "checked"){
+            $('#'+checkboxId).prop("checked", true);
+        }
+        
+        $('#'+checkboxId).change(function() {
+            if(this.checked){
+                 localStorage.setItem(checkboxId, "checked");
+            }else{
+                 localStorage.setItem(checkboxId, "unchecked");
+            }
+            toggleHideField(hideFieldsIds);
+        });
+     }
+
+     function toggleHideField(hideFieldsIds){
+        $.each(hideFieldsIds,function(index,element){
+            if($(element).hasClass('pus-hide-content')){
+                $(element).removeClass('pus-hide-content');
+                $(element).show();
+            }else{
+                $(element).addClass('pus-hide-content');
+                $(element).hide();
+            }
+        });
+        
+        
+     }
+     // END OF Hide Text Fields
 
 
     function toggleIngredientsMode() {
