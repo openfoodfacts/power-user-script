@@ -782,6 +782,8 @@ textarea.monospace {
             $("#pwe_hide_text_fields").click(function(){
                 toggleHideTextFieldsPopUp();
             });
+
+            loadHideTextFieldsFromStorage();
         }
 
 
@@ -1638,9 +1640,45 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 $(element).hide();
             }
         });
-        
-        
      }
+
+     function loadHideTextFieldsFromStorage(){
+        $( window ).on( "load", function() {
+            loadHideTextFieldFromStorage('pus-hide-misc-card',['#misc']);
+            loadHideTextFieldFromStorage('pus-hide-barcode-not-correct',['#label_new_code','#new_code']);
+            loadHideTextFieldFromStorage('pus-hide-product-taken-off',['#obsolete','label[for="obsolete"]']);
+            loadHideTextFieldFromStorage('pus-hide-withdrawal-date',['#obsolete_since_date','label[for="obsolete_since_date"]']);
+            loadHideTextFieldFromStorage('pus-hide-alert-boxes',['#warning_3rd_party_content','#licence_accept']);
+            loadHideTextFieldFromStorage('pus-hide-product-picture',['#product_image']);
+            loadHideTextFieldFromStorage('pus-hide-product-char',['#product_characteristics']);
+            loadHideTextFieldFromStorage('pus-hide-product-name',['[id^="product_name_"]','label[for^="product_name_"]']);
+            loadHideTextFieldFromStorage('pus-hide-common-name',['[id^="generic_name_"]','label[for^="generic_name_"]']);
+            loadHideTextFieldFromStorage('pus-hide-quantity',['#quantity','label[for="quantity"]']);
+            //loadHideTextFieldFromStorage('pus-hide-brands',['tags','label[for="brands"]']);
+            //loadHideTextFieldFromStorage('pus-hide-categories',['#misc','#product_image']);
+            //loadHideTextFieldFromStorage('pus-hide-labels',['#misc','#product_image']);
+            //loadHideTextFieldFromStorage('pus-hide-manufactoring',['#misc','#product_image']);
+            //loadHideTextFieldFromStorage('pus-hide-traceability',['#misc','#product_image']);
+            loadHideTextFieldFromStorage('pus-hide-link-to-product',['#link','label[for="link"]']);
+            loadHideTextFieldFromStorage('pus-hide-best-before',['#expiration_date','label[for="expiration_date"]']);
+            //loadHideTextFieldFromStorage('pus-hide-city-state',['#misc','#product_image']);
+            //loadHideTextFieldFromStorage('pus-hide-stores',['#misc','#product_image']);
+            //loadHideTextFieldFromStorage('pus-hide-countries-sold',['#misc','#product_image']);
+            loadHideTextFieldFromStorage('pus-hide-ingredients',['#ingredients']);
+            loadHideTextFieldFromStorage('pus-hide-origin-product',['[id^="origin_"]','label[for^="origin_"]']);
+            //loadHideTextFieldFromStorage('pus-hide-substances',['#misc','#product_image']);
+            //loadHideTextFieldFromStorage('pus-hide-traces',['#misc','#product_image']);
+            //loadHideTextFieldFromStorage('pus-hide-origin-ingredients',['#misc','#product_image']);
+            loadHideTextFieldFromStorage('pus-hide-nutrition',['#nutrition']);
+            loadHideTextFieldFromStorage('pus-hide-packaging',['#packaging_section']);
+        });
+          
+    }
+    function loadHideTextFieldFromStorage(checkboxId, hideFieldsIds){
+        if(getLocalStorage(checkboxId) === "checked"){
+            toggleHideField(hideFieldsIds);
+        }
+    }
      // END OF Hide Text Fields
 
 
@@ -1808,7 +1846,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 toggleListBarcodes();
             }
         });
-          
     }
 
 
