@@ -424,6 +424,15 @@ input.show_comparison {
     z-index: 200;
 }
 
+/* Hunger games logo search button */
+.list_hunger_games_logo_search {
+    position: absolute;
+    top: 0;
+    right: 3em;
+    padding: 0 1em;
+    border-radius: 0.3em;
+}
+
 /* ---------------- /Power User Script UI -------------------------- */
 
 
@@ -1822,7 +1831,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 	
     function toggleAlwaysShowBarcodes(){
-        
         if(getLocalStorage("pus-always-show-barcode") === "always"){
             $('#pus-always-show-barcode').prop("checked", true);
         }
