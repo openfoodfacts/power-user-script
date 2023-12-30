@@ -1547,13 +1547,23 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
          <ul><li>`+ createInputWithCheckbox('Product name','pus-hide-product-name') + `</li></ul>
          <ul><li>`+ createInputWithCheckbox('Common name','pus-hide-common-name') + `</li></ul>
          <ul><li>`+ createInputWithCheckbox('Quantity','pus-hide-quantity') + `</li></ul>
-         
+         <ul><li>`+ createInputWithCheckbox('Brands','pus-hide-brands') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Categories','pus-hide-categories') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Labels, certifications, awards','pus-hide-labels') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Manufacturing or processing places','pus-hide-manufactoring') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Traceability code','pus-hide-traceability') + `</li></ul>
          <ul><li>`+ createInputWithCheckbox('Link to the product page...','pus-hide-link-to-product') + `</li></ul>
          <ul><li>`+ createInputWithCheckbox('Best before date','pus-hide-best-before') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('City, state and country ','pus-hide-city-state') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Stores','pus-hide-stores') + `</li></ul>
+          <ul><li>`+ createInputWithCheckbox('Countries where sold','pus-hide-countries-sold') + `</li></ul>
          </li>
          <hr>
          <li>`+ createInputWithCheckbox('Hide ingredients card','pus-hide-ingredients') + `
          <ul><li>`+ createInputWithCheckbox('Origin of the product ','pus-hide-origin-product') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Substances or products...','pus-hide-substances') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Traces','pus-hide-traces') + `</li></ul>
+         <ul><li>`+ createInputWithCheckbox('Origin of ingredients','pus-hide-origin-ingredients') + `</li></ul>
          
          </li>
          <hr>
@@ -1561,22 +1571,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
          <hr>
          <li>`+ createInputWithCheckbox('Hide packaging card','pus-hide-packaging') + `</li>
         </ul>`;
-
-        /** Cant hide because of tags having no id
-         * <ul><li>`+ createInputWithCheckbox('Brands','pus-hide-brands') + `</li></ul>
-         <ul><li>`+ createInputWithCheckbox('Categories','pus-hide-categories') + `</li></ul>
-         <ul><li>`+ createInputWithCheckbox('Labels, certifications, awards','pus-hide-labels') + `</li></ul>
-         <ul><li>`+ createInputWithCheckbox('Manufacturing or processing places','pus-hide-manufactoring') + `</li></ul>
-         <ul><li>`+ createInputWithCheckbox('Traceability code','pus-hide-traceability') + `</li></ul>
-         * 
-          <ul><li>`+ createInputWithCheckbox('City, state and country ','pus-hide-city-state') + `</li></ul>
-         <ul><li>`+ createInputWithCheckbox('Stores','pus-hide-stores') + `</li></ul>
-         <ul><li>`+ createInputWithCheckbox('Countries where sold','pus-hide-countries-sold') + `</li></ul>
-
-         <ul><li>`+ createInputWithCheckbox('Substances or products...','pus-hide-substances') + `</li></ul>
-         <ul><li>`+ createInputWithCheckbox('Traces','pus-hide-traces') + `</li></ul>
-         <ul><li>`+ createInputWithCheckbox('Origin of ingredients','pus-hide-origin-ingredients') + `</li></ul>
-         */
      }
      
      //generetes an input and also manages, stores, retrieves the checked state.
@@ -1596,26 +1590,26 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         getHideFieldCheckboxFromStorage('pus-hide-product-name',['[id^="product_name_"]','label[for^="product_name_"]']);
         getHideFieldCheckboxFromStorage('pus-hide-common-name',['[id^="generic_name_"]','label[for^="generic_name_"]']);
         getHideFieldCheckboxFromStorage('pus-hide-quantity',['#quantity','label[for="quantity"]']);
-        //getHideFieldCheckboxFromStorage('pus-hide-brands',['tags','label[for="brands"]']);
-        //getHideFieldCheckboxFromStorage('pus-hide-categories',['#misc','#product_image']);
-        //getHideFieldCheckboxFromStorage('pus-hide-labels',['#misc','#product_image']);
-        //getHideFieldCheckboxFromStorage('pus-hide-manufactoring',['#misc','#product_image']);
-        //getHideFieldCheckboxFromStorage('pus-hide-traceability',['#misc','#product_image']);
+        getHideFieldCheckboxFromStorage('pus-hide-brands',['label[for="brands"]','label[for="brands"]'],true);
+        getHideFieldCheckboxFromStorage('pus-hide-categories',['label[for="categories"]','label[for="categories"]'],true);
+        getHideFieldCheckboxFromStorage('pus-hide-labels',['label[for="labels"]','label[for="labels"]'],true);
+        getHideFieldCheckboxFromStorage('pus-hide-manufactoring',['label[for="manufacturing_places"]','label[for="manufacturing_places"]'],true);
+        getHideFieldCheckboxFromStorage('pus-hide-traceability',['label[for="emb_codes"]','label[for="emb_codes"]'],true); 
         getHideFieldCheckboxFromStorage('pus-hide-link-to-product',['#link','label[for="link"]']);
         getHideFieldCheckboxFromStorage('pus-hide-best-before',['#expiration_date','label[for="expiration_date"]']);
-        //getHideFieldCheckboxFromStorage('pus-hide-city-state',['#misc','#product_image']);
-        //getHideFieldCheckboxFromStorage('pus-hide-stores',['#misc','#product_image']);
-        //getHideFieldCheckboxFromStorage('pus-hide-countries-sold',['#misc','#product_image']);
+        getHideFieldCheckboxFromStorage('pus-hide-city-state',['label[for="purchase_places"]','label[for="purchase_places"]'],true);
+        getHideFieldCheckboxFromStorage('pus-hide-stores',['label[for="stores"]','label[for="stores"]'],true);
+        getHideFieldCheckboxFromStorage('pus-hide-countries-sold',['label[for="countries"]','label[for="countries"]'],true);
         getHideFieldCheckboxFromStorage('pus-hide-ingredients',['#ingredients']);
         getHideFieldCheckboxFromStorage('pus-hide-origin-product',['[id^="origin_"]','label[for^="origin_"]']);
-        //getHideFieldCheckboxFromStorage('pus-hide-substances',['#misc','#product_image']);
-        //getHideFieldCheckboxFromStorage('pus-hide-traces',['#misc','#product_image']);
-        //getHideFieldCheckboxFromStorage('pus-hide-origin-ingredients',['#misc','#product_image']);
+        getHideFieldCheckboxFromStorage('pus-hide-substances',['label[for="allergens"]','label[for="allergens"]'],true);
+        getHideFieldCheckboxFromStorage('pus-hide-traces',['label[for="traces"]','label[for="traces"]'],true);
+        getHideFieldCheckboxFromStorage('pus-hide-origin-ingredients',['label[for="origins"]','label[for="origins"]'],true);
         getHideFieldCheckboxFromStorage('pus-hide-nutrition',['#nutrition']);
         getHideFieldCheckboxFromStorage('pus-hide-packaging',['#packaging_section']);
      }
 
-     function getHideFieldCheckboxFromStorage(checkboxId,hideFieldsIds){
+     function getHideFieldCheckboxFromStorage(checkboxId,hideFieldsIds,hasTags = false){
         if(getLocalStorage(checkboxId) === "checked"){
             $('#'+checkboxId).prop("checked", true);
         }
@@ -1626,18 +1620,21 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             }else{
                  localStorage.setItem(checkboxId, "unchecked");
             }
-            toggleHideField(hideFieldsIds);
+            toggleHideField(hideFieldsIds,hasTags);
         });
      }
 
-     function toggleHideField(hideFieldsIds){
+     function toggleHideField(hideFieldsIds,hasTags = false){
+         //$("label[for='brands']").next().hide();
         $.each(hideFieldsIds,function(index,element){
-            if($(element).hasClass('pus-hide-content')){
-                $(element).removeClass('pus-hide-content');
-                $(element).show();
+            var elemen = element;
+            if(hasTags && index===1){ elemen = $(elemen).next();}
+            if($(elemen).hasClass('pus-hide-content')){
+                $(elemen).removeClass('pus-hide-content');
+                $(elemen).show();
             }else{
-                $(element).addClass('pus-hide-content');
-                $(element).hide();
+                $(elemen).addClass('pus-hide-content');
+                $(elemen).hide();
             }
         });
      }
@@ -1654,29 +1651,29 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             loadHideTextFieldFromStorage('pus-hide-product-name',['[id^="product_name_"]','label[for^="product_name_"]']);
             loadHideTextFieldFromStorage('pus-hide-common-name',['[id^="generic_name_"]','label[for^="generic_name_"]']);
             loadHideTextFieldFromStorage('pus-hide-quantity',['#quantity','label[for="quantity"]']);
-            //loadHideTextFieldFromStorage('pus-hide-brands',['tags','label[for="brands"]']);
-            //loadHideTextFieldFromStorage('pus-hide-categories',['#misc','#product_image']);
-            //loadHideTextFieldFromStorage('pus-hide-labels',['#misc','#product_image']);
-            //loadHideTextFieldFromStorage('pus-hide-manufactoring',['#misc','#product_image']);
-            //loadHideTextFieldFromStorage('pus-hide-traceability',['#misc','#product_image']);
+            loadHideTextFieldFromStorage('pus-hide-brands',['label[for="brands"]','label[for="brands"]'],true);
+            loadHideTextFieldFromStorage('pus-hide-categories',['label[for="categories"]','label[for="categories"]'],true);
+            loadHideTextFieldFromStorage('pus-hide-labels',['label[for="labels"]','label[for="labels"]'],true);
+            loadHideTextFieldFromStorage('pus-hide-manufactoring',['label[for="manufacturing_places"]','label[for="manufacturing_places"]'],true); 
+            loadHideTextFieldFromStorage('pus-hide-traceability',['label[for="emb_codes"]','label[for="emb_codes"]'],true);
             loadHideTextFieldFromStorage('pus-hide-link-to-product',['#link','label[for="link"]']);
             loadHideTextFieldFromStorage('pus-hide-best-before',['#expiration_date','label[for="expiration_date"]']);
-            //loadHideTextFieldFromStorage('pus-hide-city-state',['#misc','#product_image']);
-            //loadHideTextFieldFromStorage('pus-hide-stores',['#misc','#product_image']);
-            //loadHideTextFieldFromStorage('pus-hide-countries-sold',['#misc','#product_image']);
+            loadHideTextFieldFromStorage('pus-hide-city-state',['label[for="purchase_places"]','label[for="purchase_places"]'],true);
+            loadHideTextFieldFromStorage('pus-hide-stores',['label[for="stores"]','label[for="stores"]'],true);
+            loadHideTextFieldFromStorage('pus-hide-countries-sold',['label[for="countries"]','label[for="countries"]'],true);
             loadHideTextFieldFromStorage('pus-hide-ingredients',['#ingredients']);
             loadHideTextFieldFromStorage('pus-hide-origin-product',['[id^="origin_"]','label[for^="origin_"]']);
-            //loadHideTextFieldFromStorage('pus-hide-substances',['#misc','#product_image']);
-            //loadHideTextFieldFromStorage('pus-hide-traces',['#misc','#product_image']);
-            //loadHideTextFieldFromStorage('pus-hide-origin-ingredients',['#misc','#product_image']);
+            loadHideTextFieldFromStorage('pus-hide-substances',['label[for="allergens"]','label[for="allergens"]'],true);
+            loadHideTextFieldFromStorage('pus-hide-traces',['label[for="traces"]','label[for="traces"]'],true);
+            loadHideTextFieldFromStorage('pus-hide-origin-ingredients',['label[for="origins"]','label[for="origins"]'],true);
             loadHideTextFieldFromStorage('pus-hide-nutrition',['#nutrition']);
             loadHideTextFieldFromStorage('pus-hide-packaging',['#packaging_section']);
         });
           
     }
-    function loadHideTextFieldFromStorage(checkboxId, hideFieldsIds){
+    function loadHideTextFieldFromStorage(checkboxId, hideFieldsIds, hasTags = false){
         if(getLocalStorage(checkboxId) === "checked"){
-            toggleHideField(hideFieldsIds);
+            toggleHideField(hideFieldsIds,hasTags);
         }
     }
      // END OF Hide Text Fields
