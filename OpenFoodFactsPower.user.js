@@ -433,6 +433,10 @@ input.show_comparison {
     border-radius: 0.3em;
 }
 
+.list_hunger_games_logo_search:hover {
+    background-color: #aaf;
+}
+
 /* ---------------- /Power User Script UI -------------------------- */
 
 
