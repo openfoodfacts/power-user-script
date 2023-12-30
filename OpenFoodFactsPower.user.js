@@ -428,7 +428,7 @@ input.show_comparison {
 .list_hunger_games_logo_search {
     position: absolute;
     top: 0;
-    right: 3em;
+    right: 2.5em;
     padding: 0 1em;
     border-radius: 0.3em;
 }
