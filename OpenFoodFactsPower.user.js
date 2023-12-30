@@ -1909,8 +1909,11 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     function showListBarcodes() {
+    
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
+            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
+            
             if ($("#barcode_draw_" + code).length) { return; }
 
             $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.list_product_a', this) );
