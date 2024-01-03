@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2024-01-03T11:20
+// @version     2024-01-03T13:20
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2024-01-03T11:20 - mode: " + pageType);
+    log("2024-01-03T13:20 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -790,7 +790,7 @@ textarea.monospace {
                 Copydata();
                 submitToPopup(analyse_form);
             });
-            
+
             $('body').append('<button id="pwe_hide_text_fields">Hide fields</button>');
             $("#pwe_hide_text_fields").click(function(){
                 toggleHideTextFieldsPopUp();
@@ -800,6 +800,28 @@ textarea.monospace {
         }
 
 
+        if (pageType === "edit" || pageType === "product view") {
+            var history = document.getElementById("history");
+            // add search field after "Changes history"
+            const historyInput = document.createElement("input");
+            history.after(historyInput);
+            var initalList = true;
+            // search term when the user fill a value
+            historyInput.addEventListener('input', function (input) {
+                const value = input.target.value;
+                let list = document.querySelector('#history_list').querySelectorAll('li');
+                // if search term is less than 2 characters, reset style and return
+                if (value.length < 2) {
+                    if (initalList === false) list.forEach((x) => { x.style.color = '' });
+                    initalList = true;
+                    return;
+                }
+                initalList = false;
+                let re = new RegExp(value, 'i');
+                // highlight line in blue or grey weither it contains the searched term or not
+                list.forEach((x) => { x.style.color = (re.test(x.textContent)) ?  'blue' : 'grey' });
+            });
+        }
 
         // Keyboard actions
         $(document).on('keydown', function(event) {
@@ -1506,7 +1528,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         //$("#power-user-help").prev().addClass('ui-state-information');
         return popup;
     }
-    
+
     // Toggle popup
     function togglePowerUserInfo(message) {
         if ($("#power-user-help").dialog( "isOpen" ) === true) {
@@ -1516,7 +1538,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             return showPowerUserInfo(message);
         }
     }
-    
+
     // Hide Text Fields
      function toggleHideTextFieldsPopUp() {
          if($("#power-user-hide-fields-popup").dialog("isOpen") === true){
@@ -1525,26 +1547,26 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
              return showPowerUserHideTextFieldsPopUp();
          }
      }
-     
+
      function showPowerUserHideTextFieldsPopUp(){
         if($("#power-user-hide-fields-popup").length === 0){
             $('body').append('<div id="power-user-hide-fields-popup" title="Hide text fields"></div>');
             $("#power-user-hide-fields-popup").dialog({autoOpen: false});
         }
-        
+
          var popUpContent = getPowerUserHideFieldsContent();
-            
+
         $("#power-user-hide-fields-popup").html(popUpContent);
 
         getHideFieldsCheckboxesFromStorage();
-            
+
         let popup = $("#power-user-hide-fields-popup").dialog({
             autoOpen: true,
             width: 400,
             dialogClass: 'dialogstyleperso',
-        }); 
+        });
     }
-     
+
      function getPowerUserHideFieldsContent(){
          return `<ul class="pus_hide_menu">
          <li>`+ createInputWithCheckbox('Hide misc card','pus-hide-misc-card') + `
@@ -1577,7 +1599,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
          <ul><li>`+ createInputWithCheckbox('Substances or products...','pus-hide-substances') + `</li></ul>
          <ul><li>`+ createInputWithCheckbox('Traces','pus-hide-traces') + `</li></ul>
          <ul><li>`+ createInputWithCheckbox('Origin of ingredients','pus-hide-origin-ingredients') + `</li></ul>
-         
+
          </li>
          <hr>
          <li>`+ createInputWithCheckbox('Hide nutrition card','pus-hide-nutrition') + `</li>
@@ -1585,7 +1607,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
          <li>`+ createInputWithCheckbox('Hide packaging card','pus-hide-packaging') + `</li>
         </ul>`;
      }
-     
+
      //generetes an input and also manages, stores, retrieves the checked state.
      function createInputWithCheckbox(labelValue, inputId){
          let checkbox = '<input type="checkbox" id="'+inputId+'"><label for="'+inputId+'">'+labelValue+'</label>';
@@ -1607,7 +1629,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         getHideFieldCheckboxFromStorage('pus-hide-categories',['label[for="categories"]','label[for="categories"]'],true);
         getHideFieldCheckboxFromStorage('pus-hide-labels',['label[for="labels"]','label[for="labels"]'],true);
         getHideFieldCheckboxFromStorage('pus-hide-manufactoring',['label[for="manufacturing_places"]','label[for="manufacturing_places"]'],true);
-        getHideFieldCheckboxFromStorage('pus-hide-traceability',['label[for="emb_codes"]','label[for="emb_codes"]'],true); 
+        getHideFieldCheckboxFromStorage('pus-hide-traceability',['label[for="emb_codes"]','label[for="emb_codes"]'],true);
         getHideFieldCheckboxFromStorage('pus-hide-link-to-product',['#link','label[for="link"]']);
         getHideFieldCheckboxFromStorage('pus-hide-best-before',['#expiration_date','label[for="expiration_date"]']);
         getHideFieldCheckboxFromStorage('pus-hide-city-state',['label[for="purchase_places"]','label[for="purchase_places"]'],true);
@@ -1626,7 +1648,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         if(getLocalStorage(checkboxId) === "checked"){
             $('#'+checkboxId).prop("checked", true);
         }
-        
+
         $('#'+checkboxId).change(function() {
             if(this.checked){
                  localStorage.setItem(checkboxId, "checked");
@@ -1667,7 +1689,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             loadHideTextFieldFromStorage('pus-hide-brands',['label[for="brands"]','label[for="brands"]'],true);
             loadHideTextFieldFromStorage('pus-hide-categories',['label[for="categories"]','label[for="categories"]'],true);
             loadHideTextFieldFromStorage('pus-hide-labels',['label[for="labels"]','label[for="labels"]'],true);
-            loadHideTextFieldFromStorage('pus-hide-manufactoring',['label[for="manufacturing_places"]','label[for="manufacturing_places"]'],true); 
+            loadHideTextFieldFromStorage('pus-hide-manufactoring',['label[for="manufacturing_places"]','label[for="manufacturing_places"]'],true);
             loadHideTextFieldFromStorage('pus-hide-traceability',['label[for="emb_codes"]','label[for="emb_codes"]'],true);
             loadHideTextFieldFromStorage('pus-hide-link-to-product',['#link','label[for="link"]']);
             loadHideTextFieldFromStorage('pus-hide-best-before',['#expiration_date','label[for="expiration_date"]']);
@@ -1682,7 +1704,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             loadHideTextFieldFromStorage('pus-hide-nutrition',['#nutrition']);
             loadHideTextFieldFromStorage('pus-hide-packaging',['#packaging_section']);
         });
-          
+
     }
     function loadHideTextFieldFromStorage(checkboxId, hideFieldsIds, hasTags = false){
         if(getLocalStorage(checkboxId) === "checked"){
@@ -1833,12 +1855,12 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
         });
     }
-	
+
     function toggleAlwaysShowBarcodes(){
         if(getLocalStorage("pus-always-show-barcode") === "always"){
             $('#pus-always-show-barcode').prop("checked", true);
         }
-        
+
         $('#pus-always-show-barcode').change(function() {
             if(this.checked){
                  localStorage.setItem('pus-always-show-barcode', "always");
@@ -1848,7 +1870,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             toggleListBarcodes();
         });
     }
-    
+
     function loadAlwaysShowBarcodesFromStorage(){
         $( window ).on( "load", function() {
             if(getLocalStorage("pus-always-show-barcode") === "always"){
@@ -1913,11 +1935,11 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     function showListBarcodes() {
-    
+
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
             $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
-            
+
             if ($("#barcode_draw_" + code).length) { return; }
 
             $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.list_product_a', this) );
@@ -1936,7 +1958,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                     break;
             }
 
-             try {            
+             try {
                 JsBarcode("#barcode_draw_" + code, code, {
                     format: barcode_format,
                     flat: true,
