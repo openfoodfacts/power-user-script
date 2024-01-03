@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2023-12-22T10:15
+// @version     2024-01-03T11:20
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2023-10-11T09:43 - mode: " + pageType);
+    log("2024-01-03T11:20 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -422,6 +422,19 @@ input.show_comparison {
     background-color:red;
     border-radius: 0 10px 10px 0;
     z-index: 200;
+}
+
+/* Hunger games logo search button */
+.list_hunger_games_logo_search {
+    position: absolute;
+    top: 0;
+    right: 2.5em;
+    padding: 0 1em;
+    border-radius: 0.3em;
+}
+
+.list_hunger_games_logo_search:hover {
+    background-color: #aaf;
 }
 
 /* ---------------- /Power User Script UI -------------------------- */
@@ -1822,7 +1835,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 	
     function toggleAlwaysShowBarcodes(){
-        
         if(getLocalStorage("pus-always-show-barcode") === "always"){
             $('#pus-always-show-barcode').prop("checked", true);
         }
@@ -1901,8 +1913,11 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     function showListBarcodes() {
+    
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
+            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
+            
             if ($("#barcode_draw_" + code).length) { return; }
 
             $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.list_product_a', this) );
