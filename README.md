@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2024-01-03T11:20
+* Products' list: add button to each product to open Hunger Game
 ### 2023-12-22T10:15
 * Add option to display barcodes by default
 ### 2023-09-15T22:59
