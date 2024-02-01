@@ -1156,6 +1156,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
         // detect product codes and add them as attributes
         addCodesToProductList();
+        showListButtons();
         loadAlwaysShowBarcodesFromStorage();
 
         // Show an easier to read number of products
@@ -1955,12 +1956,18 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
     }
 
-
     function hideListBarcodes() {
         $("svg.list_barcode").remove();
         $('ul[id^="products_"].search_results .with_barcode').removeClass('with_barcode');
     }
 
+    function showListButtons(){
+        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
+            let code = $(this).attr('data-code');
+            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
+            
+        });
+    }
 
     /**
      * The product list view has no easy way to get the barcode for each entry,
