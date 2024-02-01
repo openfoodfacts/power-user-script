@@ -429,7 +429,7 @@ input.show_comparison {
     position: absolute;
     top: 0;
     right: 2.5em;
-    padding: 0 1em;
+    padding: 0 0.5em;
     border-radius: 0.3em;
 }
 
