@@ -1983,10 +1983,36 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             let code = $(this).attr('data-code');
             $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
             
-            $(this).append('<a class="list_rotate_left" alt="Rotate left" title="Rotate left" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">rotate_left</span></a>');
-            $(this).append('<a class="list_rotate_right" alt="Rotate right" title="Rotate right" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">rotate_right</span></a>');
+            $(this).append('<a class="list_rotate_left" alt="Rotate left" title="Rotate left"><span class="material-icons">rotate_left</span></a>');
+            $(this).append('<a class="list_rotate_right" alt="Rotate right" title="Rotate right"><span class="material-icons">rotate_right</span></a>');
+
+            $(".list_rotate_left",$(this)).on("click", function(){
+                rotateImage('left',code);
+            });
+
+            $(".list_rotate_right",$(this)).on("click", function(){
+                rotateImage('right',code);
+            });
             
         });
+    }
+
+    function rotateImage(direction,code){
+        let angle = 90;
+        if(direction==='left'){
+            angle = 270;
+        }
+        
+        var _url = "/cgi/product_image_crop.pl?code=" + code + "&id=front&imgid=1&angle="+ angle;
+            $.getJSON(_url, function(data) {
+                url = data.image.display_url;
+                imageStatus =  data.status;
+                field = data.imagefield;
+                log("rotate url:" +url);
+                log("rotate status:" +imageStatus);
+                log("rotate field:" +field);
+                
+            });
     }
 
     /**
