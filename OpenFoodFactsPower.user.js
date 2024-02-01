@@ -433,8 +433,25 @@ input.show_comparison {
     border-radius: 0.3em;
 }
 
-.list_hunger_games_logo_search:hover {
+.list_hunger_games_logo_search:hover, .list_rotate_right:hover, .list_rotate_left:hover  {
     background-color: #aaf;
+}
+
+/* Rotate list product buttons */
+.list_rotate_right {
+    position: absolute;
+    top: 0;
+    right: 5em;
+    padding: 0 0.5em;
+    border-radius: 0.3em;
+}
+
+.list_rotate_left {
+    position: absolute;
+    top: 0;
+    right: 7.5em;
+    padding: 0 0.5em;
+    border-radius: 0.3em;
 }
 
 /* ---------------- /Power User Script UI -------------------------- */
@@ -1917,7 +1934,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
-            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
             
             if ($("#barcode_draw_" + code).length) { return; }
 
@@ -1961,10 +1977,14 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $('ul[id^="products_"].search_results .with_barcode').removeClass('with_barcode');
     }
 
+    //shows HungerGames logo, rotate buttons
     function showListButtons(){
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
             $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
+            
+            $(this).append('<a class="list_rotate_left" alt="Rotate left" title="Rotate left" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">rotate_left</span></a>');
+            $(this).append('<a class="list_rotate_right" alt="Rotate right" title="Rotate right" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">rotate_right</span></a>');
             
         });
     }
