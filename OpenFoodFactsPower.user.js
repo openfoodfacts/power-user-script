@@ -1991,10 +1991,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             let code = $(this).attr('data-code');
             $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
             
-            $(this).append('<a class="list_rotate_image_270" alt="Rotate 270°" title="Rotate 270°"><span class="material-icons">rotate_left</span></a>');
+            $(this).append('<a class="list_rotate_image_270" alt="Rotate 270°" title="Rotate 270°"><span class="material-icons" style="transform: rotate(-90deg);">rotate_left</span></a>');
             $(this).append('<a class="list_rotate_image_180" alt="Rotate 180°" title="Rotate 180°"><span class="material-icons">rotate_left</span></a>');
-            
-            $(this).append('<a class="list_rotate_image_90" alt="Rotate 90°" title="Rotate 90°"><span class="material-icons">rotate_right</span></a>');
+            $(this).append('<a class="list_rotate_image_90" alt="Rotate 90°" title="Rotate 90°"><span class="material-icons" style="transform: rotate(90deg);">rotate_right</span></a>');
 
             $(".list_rotate_image_270",$(this)).on("click", function(){
                 rotateImage(270,code);
