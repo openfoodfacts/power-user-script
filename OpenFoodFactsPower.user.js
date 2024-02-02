@@ -1992,20 +1992,24 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
             $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
-            $(this).append('<a class="list_rotate_image_270" alt="Rotate 270°" title="Rotate 270°"><span class="material-icons" style="transform: rotate(-90deg);">rotate_left</span></a>');
-            $(this).append('<a class="list_rotate_image_180" alt="Rotate 180°" title="Rotate 180°"><span class="material-icons">rotate_left</span></a>');
-            $(this).append('<a class="list_rotate_image_90" alt="Rotate 90°" title="Rotate 90°"><span class="material-icons" style="transform: rotate(90deg);">rotate_right</span></a>'); 
+            $(this).append('<a class="list_rotate_image_270" alt="Rotate at 270°" title="Rotate at 270°"><span class="material-icons" style="transform: rotate(-90deg);">rotate_left</span></a>');
+            $(this).append('<a class="list_rotate_image_180" alt="Rotate at 180°" title="Rotate at 180°"><span class="material-icons">rotate_left</span></a>');
+            $(this).append('<a class="list_rotate_image_90" alt="Rotate at 90°" title="Rotate at 90°"><span class="material-icons" style="transform: rotate(90deg);">rotate_right</span></a>'); 
 
+            var imageReference = $(".list_product_img", $(this)); 
             $(".list_rotate_image_270",$(this)).on("click", function(){
                 rotateImage(270,code,languageCode);
+                imageReference.css('transform', 'rotate(270deg)');
             });
 
             $(".list_rotate_image_180",$(this)).on("click", function(){
                 rotateImage(180,code,languageCode);
+                imageReference.css('transform', 'rotate(180deg)');
             });
 
             $(".list_rotate_image_90",$(this)).on("click", function(){
                 rotateImage(90,code,languageCode);
+                imageReference.css('transform', 'rotate(90deg)');
             });
         });
     }
