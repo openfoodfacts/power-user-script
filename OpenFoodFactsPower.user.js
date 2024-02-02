@@ -424,7 +424,7 @@ input.show_comparison {
     z-index: 200;
 }
 
-/* Hunger games logo search button */
+/* --------------- Hunger games logo search button --------------- */
 .list_hunger_games_logo_search {
     position: absolute;
     top: 0;
@@ -433,12 +433,12 @@ input.show_comparison {
     border-radius: 0.3em;
 }
 
-.list_hunger_games_logo_search:hover, .list_rotate_right:hover, .list_rotate_left:hover  {
+.list_hunger_games_logo_search:hover, .list_rotate_image_90:hover, .list_rotate_image_180:hover, .list_rotate_image_270:hover  {
     background-color: #aaf;
 }
 
-/* Rotate list product buttons */
-.list_rotate_right {
+/* --------------- Rotate list product buttons --------------- */
+.list_rotate_image_90 {
     position: absolute;
     top: 0;
     right: 5em;
@@ -446,10 +446,18 @@ input.show_comparison {
     border-radius: 0.3em;
 }
 
-.list_rotate_left {
+.list_rotate_image_180 {
     position: absolute;
     top: 0;
     right: 7.5em;
+    padding: 0 0.5em;
+    border-radius: 0.3em;
+}
+
+.list_rotate_image_270 {
+    position: absolute;
+    top: 0;
+    right: 10em;
     padding: 0 0.5em;
     border-radius: 0.3em;
 }
@@ -1983,27 +1991,28 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             let code = $(this).attr('data-code');
             $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
             
-            $(this).append('<a class="list_rotate_left" alt="Rotate left" title="Rotate left"><span class="material-icons">rotate_left</span></a>');
-            $(this).append('<a class="list_rotate_right" alt="Rotate right" title="Rotate right"><span class="material-icons">rotate_right</span></a>');
+            $(this).append('<a class="list_rotate_image_270" alt="Rotate 270°" title="Rotate 270°"><span class="material-icons">rotate_left</span></a>');
+            $(this).append('<a class="list_rotate_image_180" alt="Rotate 180°" title="Rotate 180°"><span class="material-icons">rotate_left</span></a>');
+            
+            $(this).append('<a class="list_rotate_image_90" alt="Rotate 90°" title="Rotate 90°"><span class="material-icons">rotate_right</span></a>');
 
-            $(".list_rotate_left",$(this)).on("click", function(){
-                rotateImage('left',code);
+            $(".list_rotate_image_270",$(this)).on("click", function(){
+                rotateImage(270,code);
             });
 
-            $(".list_rotate_right",$(this)).on("click", function(){
-                rotateImage('right',code);
+            $(".list_rotate_image_180",$(this)).on("click", function(){
+                rotateImage(180,code);
+            });
+
+            $(".list_rotate_image_90",$(this)).on("click", function(){
+                rotateImage(90,code);
             });
             
         });
     }
 
-    function rotateImage(direction,code){
-        let angle = 90;
-        if(direction==='left'){
-            angle = 270;
-        }
-        
-        var _url = "/cgi/product_image_crop.pl?code=" + code + "&id=front&imgid=1&angle="+ angle;
+    function rotateImage(angle,code){
+        var _url = "/cgi/product_image_crop.pl?code=" + code + "&id=front_en&imgid=1&angle="+ angle;
             $.getJSON(_url, function(data) {
                 url = data.image.display_url;
                 imageStatus =  data.status;
