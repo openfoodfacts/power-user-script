@@ -1987,31 +1987,40 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
     //shows HungerGames logo, rotate buttons
     function showListButtons(){
+        let languageCode = getSubdomainLanguageCode();
+
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
             $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
-            
             $(this).append('<a class="list_rotate_image_270" alt="Rotate 270°" title="Rotate 270°"><span class="material-icons" style="transform: rotate(-90deg);">rotate_left</span></a>');
             $(this).append('<a class="list_rotate_image_180" alt="Rotate 180°" title="Rotate 180°"><span class="material-icons">rotate_left</span></a>');
-            $(this).append('<a class="list_rotate_image_90" alt="Rotate 90°" title="Rotate 90°"><span class="material-icons" style="transform: rotate(90deg);">rotate_right</span></a>');
+            $(this).append('<a class="list_rotate_image_90" alt="Rotate 90°" title="Rotate 90°"><span class="material-icons" style="transform: rotate(90deg);">rotate_right</span></a>'); 
 
             $(".list_rotate_image_270",$(this)).on("click", function(){
-                rotateImage(270,code);
+                rotateImage(270,code,languageCode);
             });
 
             $(".list_rotate_image_180",$(this)).on("click", function(){
-                rotateImage(180,code);
+                rotateImage(180,code,languageCode);
             });
 
             $(".list_rotate_image_90",$(this)).on("click", function(){
-                rotateImage(90,code);
+                rotateImage(90,code,languageCode);
             });
-            
         });
     }
 
-    function rotateImage(angle,code){
-        var _url = "/cgi/product_image_crop.pl?code=" + code + "&id=front_en&imgid=1&angle="+ angle;
+    //if 'ru-en'->ru while $("html").attr('lang'); returns en
+    function getSubdomainLanguageCode(){
+        var subdomain = window.location.href.split('.')[0].split('//')[1];
+        if(subdomain === 'world'){ return 'en';}
+        if(subdomain.length === 2){ return subdomain;}
+
+        return subdomain.split('-')[0];
+    }
+
+    function rotateImage(angle,code,languageCode){
+        var _url = "/cgi/product_image_crop.pl?code=" + code + "&id=front_"+languageCode+"&imgid=1&angle="+ angle;
             $.getJSON(_url, function(data) {
                 url = data.image.display_url;
                 imageStatus =  data.status;
@@ -2019,7 +2028,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 log("rotate url:" +url);
                 log("rotate status:" +imageStatus);
                 log("rotate field:" +field);
-                
             });
     }
 
