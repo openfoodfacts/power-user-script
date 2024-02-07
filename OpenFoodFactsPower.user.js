@@ -2013,7 +2013,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let barcode = $(this).attr('data-code');
             $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+barcode+'"><span class="material-icons">image_search</span></a>');
-            $(this).append('<a class="list_rotate_image_270" alt="Rotate at 270°" title="Rotate at 270°"><span class="material-icons" style="transform: rotate(-90deg);">rotate_left</span></a>');
+            $(this).append('<a class="list_rotate_image_270" alt="Rotate at -90°" title="Rotate at -90°"><span class="material-icons"  style="transform: scaleX(-1);">redo</span></a>');
             $(this).append('<a class="list_rotate_image_180" alt="Rotate at 180°" title="Rotate at 180°"><span class="material-icons">rotate_left</span></a>');
             $(this).append('<a class="list_rotate_image_90" alt="Rotate at 90°" title="Rotate at 90°"><span class="material-icons" style="transform: rotate(90deg);">rotate_right</span></a>'); 
 
