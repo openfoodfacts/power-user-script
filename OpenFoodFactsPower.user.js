@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2024-01-03T13:20
+// @version     2024-02-02T20:39
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -59,7 +59,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2024-01-03T13:20 - mode: " + pageType);
+    log("2024-02-02T20:39 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -424,17 +424,42 @@ input.show_comparison {
     z-index: 200;
 }
 
-/* Hunger games logo search button */
+/* --------------- Hunger games logo search button --------------- */
 .list_hunger_games_logo_search {
     position: absolute;
     top: 0;
     right: 2.5em;
-    padding: 0 1em;
+    padding: 0 0.5em;
     border-radius: 0.3em;
 }
 
-.list_hunger_games_logo_search:hover {
+.list_hunger_games_logo_search:hover, .list_rotate_image_90:hover, .list_rotate_image_180:hover, .list_rotate_image_270:hover  {
     background-color: #aaf;
+}
+
+/* --------------- Rotate list product buttons --------------- */
+.list_rotate_image_90 {
+    position: absolute;
+    top: 0;
+    right: 5em;
+    padding: 0 0.5em;
+    border-radius: 0.3em;
+}
+
+.list_rotate_image_180 {
+    position: absolute;
+    top: 0;
+    right: 7.5em;
+    padding: 0 0.5em;
+    border-radius: 0.3em;
+}
+
+.list_rotate_image_270 {
+    position: absolute;
+    top: 0;
+    right: 10em;
+    padding: 0 0.5em;
+    border-radius: 0.3em;
 }
 
 /* ---------------- /Power User Script UI -------------------------- */
@@ -1178,6 +1203,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
         // detect product codes and add them as attributes
         addCodesToProductList();
+        showListButtons();
         loadAlwaysShowBarcodesFromStorage();
 
         // Show an easier to read number of products
@@ -1938,8 +1964,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
-            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+code+'"><span class="material-icons">image_search</span></a>');
-
             if ($("#barcode_draw_" + code).length) { return; }
 
             $('<svg id="barcode_draw_' + code + '" class="list_barcode"></svg>').insertBefore( $('a.list_product_a', this) );
@@ -1977,12 +2001,87 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
     }
 
-
     function hideListBarcodes() {
         $("svg.list_barcode").remove();
         $('ul[id^="products_"].search_results .with_barcode').removeClass('with_barcode');
     }
 
+    //shows HungerGames logo, rotate buttons
+    function showListButtons(){
+        let languageCode = getSubdomainLanguageCode();
+
+        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
+            let barcode = $(this).attr('data-code');
+            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+barcode+'"><span class="material-icons">image_search</span></a>');
+            $(this).append('<a class="list_rotate_image_270" alt="Rotate at -90°" title="Rotate at -90°"><span class="material-icons"  style="transform: scaleX(-1);">redo</span></a>');
+            $(this).append('<a class="list_rotate_image_180" alt="Rotate at 180°" title="Rotate at 180°"><span class="material-icons">rotate_right</span></a>');
+            $(this).append('<a class="list_rotate_image_90" alt="Rotate at 90°" title="Rotate at 90°"><span class="material-icons">redo</span></a>');
+
+            var image_reference = $(".list_product_img", $(this)); 
+            $(".list_rotate_image_270",$(this)).on("click", function(){
+                getFrontImagesToRotate(270,barcode,languageCode);
+                image_reference.css('transform', 'rotate(270deg)');
+            });
+
+            $(".list_rotate_image_180",$(this)).on("click", function(){
+                getFrontImagesToRotate(180,barcode,languageCode);
+                image_reference.css('transform', 'rotate(180deg)');
+            });
+
+            $(".list_rotate_image_90",$(this)).on("click", function(){
+                getFrontImagesToRotate(90,barcode,languageCode);
+                image_reference.css('transform', 'rotate(90deg)');
+            });
+        });
+    }
+
+    //if 'ru-en'->ru while $("html").attr('lang'); returns en
+    function getSubdomainLanguageCode(){
+        var subdomain = window.location.href.split('.')[0].split('//')[1];
+        if(subdomain === 'world'){ return 'en';}
+        if(subdomain.length === 2){ return subdomain;}
+
+        return subdomain.split('-')[0];
+    }
+
+    /*gets all the front_lc images available and then compares it to the subdomain.
+    For example if you are on ru.openfoodfacts and a product only has front_en then that picture will be rotated 
+    instead of creating a new rotated front_ru */
+    function getFrontImagesToRotate(angle,barcode,languageCode){
+        var _productUrl = "/api/v2/product/" + barcode + ".json?fields=images";
+        $.getJSON(_productUrl,function(productData){
+            let productImages = productData.product.images;
+            var frontImages = [];
+            if(productImages){
+                $.each(productImages,function(key,value){
+                    let startsWithFront = key.toString().startsWith('front');
+                    if(startsWithFront){
+                        frontImages.push(key);
+                    }
+                });
+                if(frontImages.length>0){
+                    let includesLanguageCode = frontImages.includes("front_"+languageCode);
+                    var front_lc = frontImages[0];
+
+                    if(includesLanguageCode){
+                        front_lc = "front_"+languageCode;
+                    }
+
+                    let image_id = productImages[front_lc].imgid;
+                    //let angle = productImages[front_lc].angle;
+                    rotateImage(angle,barcode,front_lc,image_id);
+                }
+                
+            }
+        });
+    }
+
+    function rotateImage(angle,barcode,front_lc,image_id){
+        var _url = "/cgi/product_image_crop.pl?code=" + barcode + "&id="+front_lc+"&imgid="+image_id+"&angle="+angle;
+        $.getJSON(_url, function(data) {
+            log("rotate status:" +data.status);
+        });
+    }
 
     /**
      * The product list view has no easy way to get the barcode for each entry,
