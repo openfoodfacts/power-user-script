@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2024-02-02T20:39
+// @version     2024-02-16T13:40
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -827,25 +827,27 @@ textarea.monospace {
 
         if (pageType === "edit" || pageType === "product view") {
             var history = document.getElementById("history");
-            // add search field after "Changes history"
-            const historyInput = document.createElement("input");
-            history.after(historyInput);
-            var initalList = true;
-            // search term when the user fill a value
-            historyInput.addEventListener('input', function (input) {
-                const value = input.target.value;
-                let list = document.querySelector('#history_list').querySelectorAll('li');
-                // if search term is less than 2 characters, reset style and return
-                if (value.length < 2) {
-                    if (initalList === false) list.forEach((x) => { x.style.color = '' });
-                    initalList = true;
-                    return;
-                }
-                initalList = false;
-                let re = new RegExp(value, 'i');
-                // highlight line in blue or grey weither it contains the searched term or not
-                list.forEach((x) => { x.style.color = (re.test(x.textContent)) ?  'blue' : 'grey' });
-            });
+            if (history !== null) {
+                // add search field after "Changes history"
+                const historyInput = document.createElement("input");
+                history.after(historyInput);
+                var initalList = true;
+                // search term when the user fill a value
+                historyInput.addEventListener('input', function (input) {
+                    const value = input.target.value;
+                    let list = document.querySelector('#history_list').querySelectorAll('li');
+                    // if search term is less than 2 characters, reset style and return
+                    if (value.length < 2) {
+                        if (initalList === false) list.forEach((x) => { x.style.color = '' });
+                        initalList = true;
+                        return;
+                    }
+                    initalList = false;
+                    let re = new RegExp(value, 'i');
+                    // highlight line in blue or grey weither it contains the searched term or not
+                    list.forEach((x) => { x.style.color = (re.test(x.textContent)) ?  'blue' : 'grey' });
+                });
+            }
         }
 
         // Keyboard actions
