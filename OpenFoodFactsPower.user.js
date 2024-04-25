@@ -423,6 +423,10 @@ input.show_comparison {
     border-radius: 0 10px 10px 0;
     z-index: 200;
 }
+/* --------------- List buttons size --------------- */
+#list_button {
+    font-size: 20px;
+}
 
 /* --------------- Hunger games logo search button --------------- */
 .list_hunger_games_logo_search {
@@ -1956,7 +1960,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function showListHungerGamesButtons(){
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let barcode = $(this).attr('data-code');
-            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+barcode+'"><span class="material-icons">image_search</span></a>');
+            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+barcode+'"><span class="material-icons" id="list_button">image_search</span></a>');
         });
     }
     
@@ -1965,9 +1969,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let barcode = $(this).attr('data-code');
-            $(this).append('<a class="list_rotate_image_270" alt="Rotate at -90°" title="Rotate at -90°"><span class="material-icons"  style="transform: scaleX(-1);">redo</span></a>');
-            $(this).append('<a class="list_rotate_image_180" alt="Rotate at 180°" title="Rotate at 180°"><span class="material-icons">rotate_right</span></a>');
-            $(this).append('<a class="list_rotate_image_90" alt="Rotate at 90°" title="Rotate at 90°"><span class="material-icons">redo</span></a>');
+            $(this).append('<a class="list_rotate_image_270" alt="Rotate at -90°" title="Rotate at -90°"><span class="material-icons" id="list_button" style="transform: scaleX(-1);">redo</span></a>');
+            $(this).append('<a class="list_rotate_image_180" alt="Rotate at 180°" title="Rotate at 180°"><span class="material-icons" id="list_button">rotate_right</span></a>');
+            $(this).append('<a class="list_rotate_image_90" alt="Rotate at 90°" title="Rotate at 90°"><span class="material-icons" id="list_button">redo</span></a>');
 
             var image_reference = $(".list_product_img", $(this)); 
             $(".list_rotate_image_270",$(this)).on("click", function(){
