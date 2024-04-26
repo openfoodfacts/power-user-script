@@ -1216,10 +1216,14 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         // detect product codes and add them as attributes
         addCodesToProductList();
         showListButtonsByDefault();
-        loadASettingFromStorage('pus-always-show-barcode',toggleListBarcodes);
-        loadASettingFromStorage('pus-rotation-buttons',toggleRotationButtons);
-        loadASettingFromStorage('pus-hunger-games-logo-search',toggleHungerGamesButton);
-        loadASettingFromStorage('pus-quick-categories',null);
+        $( window ).on( "load", function() {
+            loadASettingFromStorage('pus-always-show-barcode',toggleListBarcodes);
+            loadASettingFromStorage('pus-rotation-buttons',toggleRotationButtons);
+            loadASettingFromStorage('pus-hunger-games-logo-search',toggleHungerGamesButton);
+            loadASettingFromStorage('pus-quick-categories',null);
+            listenToFoodPreferences();
+        });
+        
 
         // Show an easier to read number of products
         /*
@@ -1914,11 +1918,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     function loadASettingFromStorage(checkboxId, toggleFunctionToCall){
-        $( window ).on( "load", function() {
-            if(getLocalStorage(checkboxId) === "enabled"){
-                toggleFunctionToCall();
-            }
-        });
+        if(getLocalStorage(checkboxId) === "enabled"){
+            toggleFunctionToCall();
+        }
     }
 
 
@@ -1954,6 +1956,19 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         if(!getLocalStorage('pus-hunger-games-logo-search')){
             localStorage.setItem('pus-hunger-games-logo-search', "enabled");
         }
+    }
+    
+    /**  listens to Food preference changes, since any change there redraws the whole product list
+     * making the list buttons disappear
+    */
+    function listenToFoodPreferences(){
+        $('#preferences_switch_in_list_of_products_switch input').change(function(){
+            addCodesToProductList();
+            loadASettingFromStorage('pus-always-show-barcode',toggleListBarcodes);
+            loadASettingFromStorage('pus-rotation-buttons',toggleRotationButtons);
+            loadASettingFromStorage('pus-hunger-games-logo-search',toggleHungerGamesButton);
+            loadASettingFromStorage('pus-quick-categories',null);
+        });
     }
 
     //shows HungerGames logo
