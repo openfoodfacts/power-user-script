@@ -437,7 +437,7 @@ input.show_comparison {
     border-radius: 0.3em;
 }
 
-.list_hunger_games_logo_search:hover, .list_rotate_image_90:hover, .list_rotate_image_180:hover, .list_rotate_image_270:hover  {
+.list_hunger_games_logo_search:hover, .list_rotate_image_90:hover, .list_rotate_image_180:hover, .list_rotate_image_270:hover, .list_quick_category_1:hover, .list_quick_category_2:hover  {
     background-color: #aaf;
 }
 
@@ -465,6 +465,35 @@ input.show_comparison {
     padding: 0 0.5em;
     border-radius: 0.3em;
 }
+
+/* --------------- List quick category --------------- */
+.list_categories_card {
+    position: sticky;
+    top: 10em;
+    left:0;
+    border-radius: 8px;
+    padding: 0;
+    background-color: #fff;
+    display: flex;
+    width: 2em;
+    flex-direction: column;
+    box-shadow: 0 4px 4px rgba(0,0,0,.25);
+}
+
+.list_quick_category_1 {
+    position: absolute;
+    top: 4em;
+    left: 0;
+    border-radius: 0.3em;
+}
+
+.list_quick_category_2 {
+    position: absolute;
+    top: 6em;
+    left: 0;
+    border-radius: 0.3em;
+}
+
 
 /* ---------------- /Power User Script UI -------------------------- */
 
@@ -1210,7 +1239,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             toggleASetting('pus-always-show-barcode',toggleListBarcodes);
             toggleASetting('pus-rotation-buttons',toggleRotationButtons);
             toggleASetting('pus-hunger-games-logo-search',toggleHungerGamesButton);
-            toggleASetting('pus-quick-categories',null);
+            toggleASetting('pus-quick-categories',toggleQuickCategories);
         });
 
         // detect product codes and add them as attributes
@@ -1220,7 +1249,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             loadASettingFromStorage('pus-always-show-barcode',toggleListBarcodes);
             loadASettingFromStorage('pus-rotation-buttons',toggleRotationButtons);
             loadASettingFromStorage('pus-hunger-games-logo-search',toggleHungerGamesButton);
-            loadASettingFromStorage('pus-quick-categories',null);
+            loadASettingFromStorage('pus-quick-categories',toggleQuickCategories);
         });
         setTimeout(function(){
             listenToFoodPreferences();
@@ -1934,6 +1963,16 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         }
     }
 
+    function toggleQuickCategories(){
+        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
+            let code = $(this).attr('data-code');
+
+            $('<div id="quick_category_' + code + '" class="list_categories_card"></div>').insertBefore( $('a.list_product_a', this) );
+        
+            $('#quick_category_' + code,$(this)).append('<a class="list_quick_category_1" alt="Pets" title="Pets"><span class="material-icons" id="list_button">pets</span></a>');
+            $('#quick_category_' + code,$(this)).append('<a class="list_quick_category_2" alt="Beauty" title="Beauty"><span class="material-icons" id="list_button">emoji_nature</span></a>');
+        });
+    }
     /**
      * Show/hide rotation icons in list view
      */
