@@ -1221,8 +1221,10 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             loadASettingFromStorage('pus-rotation-buttons',toggleRotationButtons);
             loadASettingFromStorage('pus-hunger-games-logo-search',toggleHungerGamesButton);
             loadASettingFromStorage('pus-quick-categories',null);
-            listenToFoodPreferences();
         });
+        setTimeout(function(){
+            listenToFoodPreferences();
+        }, 5000);
         
 
         // Show an easier to read number of products
