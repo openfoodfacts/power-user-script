@@ -28,6 +28,7 @@ Just click on the Raw button and your script manager will ask you if you want to
 # Changelog
 ### 2024-06-19T14:18
 * Exclude prices.openfoodfacts.org
+* Fix kJ/kcal ratio to 4.2 instead of 4.4
 ### 2024-02-02T20:39
 * Product list: rotate images
 ### 2024-01-03T13:20

@@ -2757,17 +2757,17 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         log("checkKJ() - kJ: " + j + ", kcal: " + c);
         // If either KJ or Kcal does not exist: compute the missing value
         if (j == "" && c != "") {
-            const cj = (c * 4.4).toFixed();
+            const cj = (c * 4.2).toFixed();
             document.getElementById('kjtokcal').title = "Reverse the kj/kcal values -- kcal: " + c + "; computed kJ: ~" + cj;
         }
         if (c == "" && j != "") {
-            const cc = (j / 4.4).toFixed();
+            const cc = (j / 4.2).toFixed();
             document.getElementById('kjtokcal').title = "Reverse the kj/kcal values -- kJ: " + j + "; computed kcal: ~" + cc;
         }
         if (c != "" && j != "") {
             const ratio = (j / c).toFixed(1);
-            document.getElementById("kjtokcal").title = "Reverse the kj/kcal values -- ratio Kj/kcal (should be 4.4): " + ratio;
-            (ratio >= 4.8 || ratio <= 4.0) ?
+            document.getElementById("kjtokcal").title = "Reverse the kj/kcal values -- ratio Kj/kcal (should be 4.2): " + ratio;
+            (ratio >= 4.6 || ratio <= 4.0) ?
                 document.getElementById('kjtokcal').style.color = "red" : document.getElementById('kjtokcal').style.color = "black";
         }
         // CAREFUL: all of this might be false if values are per serving!!!!
