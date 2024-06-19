@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2024-06-19T14:18
+* Exclude prices.openfoodfacts.org
 ### 2024-02-02T20:39
 * Product list: rotate images
 ### 2024-01-03T13:20
