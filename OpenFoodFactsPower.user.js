@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2024-06-19T14:18
+// @version     2024-08-27T19:25
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -29,6 +29,7 @@
 // @exclude     https://contents.openfoodfacts.org/*
 // @exclude     https://mirabelle.openfoodfacts.org/*
 // @exclude     https://prices.openfoodfacts.org/*
+// @exclude     https://search.openfoodfacts.org/*
 //
 // @icon        http://world.openfoodfacts.org/favicon.ico
 // @updateURL   https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
@@ -60,7 +61,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2024-06-19T14:18 - mode: " + pageType);
+    log("2024-08-27T19:25 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -723,6 +724,7 @@ textarea.monospace {
 
             // https://fr.openfoodfacts.org/etat/marques-a-completer/code/506036745xxxx&json=1
             var sameBrandProductsJSON = sameBrandProductsURL + "&json=1";
+            log("Get JSON from: " + sameBrandProductsJSON);
             $.getJSON(sameBrandProductsJSON, function(data) {
                 var nbOfSameBrandProducts = data.count;
                 log("nbOfSameBrandProducts: " + nbOfSameBrandProducts);
@@ -1110,7 +1112,6 @@ textarea.monospace {
             '<p><strong>Product issues:</strong></p>' +
             '<ul id="issues" class="row" style="margin-bottom: 0.2rem; padding-left: 1rem;">' +
             '</ul>' +
-            '<div class="row">→ <a href="'+editURL+'">Re-edit current product</a></div>' +
             '<div id="furthermore" class="row" style="margin-top: 10px;"><strong>Going further:</strong></div>' +
             '<ul id="going-further" class="row" style="padding-left: 1rem;">' +
             '</ul>' +
