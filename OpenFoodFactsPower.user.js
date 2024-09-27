@@ -425,6 +425,10 @@ input.show_comparison {
     border-radius: 0 10px 10px 0;
     z-index: 200;
 }
+/* --------------- List buttons size --------------- */
+#list_button {
+    font-size: 20px;
+}
 
 /* --------------- Hunger games logo search button --------------- */
 .list_hunger_games_logo_search {
@@ -435,7 +439,7 @@ input.show_comparison {
     border-radius: 0.3em;
 }
 
-.list_hunger_games_logo_search:hover, .list_rotate_image_90:hover, .list_rotate_image_180:hover, .list_rotate_image_270:hover  {
+.list_hunger_games_logo_search:hover, .list_rotate_image_90:hover, .list_rotate_image_180:hover, .list_rotate_image_270:hover, .list_quick_category_1:hover, .list_quick_category_2:hover  {
     background-color: #aaf;
 }
 
@@ -463,6 +467,35 @@ input.show_comparison {
     padding: 0 0.5em;
     border-radius: 0.3em;
 }
+
+/* --------------- List quick category --------------- */
+.list_categories_card {
+    position: sticky;
+    top: 10em;
+    left:0;
+    border-radius: 8px;
+    padding: 0;
+    background-color: #fff;
+    display: flex;
+    width: 2em;
+    flex-direction: column;
+    box-shadow: 0 4px 4px rgba(0,0,0,.25);
+}
+
+.list_quick_category_1 {
+    position: absolute;
+    top: 4em;
+    left: 0;
+    border-radius: 0.3em;
+}
+
+.list_quick_category_2 {
+    position: absolute;
+    top: 6em;
+    left: 0;
+    border-radius: 0.3em;
+}
+
 
 /* ---------------- /Power User Script UI -------------------------- */
 
@@ -1189,6 +1222,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             <hr>
             <li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>
             <li><input class="pus-checkbox" type="checkbox" id="pus-always-show-barcode"><label for="pus-always-show-barcode">Always show barcodes</label></li>
+            <li><input class="pus-checkbox" type="checkbox" id="pus-rotation-buttons"><label for="pus-rotation-buttons">Image rotation buttons</label></li>
+            <li><input class="pus-checkbox" type="checkbox" id="pus-hunger-games-logo-search"><label for="pus-hunger-games-logo-search">Hunger Games logo search button</label></li>
+            <li><input class="pus-checkbox" type="checkbox" id="pus-quick-categories"><label for="pus-quick-categories">Quick set categories</label></li>
             <hr>
             <li>(Shift+L): List edit mode</li>
             <li>(Shift+b): Show/hide barcodes</li>
@@ -1202,13 +1238,25 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $("#pwe_help").click(function(){
             togglePowerUserInfo(listhelp);
             toggleIngredientsMonospace();
-            toggleAlwaysShowBarcodes();
+            toggleASetting('pus-always-show-barcode',toggleListBarcodes);
+            toggleASetting('pus-rotation-buttons',toggleRotationButtons);
+            toggleASetting('pus-hunger-games-logo-search',toggleHungerGamesButton);
+            toggleASetting('pus-quick-categories',toggleQuickCategories);
         });
 
         // detect product codes and add them as attributes
         addCodesToProductList();
-        showListButtons();
-        loadAlwaysShowBarcodesFromStorage();
+        showListButtonsByDefault();
+        $( window ).on( "load", function() {
+            loadASettingFromStorage('pus-always-show-barcode',toggleListBarcodes);
+            loadASettingFromStorage('pus-rotation-buttons',toggleRotationButtons);
+            loadASettingFromStorage('pus-hunger-games-logo-search',toggleHungerGamesButton);
+            loadASettingFromStorage('pus-quick-categories',toggleQuickCategories);
+        });
+        setTimeout(function(){
+            listenToFoodPreferences();
+        }, 5000);
+        
 
         // Show an easier to read number of products
         /*
@@ -1886,26 +1934,166 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
     }
 
-    function toggleAlwaysShowBarcodes(){
-        if(getLocalStorage("pus-always-show-barcode") === "always"){
-            $('#pus-always-show-barcode').prop("checked", true);
+    //2 reusable functions that can be used for toggleable setting such as "always show barcodes".
+    function toggleASetting(checkboxId, toggleFunctionToCall){
+        if(getLocalStorage(checkboxId) === "enabled"){
+            $('#'+checkboxId).prop("checked", true);
         }
 
-        $('#pus-always-show-barcode').change(function() {
+        $('#'+checkboxId).change(function() {
             if(this.checked){
-                 localStorage.setItem('pus-always-show-barcode', "always");
+                 localStorage.setItem(checkboxId, "enabled");
             }else{
-                 localStorage.setItem('pus-always-show-barcode', "never");
+                 localStorage.setItem(checkboxId, "disabled");
             }
-            toggleListBarcodes();
+            toggleFunctionToCall();
         });
     }
 
-    function loadAlwaysShowBarcodesFromStorage(){
-        $( window ).on( "load", function() {
-            if(getLocalStorage("pus-always-show-barcode") === "always"){
-                toggleListBarcodes();
+    function loadASettingFromStorage(checkboxId, toggleFunctionToCall){
+        if(getLocalStorage(checkboxId) === "enabled"){
+            toggleFunctionToCall();
+        }
+    }
+
+
+    function toggleHungerGamesButton(){
+        if($("a.list_hunger_games_logo_search").length){
+            $("a.list_hunger_games_logo_search").remove();
+        }else{
+            showListHungerGamesButtons();
+        }
+    }
+
+    function toggleQuickCategories(){
+        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
+            let code = $(this).attr('data-code');
+
+            $('<div id="quick_category_' + code + '" class="list_categories_card"></div>').insertBefore( $('a.list_product_a', this) );
+        
+            $('#quick_category_' + code,$(this)).append('<a class="list_quick_category_1" alt="Pets" title="Pets"><span class="material-icons" id="list_button">pets</span></a>');
+            $('#quick_category_' + code,$(this)).append('<a class="list_quick_category_2" alt="Beauty" title="Beauty"><span class="material-icons" id="list_button">emoji_nature</span></a>');
+        });
+    }
+    /**
+     * Show/hide rotation icons in list view
+     */
+    function toggleRotationButtons(){
+        if($("a.list_rotate_image_270").length){
+            hideRotationButtons();
+        }else{
+            showListRotateButtons();
+        }
+    }
+
+    function hideRotationButtons(){
+        $("a.list_rotate_image_270").remove();
+        $("a.list_rotate_image_180").remove();
+        $("a.list_rotate_image_90").remove();
+    }
+
+    function showListButtonsByDefault(){
+        if(!getLocalStorage('pus-rotation-buttons')){
+            localStorage.setItem('pus-rotation-buttons', "enabled");
+        }
+        if(!getLocalStorage('pus-hunger-games-logo-search')){
+            localStorage.setItem('pus-hunger-games-logo-search', "enabled");
+        }
+    }
+    
+    /**  listens to Food preference changes, since any change there redraws the whole product list
+     * making the list buttons disappear
+    */
+    function listenToFoodPreferences(){
+        $('#preferences_switch_in_list_of_products_switch input').change(function(){
+            addCodesToProductList();
+            loadASettingFromStorage('pus-always-show-barcode',toggleListBarcodes);
+            loadASettingFromStorage('pus-rotation-buttons',toggleRotationButtons);
+            loadASettingFromStorage('pus-hunger-games-logo-search',toggleHungerGamesButton);
+            loadASettingFromStorage('pus-quick-categories',null);
+        });
+    }
+
+    //shows HungerGames logo
+    function showListHungerGamesButtons(){
+        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
+            let barcode = $(this).attr('data-code');
+            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+barcode+'"><span class="material-icons" id="list_button">image_search</span></a>');
+        });
+    }
+    
+    function showListRotateButtons(){
+        let languageCode = getSubdomainLanguageCode();
+
+        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
+            let barcode = $(this).attr('data-code');
+            $(this).append('<a class="list_rotate_image_270" alt="Rotate at -90°" title="Rotate at -90°"><span class="material-icons" id="list_button" style="transform: scaleX(-1);">redo</span></a>');
+            $(this).append('<a class="list_rotate_image_180" alt="Rotate at 180°" title="Rotate at 180°"><span class="material-icons" id="list_button">rotate_right</span></a>');
+            $(this).append('<a class="list_rotate_image_90" alt="Rotate at 90°" title="Rotate at 90°"><span class="material-icons" id="list_button">redo</span></a>');
+
+            var image_reference = $(".list_product_img", $(this)); 
+            $(".list_rotate_image_270",$(this)).on("click", function(){
+                getFrontImagesToRotate(270,barcode,languageCode);
+                image_reference.css('transform', 'rotate(270deg)');
+            });
+
+            $(".list_rotate_image_180",$(this)).on("click", function(){
+                getFrontImagesToRotate(180,barcode,languageCode);
+                image_reference.css('transform', 'rotate(180deg)');
+            });
+
+            $(".list_rotate_image_90",$(this)).on("click", function(){
+                getFrontImagesToRotate(90,barcode,languageCode);
+                image_reference.css('transform', 'rotate(90deg)');
+            });
+        });
+    }
+
+    //if 'ru-en'->ru while $("html").attr('lang'); returns en
+    function getSubdomainLanguageCode(){
+        var subdomain = window.location.href.split('.')[0].split('//')[1];
+        if(subdomain === 'world'){ return 'en';}
+        if(subdomain.length === 2){ return subdomain;}
+
+        return subdomain.split('-')[0];
+    }
+
+    /*gets all the front_lc images available and then compares it to the subdomain.
+    For example if you are on ru.openfoodfacts and a product only has front_en then that picture will be rotated 
+    instead of creating a new rotated front_ru */
+    function getFrontImagesToRotate(angle,barcode,languageCode){
+        var _productUrl = "/api/v2/product/" + barcode + ".json?fields=images";
+        $.getJSON(_productUrl,function(productData){
+            let productImages = productData.product.images;
+            var frontImages = [];
+            if(productImages){
+                $.each(productImages,function(key,value){
+                    let startsWithFront = key.toString().startsWith('front');
+                    if(startsWithFront){
+                        frontImages.push(key);
+                    }
+                });
+                if(frontImages.length>0){
+                    let includesLanguageCode = frontImages.includes("front_"+languageCode);
+                    var front_lc = frontImages[0];
+
+                    if(includesLanguageCode){
+                        front_lc = "front_"+languageCode;
+                    }
+
+                    let image_id = productImages[front_lc].imgid;
+                    //let angle = productImages[front_lc].angle;
+                    rotateImage(angle,barcode,front_lc,image_id);
+                }
+                
             }
+        });
+    }
+
+    function rotateImage(angle,barcode,front_lc,image_id){
+        var _url = "/cgi/product_image_crop.pl?code=" + barcode + "&id="+front_lc+"&imgid="+image_id+"&angle="+angle;
+        $.getJSON(_url, function(data) {
+            log("rotate status:" +data.status);
         });
     }
 
@@ -2008,83 +2196,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function hideListBarcodes() {
         $("svg.list_barcode").remove();
         $('ul[id^="products_"].search_results .with_barcode').removeClass('with_barcode');
-    }
-
-    //shows HungerGames logo, rotate buttons
-    function showListButtons(){
-        let languageCode = getSubdomainLanguageCode();
-
-        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
-            let barcode = $(this).attr('data-code');
-            $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+barcode+'"><span class="material-icons">image_search</span></a>');
-            $(this).append('<a class="list_rotate_image_270" alt="Rotate at -90°" title="Rotate at -90°"><span class="material-icons"  style="transform: scaleX(-1);">redo</span></a>');
-            $(this).append('<a class="list_rotate_image_180" alt="Rotate at 180°" title="Rotate at 180°"><span class="material-icons">rotate_right</span></a>');
-            $(this).append('<a class="list_rotate_image_90" alt="Rotate at 90°" title="Rotate at 90°"><span class="material-icons">redo</span></a>');
-
-            var image_reference = $(".list_product_img", $(this)); 
-            $(".list_rotate_image_270",$(this)).on("click", function(){
-                getFrontImagesToRotate(270,barcode,languageCode);
-                image_reference.css('transform', 'rotate(270deg)');
-            });
-
-            $(".list_rotate_image_180",$(this)).on("click", function(){
-                getFrontImagesToRotate(180,barcode,languageCode);
-                image_reference.css('transform', 'rotate(180deg)');
-            });
-
-            $(".list_rotate_image_90",$(this)).on("click", function(){
-                getFrontImagesToRotate(90,barcode,languageCode);
-                image_reference.css('transform', 'rotate(90deg)');
-            });
-        });
-    }
-
-    //if 'ru-en'->ru while $("html").attr('lang'); returns en
-    function getSubdomainLanguageCode(){
-        var subdomain = window.location.href.split('.')[0].split('//')[1];
-        if(subdomain === 'world'){ return 'en';}
-        if(subdomain.length === 2){ return subdomain;}
-
-        return subdomain.split('-')[0];
-    }
-
-    /*gets all the front_lc images available and then compares it to the subdomain.
-    For example if you are on ru.openfoodfacts and a product only has front_en then that picture will be rotated 
-    instead of creating a new rotated front_ru */
-    function getFrontImagesToRotate(angle,barcode,languageCode){
-        var _productUrl = "/api/v2/product/" + barcode + ".json?fields=images";
-        $.getJSON(_productUrl,function(productData){
-            let productImages = productData.product.images;
-            var frontImages = [];
-            if(productImages){
-                $.each(productImages,function(key,value){
-                    let startsWithFront = key.toString().startsWith('front');
-                    if(startsWithFront){
-                        frontImages.push(key);
-                    }
-                });
-                if(frontImages.length>0){
-                    let includesLanguageCode = frontImages.includes("front_"+languageCode);
-                    var front_lc = frontImages[0];
-
-                    if(includesLanguageCode){
-                        front_lc = "front_"+languageCode;
-                    }
-
-                    let image_id = productImages[front_lc].imgid;
-                    //let angle = productImages[front_lc].angle;
-                    rotateImage(angle,barcode,front_lc,image_id);
-                }
-                
-            }
-        });
-    }
-
-    function rotateImage(angle,barcode,front_lc,image_id){
-        var _url = "/cgi/product_image_crop.pl?code=" + barcode + "&id="+front_lc+"&imgid="+image_id+"&angle="+angle;
-        $.getJSON(_url, function(data) {
-            log("rotate status:" +data.status);
-        });
     }
 
     /**
