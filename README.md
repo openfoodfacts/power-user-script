@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2024-12-20T11:15
+* Fix moving products to OPF, OBF, OPFF
 ### 2024-08-27T19:25
 * Exclude search.openfoodfacts.org
 ### 2024-06-19T14:18

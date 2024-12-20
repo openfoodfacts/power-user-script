@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2024-08-27T19:25
+// @version     2024-12-20T11:15
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -61,7 +61,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2024-08-27T19:25 - mode: " + pageType);
+    log("2024-12-20T11:15 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -1470,17 +1470,17 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
                 //Move product to OBF
                 $("#p_actions_obf_"+local_code).click(function(){
-                    moveProductToSite( $(this).attr("value"), 'obf' );
+                    moveProductToSite( $(this).attr("value"), 'beauty' );
                 });
 
                 //Move product to OPF
                 $("#p_actions_opf_"+local_code).click(function(){
-                    moveProductToSite( $(this).attr("value"), 'opf' );
+                    moveProductToSite( $(this).attr("value"), 'product' );
                 });
 
                 //Move product to OPFF
                 $("#p_actions_opff_"+local_code).click(function(){
-                    moveProductToSite( $(this).attr("value"), 'opff' );
+                    moveProductToSite( $(this).attr("value"), 'petfood' );
                 });
 
                 // Save ingredients
@@ -2577,7 +2577,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * Move products between sites
      */
     function moveProductToSite(_code, newSite) {
-        if (/^(obf|off|opf|opff)$/.test(newSite) !== true) {
+        if (/^(beauty|food|product|petfood)$/.test(newSite) !== true) {
             log("moveProductToSite() > invalid site: " + newSite);
             return false;
         }
@@ -2588,7 +2588,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         }
 
         var _url = encodeURI(document.location.protocol + "//" + document.location.host +
-                             "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=" + newSite);
+                             "/cgi/product_jqm.pl?type=edit&code=" + _code + "&product_type=" + newSite);
         log("api call-> "+_url);
         $("body").append('<div id="timed_alert_move_' + _code + '" class="timed_alert">Moving</div>');
         var _d = $.getJSON(_url, function() {
