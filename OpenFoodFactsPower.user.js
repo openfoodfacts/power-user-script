@@ -13,6 +13,9 @@
 // @include     http://*.productopener.localhost/*
 // @include     http://*.openfoodfacts.localhost/*
 // @include     http://*.openfoodfacts.localhost:8080/*
+// @include     http://*.openpetfoodfacts.localhost:*/*
+// @include     http://*.openproductsfacts.localhost:*/*
+// @include     http://*.openbeautyfacts.localhost:*/*
 // @exclude     https://analytics.openfoodfacts.org/*
 // @exclude     https://api.folksonomy.openfoodfacts.org/*
 // @exclude     https://*.wiki.openfoodfacts.org/*
