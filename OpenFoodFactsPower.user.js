@@ -13,6 +13,9 @@
 // @include     http://*.productopener.localhost/*
 // @include     http://*.openfoodfacts.localhost/*
 // @include     http://*.openfoodfacts.localhost:8080/*
+// @include     http://*.openpetfoodfacts.localhost:*/*
+// @include     http://*.openproductsfacts.localhost:*/*
+// @include     http://*.openbeautyfacts.localhost:*/*
 // @exclude     https://analytics.openfoodfacts.org/*
 // @exclude     https://api.folksonomy.openfoodfacts.org/*
 // @exclude     https://*.wiki.openfoodfacts.org/*
@@ -28,6 +31,8 @@
 // @exclude     https://*connect-test.openfoodfacts.org/*
 // @exclude     https://contents.openfoodfacts.org/*
 // @exclude     https://mirabelle.openfoodfacts.org/*
+// @exclude     https://prices.openfoodfacts.org/*
+// @exclude     https://search.openfoodfacts.org/*
 //
 // @icon        http://world.openfoodfacts.org/favicon.ico
 // @updateURL   https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
@@ -755,6 +760,7 @@ textarea.monospace {
 
             // https://fr.openfoodfacts.org/etat/marques-a-completer/code/506036745xxxx&json=1
             var sameBrandProductsJSON = sameBrandProductsURL + "&json=1";
+            log("Get JSON from: " + sameBrandProductsJSON);
             $.getJSON(sameBrandProductsJSON, function(data) {
                 var nbOfSameBrandProducts = data.count;
                 log("nbOfSameBrandProducts: " + nbOfSameBrandProducts);
@@ -1142,7 +1148,6 @@ textarea.monospace {
             '<p><strong>Product issues:</strong></p>' +
             '<ul id="issues" class="row" style="margin-bottom: 0.2rem; padding-left: 1rem;">' +
             '</ul>' +
-            '<div class="row">→ <a href="'+editURL+'">Re-edit current product</a></div>' +
             '<div id="furthermore" class="row" style="margin-top: 10px;"><strong>Going further:</strong></div>' +
             '<ul id="going-further" class="row" style="padding-left: 1rem;">' +
             '</ul>' +
@@ -1516,17 +1521,17 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
                 //Move product to OBF
                 $("#p_actions_obf_"+local_code).click(function(){
-                    moveProductToSite( $(this).attr("value"), 'obf' );
+                    moveProductToSite( $(this).attr("value"), 'beauty' );
                 });
 
                 //Move product to OPF
                 $("#p_actions_opf_"+local_code).click(function(){
-                    moveProductToSite( $(this).attr("value"), 'opf' );
+                    moveProductToSite( $(this).attr("value"), 'product' );
                 });
 
                 //Move product to OPFF
                 $("#p_actions_opff_"+local_code).click(function(){
-                    moveProductToSite( $(this).attr("value"), 'opff' );
+                    moveProductToSite( $(this).attr("value"), 'petfood' );
                 });
 
                 // Save ingredients
@@ -2686,7 +2691,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * Move products between sites
      */
     function moveProductToSite(_code, newSite) {
-        if (/^(obf|off|opf|opff)$/.test(newSite) !== true) {
+        if (/^(beauty|food|product|petfood)$/.test(newSite) !== true) {
             log("moveProductToSite() > invalid site: " + newSite);
             return false;
         }
@@ -2697,7 +2702,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         }
 
         var _url = encodeURI(document.location.protocol + "//" + document.location.host +
-                             "/cgi/product_jqm.pl?type=edit&code=" + _code + "&new_code=" + newSite);
+                             "/cgi/product_jqm.pl?type=edit&code=" + _code + "&product_type=" + newSite);
         log("api call-> "+_url);
         $("body").append('<div id="timed_alert_move_' + _code + '" class="timed_alert">Moving</div>');
         var _d = $.getJSON(_url, function() {
@@ -2867,17 +2872,17 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         log("checkKJ() - kJ: " + j + ", kcal: " + c);
         // If either KJ or Kcal does not exist: compute the missing value
         if (j == "" && c != "") {
-            const cj = (c * 4.4).toFixed();
+            const cj = (c * 4.2).toFixed();
             document.getElementById('kjtokcal').title = "Reverse the kj/kcal values -- kcal: " + c + "; computed kJ: ~" + cj;
         }
         if (c == "" && j != "") {
-            const cc = (j / 4.4).toFixed();
+            const cc = (j / 4.2).toFixed();
             document.getElementById('kjtokcal').title = "Reverse the kj/kcal values -- kJ: " + j + "; computed kcal: ~" + cc;
         }
         if (c != "" && j != "") {
             const ratio = (j / c).toFixed(1);
-            document.getElementById("kjtokcal").title = "Reverse the kj/kcal values -- ratio Kj/kcal (should be 4.4): " + ratio;
-            (ratio >= 4.8 || ratio <= 4.0) ?
+            document.getElementById("kjtokcal").title = "Reverse the kj/kcal values -- ratio Kj/kcal (should be 4.2): " + ratio;
+            (ratio >= 4.6 || ratio <= 4.0) ?
                 document.getElementById('kjtokcal').style.color = "red" : document.getElementById('kjtokcal').style.color = "black";
         }
         // CAREFUL: all of this might be false if values are per serving!!!!
