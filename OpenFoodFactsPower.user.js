@@ -705,6 +705,14 @@ textarea.monospace {
             $("#barcode_paragraph")
                 .append(' <span id="duckLink" class="productLink">[<a href="' + duckLink +
                         '">DDG</a>]');
+
+            // Link to Open Prices
+            var pricesLink = 'https://prices.openfoodfacts.org/app/products/' + code;
+            productExists(corsProxyURL+pricesLink,"#pricesLinkStatus","","");
+            $("#barcode_paragraph")
+                .append(' <span id="pricesLink" class="productLink">[<a href="' + pricesLink +
+                        '">prices</a>] (<span id="pricesLinkStatus"></span>)');
+
             // Link to .pro.openfoodfacts.dev
             //var proDevLink = 'https://off:off@world.pro.openfoodfacts.dev/product/' + code;
             var proDevLink = 'https://world.pro.openfoodfacts.dev/product/' + code;
