@@ -26,6 +26,10 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2025-06-17T18:50
+* Now using Open Food Facts' API v2 (no functionnal change)
+* Include link to Open Prices on product pages
+* Remove old code related to OxF duplicates, not useful anymore (technical debt)
 ### 2024-12-20T11:15
 * Fix moving products to OPF, OBF, OPFF
 ### 2024-08-27T19:25
