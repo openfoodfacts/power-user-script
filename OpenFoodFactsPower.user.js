@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2025-05-28T10:24
+// @version     2025-06-17T18:50
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -64,9 +64,9 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2025-05-28T10:24 - mode: " + pageType);
+    log("2025-06-17T18:50 - mode: " + pageType);
 
-    // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
+    // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v2/product/3222471092705.json
     if (pageType === "api") {
         // TODO: allow keyboard shortcut to get back to product view?
         var _code = window.location.href.match(/\/product\/(.*)\.json$/)[1];
@@ -178,7 +178,7 @@
 
     // TODO
     // * FEATURES
-    //   * identify problematic fields based on quality feedbacks; https://world.openfoodfacts.org/api/v0/product/7502271153193.json
+    //   * identify problematic fields based on quality feedbacks; https://world.openfoodfacts.org/api/v2/product/7502271153193.json
     //     * see "data_quality_errors_tags" array
     //   * On the fly quality checks in the product edit form (javascript): https://github.com/openfoodfacts/openfoodfacts-server/issues/1905
     //   * Add automatic detection of nutriments, see: https://robotoff.openfoodfacts.org/api/v1/predict/nutrient?ocr_url=https://static.openfoodfacts.org/images/products/841/037/511/0228/nutrition_pt.12.json
@@ -589,8 +589,8 @@ textarea.monospace {
         }
 
         log("code: "+ code);
-        // build API product link; example: https://world.openfoodfacts.org/api/v0/product/737628064502.json
-        var apiProductURL = "/api/v0/product/" + code + ".json";
+        // build API product link; example: https://world.openfoodfacts.org/api/v2/product/737628064502.json
+        var apiProductURL = "/api/v2/product/" + code + ".json";
         log("API: " + apiProductURL);
         // build edit url
         var editURL = document.location.protocol + "//" + document.location.host + "/cgi/product.pl?type=edit&code=" + code;
@@ -2136,7 +2136,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             flagRevision(rev);
         }
         else {
-            var _url = "/api/v0/product/" + code + ".json";
+            var _url = "/api/v2/product/" + code + ".json";
             $.getJSON(_url, function(data) {
                 rev = data.product.rev;
                 log("rev: "); log(rev);
@@ -2335,7 +2335,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         if (pageType !== "product view") { // script fail if productName below is undefined
             return;
         }
-        // The productName below sometimes is undefined; TODO: get it with API? https://world.openfoodfacts.org/api/v0/product/3222475464430.json&fields=product_name
+        // The productName below sometimes is undefined; TODO: get it with API? https://world.openfoodfacts.org/api/v2/product/3222475464430.json&fields=product_name
         productName = $('h1[property="food:name"]').html().match(/(.*?)(( - .*)|$)/)[1];
         similarProductsSearchURL = encodeURI(
             document.location.protocol + "//" + document.location.host +
@@ -2370,7 +2370,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * @returns  {String} - Type of page: api|saved-product page|edit|list|search form|product view|error page
      */
     function isPageType() {
-        // Detect API page. Example: https://world.openfoodfacts.org/api/v0/product/3599741003380.json
+        // Detect API page. Example: https://world.openfoodfacts.org/api/v2/product/3599741003380.json
         var regex_api = RegExp('api/v0/');
         if(regex_api.test(document.URL) === true) return "api";
 
