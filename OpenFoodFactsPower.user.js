@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2025-05-28T10:01
+// @version     2025-05-28T10:24
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -64,7 +64,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2025-05-28T10:01 - mode: " + pageType);
+    log("2025-05-28T10:24 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v0/product/3222471092705.json
     if (pageType === "api") {
@@ -705,24 +705,14 @@ textarea.monospace {
             $("#barcode_paragraph")
                 .append(' <span id="duckLink" class="productLink">[<a href="' + duckLink +
                         '">DDG</a>]');
+
             // Link to Open Prices
             var pricesLink = 'https://prices.openfoodfacts.org/app/products/' + code;
             productExists(corsProxyURL+pricesLink,"#pricesLinkStatus","","");
             $("#barcode_paragraph")
                 .append(' <span id="pricesLink" class="productLink">[<a href="' + pricesLink +
                         '">prices</a>] (<span id="pricesLinkStatus"></span>)');
-            // Link to Open Beauty Facts
-            var obfLink = 'https://world.openbeautyfacts.org/product/' + code;
-            productExists(corsProxyURL+obfLink,"#obfLinkStatus","","");
-            $("#barcode_paragraph")
-                .append(' <span id="obfLink" class="productLink">[<a href="' + obfLink +
-                        '">obf.org</a>] (<span id="obfLinkStatus"></span>)');
-            // Link to Open Pet Food Facts
-            var opffLink = 'https://world.openpetfoodfacts.org/product/' + code;
-            productExists(corsProxyURL+opffLink,"#opffLinkStatus","","");
-            $("#barcode_paragraph")
-                .append(' <span id="opffLink" class="productLink">[<a href="' + opffLink +
-                        '">opff.org</a>] (<span id="opffLinkStatus"></span>)');
+
             // Link to .pro.openfoodfacts.dev
             //var proDevLink = 'https://off:off@world.pro.openfoodfacts.dev/product/' + code;
             var proDevLink = 'https://world.pro.openfoodfacts.dev/product/' + code;
