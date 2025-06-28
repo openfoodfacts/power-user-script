@@ -1201,7 +1201,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $("#pwe_help").click(function(){
             togglePowerUserInfo(listhelp);
             toggleIngredientsMonospace();
-            toggleAlwaysShowBarcodes();
+            toggleCheckboxSetting('pus-always-show-barcode',toggleListBarcodes);
         });
 
         // detect product codes and add them as attributes
@@ -1885,18 +1885,18 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
     }
 
-    function toggleAlwaysShowBarcodes(){
-        if(getLocalStorage("pus-always-show-barcode") === "checked"){
-            $('#pus-always-show-barcode').prop("checked", true);
+    function toggleCheckboxSetting(checkboxId, toggleFunctionToCall){
+        if(getLocalStorage(checkboxId) === "checked"){
+            $('#'+checkboxId).prop("checked", true);
         }
 
-        $('#pus-always-show-barcode').change(function() {
+        $('#'+checkboxId).change(function() {
             if(this.checked){
-                 localStorage.setItem('pus-always-show-barcode', "checked");
+                 localStorage.setItem(checkboxId, "checked");
             }else{
-                 localStorage.setItem('pus-always-show-barcode', "unchecked");
+                 localStorage.setItem(checkboxId, "unchecked");
             }
-            toggleListBarcodes();
+            toggleFunctionToCall();
         });
     }
 
@@ -1907,7 +1907,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             }
         });
     }
-
 
     /**
      * Show/hide a graphical barcode on the product view
