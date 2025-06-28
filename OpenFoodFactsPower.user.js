@@ -1886,15 +1886,15 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     function toggleAlwaysShowBarcodes(){
-        if(getLocalStorage("pus-always-show-barcode") === "always"){
+        if(getLocalStorage("pus-always-show-barcode") === "checked"){
             $('#pus-always-show-barcode').prop("checked", true);
         }
 
         $('#pus-always-show-barcode').change(function() {
             if(this.checked){
-                 localStorage.setItem('pus-always-show-barcode', "always");
+                 localStorage.setItem('pus-always-show-barcode', "checked");
             }else{
-                 localStorage.setItem('pus-always-show-barcode', "never");
+                 localStorage.setItem('pus-always-show-barcode', "unchecked");
             }
             toggleListBarcodes();
         });
@@ -1902,7 +1902,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
     function loadAlwaysShowBarcodesFromStorage(){
         $( window ).on( "load", function() {
-            if(getLocalStorage("pus-always-show-barcode") === "always"){
+            if(getLocalStorage("pus-always-show-barcode") === "checked"){
                 toggleListBarcodes();
             }
         });
