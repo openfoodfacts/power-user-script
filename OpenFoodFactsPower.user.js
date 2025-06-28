@@ -1207,7 +1207,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         // detect product codes and add them as attributes
         addCodesToProductList();
         showListButtons();
-        loadAlwaysShowBarcodesFromStorage();
+        $( window ).on( "load", function() {
+            loadCheckboxSettingFromStorage('pus-always-show-barcode',toggleListBarcodes);
+        });
 
         // Show an easier to read number of products
         /*
@@ -1885,6 +1887,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
     }
 
+    /**
+     * Reusable function that toggles a checkbox setting and then calls toggleFunctionToCall to execute related action
+     */ 
     function toggleCheckboxSetting(checkboxId, toggleFunctionToCall){
         if(getLocalStorage(checkboxId) === "checked"){
             $('#'+checkboxId).prop("checked", true);
@@ -1900,12 +1905,13 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
     }
 
-    function loadAlwaysShowBarcodesFromStorage(){
-        $( window ).on( "load", function() {
-            if(getLocalStorage("pus-always-show-barcode") === "checked"){
-                toggleListBarcodes();
-            }
-        });
+    /**
+     * Reusable function loads checkbox value and then calls toggleFunctionToCall
+     */
+    function loadCheckboxSettingFromStorage(checkboxId, toggleFunctionToCall){
+        if(getLocalStorage(checkboxId) === "checked"){
+            toggleFunctionToCall();
+        }
     }
 
     /**
