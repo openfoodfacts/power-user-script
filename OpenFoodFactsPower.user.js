@@ -753,11 +753,11 @@ textarea.monospace {
             "<li>(?) or (h): this present help</li>" +
             "<hr id='nav_keys'>" +
             ((pageType === "edit") ?
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label for="pus-helpers">Field helpers</label></li>' +
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-dist-free"><label for="pus-dist-free">Distraction free mode</label></li>':
+                appendPUSCheckbox('pus-helpers','Field helpers')+''+
+                appendPUSCheckbox('pus-dist-free','Distraction free mode'):
                "") +
             ((pageType === "edit" || pageType === "list") ?
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>':
+                appendPUSCheckbox('pus-ingredients-font','Ingredients fixed-width font'):
                "") +
             ((pageType === "product view" || pageType === "edit") ?
                "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
