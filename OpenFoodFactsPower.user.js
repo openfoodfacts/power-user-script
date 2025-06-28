@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2025-06-17T18:50
+// @version     2025-06-28T19:55
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -64,7 +64,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2025-06-17T18:50 - mode: " + pageType);
+    log("2025-06-28T19:55 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v2/product/3222471092705.json
     if (pageType === "api") {
@@ -1188,6 +1188,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             <hr>
             <li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>
             <li><input class="pus-checkbox" type="checkbox" id="pus-always-show-barcode"><label for="pus-always-show-barcode">Always show barcodes</label></li>
+            <li><input class="pus-checkbox" type="checkbox" id="pus-rotation-hunger-games-buttons"><label for="pus-rotation-hunger-games-buttons">Image rotation and Hunger Games buttons</label></li>
             <hr>
             <li>(Shift+L): List edit mode</li>
             <li>(Shift+b): Show/hide barcodes</li>
@@ -1201,13 +1202,17 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $("#pwe_help").click(function(){
             togglePowerUserInfo(listhelp);
             toggleIngredientsMonospace();
-            toggleAlwaysShowBarcodes();
+            toggleCheckboxSetting('pus-always-show-barcode',toggleListBarcodes);
+            toggleCheckboxSetting('pus-rotation-hunger-games-buttons',toggleRotateHungerButtons);
         });
 
         // detect product codes and add them as attributes
         addCodesToProductList();
-        showListButtons();
-        loadAlwaysShowBarcodesFromStorage();
+        showRotateHungerButtonsByDefault();
+        $( window ).on( "load", function() {
+            loadCheckboxSettingFromStorage('pus-always-show-barcode',toggleListBarcodes);
+            loadCheckboxSettingFromStorage('pus-rotation-hunger-games-buttons',toggleRotateHungerButtons);
+        });
 
         // Show an easier to read number of products
         /*
@@ -1885,29 +1890,32 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
     }
 
-    function toggleAlwaysShowBarcodes(){
-        if(getLocalStorage("pus-always-show-barcode") === "always"){
-            $('#pus-always-show-barcode').prop("checked", true);
+    /**
+     * Reusable function that toggles a checkbox setting and then calls toggleFunctionToCall to execute related action
+     */ 
+    function toggleCheckboxSetting(checkboxId, toggleFunctionToCall){
+        if(getLocalStorage(checkboxId) === "checked"){
+            $('#'+checkboxId).prop("checked", true);
         }
 
-        $('#pus-always-show-barcode').change(function() {
+        $('#'+checkboxId).change(function() {
             if(this.checked){
-                 localStorage.setItem('pus-always-show-barcode', "always");
+                 localStorage.setItem(checkboxId, "checked");
             }else{
-                 localStorage.setItem('pus-always-show-barcode', "never");
+                 localStorage.setItem(checkboxId, "unchecked");
             }
-            toggleListBarcodes();
+            toggleFunctionToCall();
         });
     }
 
-    function loadAlwaysShowBarcodesFromStorage(){
-        $( window ).on( "load", function() {
-            if(getLocalStorage("pus-always-show-barcode") === "always"){
-                toggleListBarcodes();
-            }
-        });
+    /**
+     * Reusable function loads checkbox value and then calls toggleFunctionToCall
+     */
+    function loadCheckboxSettingFromStorage(checkboxId, toggleFunctionToCall){
+        if(getLocalStorage(checkboxId) === "checked"){
+            toggleFunctionToCall();
+        }
     }
-
 
     /**
      * Show/hide a graphical barcode on the product view
@@ -1964,7 +1972,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     function showListBarcodes() {
-
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
             if ($("#barcode_draw_" + code).length) { return; }
@@ -2009,8 +2016,29 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $('ul[id^="products_"].search_results .with_barcode').removeClass('with_barcode');
     }
 
+    function showRotateHungerButtonsByDefault(){
+        if(!getLocalStorage('pus-rotation-hunger-games-buttons')){
+            localStorage.setItem('pus-rotation-buttons', "checked");
+        }
+    }
+
+    function toggleRotateHungerButtons(){
+        if($("a.list_rotate_image_270").length){
+            hideRotateHungerButtons();
+        }else{
+            showRotateHungerButtons();
+        }
+    }
+
+    function hideRotateHungerButtons(){
+        $("a.list_hunger_games_logo_search").remove();
+        $("a.list_rotate_image_270").remove();
+        $("a.list_rotate_image_180").remove();
+        $("a.list_rotate_image_90").remove();
+    }
+
     //shows HungerGames logo, rotate buttons
-    function showListButtons(){
+    function showRotateHungerButtons(){
         let languageCode = getSubdomainLanguageCode();
 
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
