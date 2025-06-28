@@ -1188,6 +1188,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             <hr>
             <li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>
             <li><input class="pus-checkbox" type="checkbox" id="pus-always-show-barcode"><label for="pus-always-show-barcode">Always show barcodes</label></li>
+            <li><input class="pus-checkbox" type="checkbox" id="pus-rotation-hunger-games-buttons"><label for="pus-rotation-hunger-games-buttons">Image rotation and Hunger Games buttons</label></li>
             <hr>
             <li>(Shift+L): List edit mode</li>
             <li>(Shift+b): Show/hide barcodes</li>
@@ -1202,13 +1203,15 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             togglePowerUserInfo(listhelp);
             toggleIngredientsMonospace();
             toggleCheckboxSetting('pus-always-show-barcode',toggleListBarcodes);
+            toggleCheckboxSetting('pus-rotation-hunger-games-buttons',toggleRotateHungerButtons);
         });
 
         // detect product codes and add them as attributes
         addCodesToProductList();
-        showListButtons();
+        showRotateHungerButtonsByDefault();
         $( window ).on( "load", function() {
             loadCheckboxSettingFromStorage('pus-always-show-barcode',toggleListBarcodes);
+            loadCheckboxSettingFromStorage('pus-rotation-hunger-games-buttons',toggleRotateHungerButtons);
         });
 
         // Show an easier to read number of products
@@ -1969,7 +1972,6 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     function showListBarcodes() {
-
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
             let code = $(this).attr('data-code');
             if ($("#barcode_draw_" + code).length) { return; }
@@ -2014,8 +2016,29 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         $('ul[id^="products_"].search_results .with_barcode').removeClass('with_barcode');
     }
 
+    function showRotateHungerButtonsByDefault(){
+        if(!getLocalStorage('pus-rotation-hunger-games-buttons')){
+            localStorage.setItem('pus-rotation-buttons', "checked");
+        }
+    }
+
+    function toggleRotateHungerButtons(){
+        if($("a.list_rotate_image_270").length){
+            hideRotateHungerButtons();
+        }else{
+            showRotateHungerButtons();
+        }
+    }
+
+    function hideRotateHungerButtons(){
+        $("a.list_hunger_games_logo_search").remove();
+        $("a.list_rotate_image_270").remove();
+        $("a.list_rotate_image_180").remove();
+        $("a.list_rotate_image_90").remove();
+    }
+
     //shows HungerGames logo, rotate buttons
-    function showListButtons(){
+    function showRotateHungerButtons(){
         let languageCode = getSubdomainLanguageCode();
 
         $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
