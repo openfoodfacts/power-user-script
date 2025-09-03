@@ -95,6 +95,11 @@
     // 4. Utilize taxonomy methods like offClient.getBrands(), offClient.getCategories()
     // 5. Use search functionality with offClient.search()
     //
+    // Current Blockers:
+    // - openfoodfacts-js library needs UMD/browser build for userscript compatibility
+    // - Module system compatibility issues in userscript environment
+    // - Consider creating a separate browser bundle or UMD build
+    //
     // TODO: Investigate UMD/browser build of openfoodfacts-js for userscript compatibility
     const OFFApiHelpers = {
         // Get current domain info
@@ -2148,7 +2153,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     For example if you are on ru.openfoodfacts and a product only has front_en then that picture will be rotated 
     instead of creating a new rotated front_ru */
     function getFrontImagesToRotate(angle,barcode,languageCode){
-        OFFApiHelpers.getProductImages(barcode).then(function(productData){
+        OFFApiHelpers.getProductImages(barcode).done(function(productData){
             let productImages = productData.product.images;
             var frontImages = [];
             if(productImages){
@@ -2232,7 +2237,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             flagRevision(rev);
         }
         else {
-            OFFApiHelpers.getProduct(code).then(function(data) {
+            OFFApiHelpers.getProduct(code).done(function(data) {
                 rev = data.product.rev;
                 log("rev: "); log(rev);
                 version_user = data.product.last_editor;
