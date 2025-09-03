@@ -26,6 +26,11 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2025-01-17T12:00
+* Refactored API calls to use helper functions (preparation for openfoodfacts-js integration)
+* Added OFFApiHelpers utility functions for better code organization
+* Improved barcode extraction from URLs using centralized helper
+* Code cleanup and preparation for future integration with official openfoodfacts-js library
 ### 2025-06-17T18:50
 * Now using Open Food Facts' API v2 (no functionnal change)
 * Include link to Open Prices on product pages
