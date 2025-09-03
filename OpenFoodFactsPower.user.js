@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2025-06-17T18:50
+// @version     2025-01-17T12:00
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -64,13 +64,13 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2025-06-17T18:50 - mode: " + pageType);
+    log("2025-01-17T12:00 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v2/product/3222471092705.json
     if (pageType === "api") {
         // TODO: allow keyboard shortcut to get back to product view?
         var _code = window.location.href.match(/\/product\/(.*)\.json$/)[1];
-        var viewURL = document.location.protocol + "//" + document.location.host + "/product/" + _code;
+        var viewURL = OFFApiHelpers.buildProductUrls(_code).view;
         log('press v to get back to product view: ' + viewURL);
         $(document).on('keydown', function(event) {
             if (event.key === 'v') {
@@ -80,6 +80,100 @@
         });
         return;
     }
+
+    // OpenFoodFacts API Helper Functions
+    // 
+    // FUTURE INTEGRATION with openfoodfacts-js:
+    // These helper functions abstract the current manual API calls and provide a clean
+    // interface that can be easily replaced with the official openfoodfacts-js library
+    // when it becomes available in userscript environments.
+    //
+    // Integration Steps:
+    // 1. Replace OFFApiHelpers.getProduct() with offClient.getProductV2()
+    // 2. Replace OFFApiHelpers.getProductImages() with offClient.getProductV2(barcode, "images")  
+    // 3. Add image upload/crop operations using offClient.uploadImage(), offClient.cropImage()
+    // 4. Utilize taxonomy methods like offClient.getBrands(), offClient.getCategories()
+    // 5. Use search functionality with offClient.search()
+    //
+    // TODO: Investigate UMD/browser build of openfoodfacts-js for userscript compatibility
+    const OFFApiHelpers = {
+        // Get current domain info
+        getCurrentDomain: function() {
+            const hostname = document.location.hostname;
+            const country = hostname.split('.')[0] === 'world' ? 'world' : hostname.split('.')[0];
+            const language = document.documentElement.lang || 'en';
+            return { country, language, hostname };
+        },
+
+        // Build API URL for product
+        buildProductApiUrl: function(barcode, fields = null) {
+            const url = "/api/v2/product/" + barcode + ".json";
+            return fields ? url + "?fields=" + fields : url;
+        },
+
+        // Fetch product data using jQuery
+        getProduct: function(barcode, fields = null) {
+            const url = this.buildProductApiUrl(barcode, fields);
+            return $.getJSON(url);
+        },
+
+        // Get product images specifically  
+        getProductImages: function(barcode) {
+            return this.getProduct(barcode, "images");
+        },
+
+        // Get product basic info (name, brands, etc.)
+        getProductInfo: function(barcode) {
+            return this.getProduct(barcode, "product_name,brands,categories,labels");
+        },
+
+        // Helper to extract barcode from current URL
+        extractBarcodeFromUrl: function(url = window.location.href) {
+            const matches = url.match(/\/product\/(\d+)/);
+            return matches ? matches[1] : null;
+        },
+
+        // Helper to build various product URLs
+        buildProductUrls: function(barcode) {
+            const domain = document.location.protocol + "//" + document.location.host;
+            return {
+                view: domain + "/product/" + barcode,
+                edit: domain + "/cgi/product.pl?type=edit&code=" + barcode,
+                api: this.buildProductApiUrl(barcode),
+                images: domain + "/cgi/product_image_upload.pl?code=" + barcode
+            };
+        },
+
+        // Helper to format/validate barcodes (could be upstreamed)
+        formatBarcode: function(barcode) {
+            if (!barcode) return null;
+            // Remove any non-digit characters
+            const cleaned = barcode.toString().replace(/\D/g, '');
+            // Basic validation - should be 8, 12, 13, or 14 digits
+            if (![8, 12, 13, 14].includes(cleaned.length)) {
+                console.warn('Invalid barcode length:', cleaned.length);
+                return cleaned; // Return anyway, let the API handle validation
+            }
+            return cleaned;
+        },
+
+        // Helper to get product image URL (could be upstreamed)
+        getProductImageUrl: function(barcode, imageName, size = '400') {
+            const formattedBarcode = this.formatBarcode(barcode);
+            if (!formattedBarcode) return null;
+            
+            const paddedBarcode = formattedBarcode.padStart(13, '0');
+            const match = paddedBarcode.match(/^(.{3})(.{3})(.{3})(.*)$/);
+            if (!match) return null;
+            
+            const path = `${match[1]}/${match[2]}/${match[3]}/${match[4]}`;
+            const domain = document.location.protocol + "//images.openfoodfacts.org/images/products";
+            return `${domain}/${path}/${imageName}.${size}.jpg`;
+        }
+    };
+
+    const domainInfo = OFFApiHelpers.getCurrentDomain();
+    log("Initialized API helpers for domain: " + domainInfo.hostname + " (country: " + domainInfo.country + ", language: " + domainInfo.language + ")");
 
     // Setup options
     var zoomOption        = false; // "true" allows zooming images with mouse wheel, while "false" disallow it
@@ -575,10 +669,12 @@ textarea.monospace {
             // product view needs more effort to get the product code.
             // Using e.g. <link rel="canonical" href="https://uk.openfoodfacts.org/product/00994835/black-forest-christmas-pudding-marks-spencer">
             // as it doesn't contain the code if the given code is not a valid entry.
-            var code2 = $('link[rel="canonical"]').attr("href").match('product/\([0-9]+\)');
-            if (code2 && code2[1]) {
-                code = code2[1];
-                //log("code2: "+ code2);
+            var canonicalUrl = $('link[rel="canonical"]').attr("href");
+            if (canonicalUrl) {
+                var extractedCode = OFFApiHelpers.extractBarcodeFromUrl(canonicalUrl);
+                if (extractedCode) {
+                    code = extractedCode;
+                }
             }
         }
 
@@ -590,10 +686,11 @@ textarea.monospace {
 
         log("code: "+ code);
         // build API product link; example: https://world.openfoodfacts.org/api/v2/product/737628064502.json
-        var apiProductURL = "/api/v2/product/" + code + ".json";
+        var apiProductURL = OFFApiHelpers.buildProductApiUrl(code);
         log("API: " + apiProductURL);
         // build edit url
-        var editURL = document.location.protocol + "//" + document.location.host + "/cgi/product.pl?type=edit&code=" + code;
+        var productUrls = OFFApiHelpers.buildProductUrls(code);
+        var editURL = productUrls.edit;
     }
 
 
@@ -883,7 +980,7 @@ textarea.monospace {
                 }
                 // (v): if in "edit" mode, switch to view mode
                 if (pageType !== "product view" && event.key === 'v') {
-                    var viewURL = document.location.protocol + "//" + document.location.host + "/product/" + code;
+                    var viewURL = OFFApiHelpers.buildProductUrls(code).view;
                     window.open(viewURL, "_blank"); // open a new window
                     return;
                 }
@@ -2051,8 +2148,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     For example if you are on ru.openfoodfacts and a product only has front_en then that picture will be rotated 
     instead of creating a new rotated front_ru */
     function getFrontImagesToRotate(angle,barcode,languageCode){
-        var _productUrl = "/api/v2/product/" + barcode + ".json?fields=images";
-        $.getJSON(_productUrl,function(productData){
+        OFFApiHelpers.getProductImages(barcode).then(function(productData){
             let productImages = productData.product.images;
             var frontImages = [];
             if(productImages){
@@ -2136,8 +2232,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             flagRevision(rev);
         }
         else {
-            var _url = "/api/v2/product/" + code + ".json";
-            $.getJSON(_url, function(data) {
+            OFFApiHelpers.getProduct(code).then(function(data) {
                 rev = data.product.rev;
                 log("rev: "); log(rev);
                 version_user = data.product.last_editor;
