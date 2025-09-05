@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2025-09-05T13:42
+* Fix conflict with Folksonomy Engine form when typing some keys such as `e` or `a`, which are shortcuts in Power User Script
 ### 2025-06-17T18:50
 * Now using Open Food Facts' API v2 (no functionnal change)
 * Include link to Open Prices on product pages
