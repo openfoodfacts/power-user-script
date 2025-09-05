@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2025-06-17T18:50
+// @version     2025-09-05T13:42
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -64,7 +64,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2025-06-17T18:50 - mode: " + pageType);
+    log("2025-09-05T13:42 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v2/product/3222471092705.json
     if (pageType === "api") {
@@ -857,10 +857,11 @@ textarea.monospace {
             log(event);
             // If the key is not pressed inside a input field (ex. search product field)
             if (
-                !$(event.target).is(':input')
-                && !$(event.target).is('span.tagify__input')
-                && !$(event.target).is('span.tagify__tag-text')
+                !event.target.matches('input, folksonomy-editor')
+                && !event.target.matches('span.tagify__input')
+                && !event.target.matches('span.tagify__tag-text')
             ) {
+                log(event.target);
                 // (Shift + B): toggle show/hide barcode
                 if (event.key === 'B') {
                     toggleSingleBarcode(code);
@@ -2020,7 +2021,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             $(this).append('<a class="list_rotate_image_180" alt="Rotate at 180°" title="Rotate at 180°"><span class="material-icons">rotate_right</span></a>');
             $(this).append('<a class="list_rotate_image_90" alt="Rotate at 90°" title="Rotate at 90°"><span class="material-icons">redo</span></a>');
 
-            var image_reference = $(".list_product_img", $(this)); 
+            var image_reference = $(".list_product_img", $(this));
             $(".list_rotate_image_270",$(this)).on("click", function(){
                 getFrontImagesToRotate(270,barcode,languageCode);
                 image_reference.css('transform', 'rotate(270deg)');
@@ -2048,7 +2049,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     /*gets all the front_lc images available and then compares it to the subdomain.
-    For example if you are on ru.openfoodfacts and a product only has front_en then that picture will be rotated 
+    For example if you are on ru.openfoodfacts and a product only has front_en then that picture will be rotated
     instead of creating a new rotated front_ru */
     function getFrontImagesToRotate(angle,barcode,languageCode){
         var _productUrl = "/api/v2/product/" + barcode + ".json?fields=images";
@@ -2074,7 +2075,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                     //let angle = productImages[front_lc].angle;
                     rotateImage(angle,barcode,front_lc,image_id);
                 }
-                
+
             }
         });
     }
