@@ -753,11 +753,11 @@ textarea.monospace {
             "<li>(?) or (h): this present help</li>" +
             "<hr id='nav_keys'>" +
             ((pageType === "edit") ?
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label for="pus-helpers">Field helpers</label></li>' +
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-dist-free"><label for="pus-dist-free">Distraction free mode</label></li>':
+                appendPUSCheckbox('pus-helpers','Field helpers')+''+
+                appendPUSCheckbox('pus-dist-free','Distraction free mode'):
                "") +
             ((pageType === "edit" || pageType === "list") ?
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>':
+                appendPUSCheckbox('pus-ingredients-font','Ingredients fixed-width font'):
                "") +
             ((pageType === "product view" || pageType === "edit") ?
                "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
@@ -1187,8 +1187,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         var listhelp = `<ul class="pus_menu">
             <li>(?) or (h): this present help</li>
             <hr>
-            <li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>
-            <li><input class="pus-checkbox" type="checkbox" id="pus-always-show-barcode"><label for="pus-always-show-barcode">Always show barcodes</label></li>
+            ${appendPUSCheckbox('pus-ingredients-font','Ingredients fixed-width font')}
+            ${appendPUSCheckbox('pus-always-show-barcode','Always show barcodes')}
+            ${appendPUSCheckbox('pus-rotation-hunger-games-buttons','Image rotation and Hunger Games buttons')}
             <hr>
             <li>(Shift+L): List edit mode</li>
             <li>(Shift+b): Show/hide barcodes</li>
@@ -1254,6 +1255,10 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
 
     } // if list mode
+
+    function appendPUSCheckbox(checkboxId, labelText){
+        return `<li><input class="pus-checkbox" type="checkbox" id="${checkboxId}"><label for="${checkboxId}">${labelText}</label></li>`;
+    }
 
     var langcodes_with_different_countrycodes = [ "af", "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
 
