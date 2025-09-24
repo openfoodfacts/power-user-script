@@ -26,6 +26,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2025-09-24T14:47
+* Exclude Nutripatrol.
 ### 2025-09-08T18:19
 * Following last version, quick fix for textarea.
 ### 2025-09-05T13:42
