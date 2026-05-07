@@ -473,7 +473,7 @@ input.show_comparison {
 
 
 /* ---------------- Height of input fields ------------------------- */
-.tagify__input { margin: 4 px; } /* instead of 5px */
+.tagify__input { margin: 4px; } /* instead of 5px */
 
 
 /* ---------------- Nutrition facts ------------------------- */
