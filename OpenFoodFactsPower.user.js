@@ -577,7 +577,7 @@ textarea.monospace {
             // product view needs more effort to get the product code.
             // Using e.g. <link rel="canonical" href="https://uk.openfoodfacts.org/product/00994835/black-forest-christmas-pudding-marks-spencer">
             // as it doesn't contain the code if the given code is not a valid entry.
-            var code2 = $('link[rel="canonical"]').attr("href").match('product/\([0-9]+\)');
+            var code2 = $('link[rel="canonical"]').attr("href").match('product/([0-9]+)');
             if (code2 && code2[1]) {
                 code = code2[1];
                 //log("code2: "+ code2);
