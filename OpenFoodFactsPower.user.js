@@ -655,7 +655,7 @@ textarea.monospace {
             var tds = $(this).find('td');
             var urlToIngredient;
             $(this).children().addClass("ingredient_td");
-            if(tds.length != 0) {
+            if(tds.length !== 0) {
                 urlToIngredient = tds.children().attr("href"); // /category/gouda/ingredient/dairy
             }
             $(this).find('td').children().after(' <a href="'+ urlToIngredient +'" target="_blank"><span class="hidden"> ↗ ↗ ↗ </span></a>');
