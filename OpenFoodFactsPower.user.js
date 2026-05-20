@@ -66,7 +66,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2026-04-22T11:40 - mode: " + pageType);
+    log("2026-05-20T05:43 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v2/product/3222471092705.json
     if (pageType === "api") {
