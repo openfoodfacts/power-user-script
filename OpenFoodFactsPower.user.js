@@ -899,7 +899,7 @@ textarea.monospace {
                 // (u): open in https://us.openfoodfacts.org to get all standard US nutrition table
                 if (pageType === "edit" && event.key === 'u') {
                     var editUS = "https://us.openfoodfacts.org/cgi/product.pl?type=edit&code=" + code;
-                    window.open(editUS, "_self"); // edit in current window
+                    window.open(editUS, "_blank"); // open a new window
                     return;
                 }
                 // (?): open help box
