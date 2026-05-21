@@ -1,4 +1,4 @@
-//// ==UserScript==
+// ==UserScript==
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
@@ -39,8 +39,8 @@
 // @icon        http://world.openfoodfacts.org/favicon.ico
 // @updateURL   https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
 // @grant       GM_getResourceText
-// @require     http://code.jquery.com/jquery-latest.min.js
-// @require     http://code.jquery.com/ui/1.12.1/jquery-ui.min.js
+// @require     https://code.jquery.com/jquery-latest.min.js
+// @require     https://code.jquery.com/ui/1.12.1/jquery-ui.min.js
 // @require     https://cdn.jsdelivr.net/npm/jsbarcode@latest/dist/JsBarcode.all.min.js
 // @author      charles@openfoodfacts.org
 // ==/UserScript==
@@ -473,7 +473,7 @@ input.show_comparison {
 
 
 /* ---------------- Height of input fields ------------------------- */
-.tagify__input { margin: 4 px; } /* instead of 5px */
+.tagify__input { margin: 4px; } /* instead of 5px */
 
 
 /* ---------------- Nutrition facts ------------------------- */
@@ -577,7 +577,7 @@ textarea.monospace {
             // product view needs more effort to get the product code.
             // Using e.g. <link rel="canonical" href="https://uk.openfoodfacts.org/product/00994835/black-forest-christmas-pudding-marks-spencer">
             // as it doesn't contain the code if the given code is not a valid entry.
-            var code2 = $('link[rel="canonical"]').attr("href").match('product/\([0-9]+\)');
+            var code2 = $('link[rel="canonical"]').attr("href").match('product/([0-9]+)');
             if (code2 && code2[1]) {
                 code = code2[1];
                 //log("code2: "+ code2);
@@ -655,7 +655,7 @@ textarea.monospace {
             var tds = $(this).find('td');
             var urlToIngredient;
             $(this).children().addClass("ingredient_td");
-            if(tds.length != 0) {
+            if(tds.length !== 0) {
                 urlToIngredient = tds.children().attr("href"); // /category/gouda/ingredient/dairy
             }
             $(this).find('td').children().after(' <a href="'+ urlToIngredient +'" target="_blank"><span class="hidden"> ↗ ↗ ↗ </span></a>');
