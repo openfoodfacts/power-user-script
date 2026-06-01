@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2026-05-20T05:43
+// @version     2026-06-01T03:25
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -39,6 +39,12 @@
 // @icon        http://world.openfoodfacts.org/favicon.ico
 // @updateURL   https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
 // @grant       GM_getResourceText
+
+// @grant       GM_xmlhttpRequest
+// @connect     prices.openfoodfacts.org
+// @connect     world.pro.openfoodfacts.dev
+// @connect     script.google.com
+
 // @require     http://code.jquery.com/jquery-latest.min.js
 // @require     http://code.jquery.com/ui/1.12.1/jquery-ui.min.js
 // @require     https://cdn.jsdelivr.net/npm/jsbarcode@latest/dist/JsBarcode.all.min.js
@@ -65,8 +71,7 @@
     var version_date;
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
-    const corsProxyURL = "";
-    log("2026-05-20T05:43 - mode: " + pageType);
+    log("2026-06-01T03:25 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v2/product/3222471092705.json
     if (pageType === "api") {
@@ -710,7 +715,7 @@ textarea.monospace {
 
             // Link to Open Prices
             var pricesLink = 'https://prices.openfoodfacts.org/app/products/' + code;
-            productExists(corsProxyURL+pricesLink,"#pricesLinkStatus","","");
+            productExists(pricesLink,"#pricesLinkStatus","","");
             $("#barcode_paragraph")
                 .append(' <span id="pricesLink" class="productLink">[<a href="' + pricesLink +
                         '">prices</a>] (<span id="pricesLinkStatus"></span>)');
@@ -718,7 +723,7 @@ textarea.monospace {
             // Link to .pro.openfoodfacts.dev
             //var proDevLink = 'https://off:off@world.pro.openfoodfacts.dev/product/' + code;
             var proDevLink = 'https://world.pro.openfoodfacts.dev/product/' + code;
-            productExists(corsProxyURL+proDevLink,"#proDevLinkStatus","off","off");
+            productExists(proDevLink,"#proDevLinkStatus","off","off");
             $("#barcode_paragraph")
                 .append(' <span id="devProPlatform" class="productLink">[<a href="' + proDevLink +
                         '">.pro.off.dev</a>] (<span id="proDevLinkStatus"></span>)');
@@ -2200,7 +2205,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         //   * https://crossorigin.me/ => GET only // 2020-04-10: site down?
         //   * https://cors.io? => sometimes down (3 days after first tries); can be installed on Heroku
         //   * https://cors-anywhere.herokuapp.com/ => ok
-        var googleScriptURL = corsProxyURL+"https://script.google.com/macros/s/AKfycbwi9tIOPc7zh2NggDuq8geTSZqdZ470unBWUi4KV4AwYzCTNO8/exec";
+        var googleScriptURL = "https://script.google.com/macros/s/AKfycbwi9tIOPc7zh2NggDuq8geTSZqdZ470unBWUi4KV4AwYzCTNO8/exec";
         var flagWindow =
             '<div id="flag_dialog" title="Dialog Form">' +
             '<form name="flag_form">' +
@@ -2244,20 +2249,31 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         form.addEventListener('submit', e => {
             log("Submited rev "+rev);
             e.preventDefault();  // Do not submit the form
-            fetch(googleScriptURL, {
+            // This was fixed in the CORS pull request, but does this need to be here now that NutriPatrol exists?
+            // Doesn't look like the API functions either... Returns Google deprecated engine information
+            GM_xmlhttpRequest({
                 method: 'POST',
-                mode: 'cors',
-                body: new FormData(form)
-            })
-            .then(function(response) {
-                log('Success!', response);
-                var spreadsheetURL = 'https://docs.google.com/spreadsheets/d/1DE85Or0QiYwIXcG4vSVZyFSLMKvmJqOXM5ooJzxZr6Y/';
-                $("#flag_result").append('<p style="margin-top:1rem;font-weight: bold;">' +
-                                         '✅ Version ' +
-                                         '<a href="' + spreadsheetURL + '" style="color:blue" target="_blank">' +
-                                         'flagged</a>.</p>');
-                return;})
-            .catch(error => console.error('Error!', error.message));
+                url: googleScriptURL,
+                data: new URLSearchParams(new FormData(form)).toString(),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                onload: function(response) {
+                    console.log('Success!', response);
+
+                    var spreadsheetURL = 'https://docs.google.com/spreadsheets/d/1DE85Or0QiYwIXcG4vSVZyFSLMKvmJqOXM5ooJzxZr6Y/';
+
+                    $("#flag_result").append(
+                        '<p style="margin-top:1rem;font-weight:bold;">' +
+                        '✅ Version ' +
+                        '<a href="' + spreadsheetURL + '" style="color:blue" target="_blank">' +
+                        'flagged</a>.</p>'
+                    );
+                },
+                onerror: function(error) {
+                    console.error('Error!', error);
+                }
+            });
         });
     }
 
@@ -2570,36 +2586,66 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      * @param    {string} passWord: password if the web server need an authentication
      * @returns  none
      */
-    function productExists(urlToCheck,id,userName,passWord){
-        //log("productExists( "+urlToCheck+" )");
-        $.ajax({
+    function productExists(urlToCheck, id, userName, passWord) {
+    // log("productExists(" + urlToCheck + ")");
+
+        GM_xmlhttpRequest({
             url: urlToCheck,
-            type: "GET",
-            //xhrFields: { withCredentials: true },
-            //             username: userName,
-            //             password: passWord,
-            headers: { // send auth headers, needed for .dev platform
+            method: "GET",
+            headers: {
                 "Authorization": "Basic " + btoa(userName + ":" + passWord)
             },
-            success: function(data, textStatus, xhr) {
-                log("productExists( "+urlToCheck+" ) > success - xhr.status: " + xhr.status);
-                if(xhr.status) $(id).text(xhr.status);
-            },
-            statusCode: {
-                404: function(xhr, textStatus) {
-                    log( "productExists( "+urlToCheck+" ) > 404 > " + xhr.status);
-                    if(xhr.status) $(id).text(xhr.status);
-                },
-                200: function(xhr, textStatus) {
-                    log( "productExists( "+urlToCheck+" ) > 200 > " + xhr.status);
-                    if(xhr.status) $(id).text(xhr.status);
+
+            onload: function(response) {
+                log(
+                    "productExists(" +
+                    urlToCheck +
+                    ") > onload - status: " +
+                    response.status
+                );
+
+                if (response.status) {
+                    $(id).text(response.status);
                 }
+
+                if (response.status === 200) {
+                    log(
+                        "productExists(" +
+                        urlToCheck +
+                        ") > 200 > " +
+                        response.status
+                    );
+                } else if (response.status === 404) {
+                    log(
+                        "productExists(" +
+                        urlToCheck +
+                        ") > 404 > " +
+                        response.status
+                    );
+                }
+            },
+
+            onerror: function(response) {
+                log(
+                    "productExists(" +
+                    urlToCheck +
+                    ") > error - status: " +
+                    response.status
+                );
+
+                if (response.status) {
+                    $(id).text(response.status);
+                }
+            },
+
+            ontimeout: function(response) {
+                log(
+                    "productExists(" +
+                    urlToCheck +
+                    ") > timeout - status: " +
+                    response.status
+                );
             }
-        })
-            .always(function (xhr, textStatus) {
-            log("productExists( "+urlToCheck+" ) > always - xhr.status: " + xhr.status);
-            //log("productExists( "+urlToCheck+" ) > always - getAllResponseHeaders(): " + xhr.getAllResponseHeaders());
-            if(xhr.status) $(id).text(xhr.status);
         });
     }
 
