@@ -715,13 +715,13 @@ textarea.monospace {
                 .append(' <span id="pricesLink" class="productLink">[<a href="' + pricesLink +
                         '">prices</a>] (<span id="pricesLinkStatus"></span>)');
 
-            // Link to .pro.openfoodfacts.dev
-            //var proDevLink = 'https://off:off@world.pro.openfoodfacts.dev/product/' + code;
-            var proDevLink = 'https://world.pro.openfoodfacts.dev/product/' + code;
-            productExists(corsProxyURL+proDevLink,"#proDevLinkStatus","off","off");
+            // Link to .pro.openfoodfacts.org
+            //var proLink = 'https://off:off@world.pro.openfoodfacts.org/product/' + code;
+            var proLink = 'https://world.pro.openfoodfacts.org/product/' + code;
+            //productExists(corsProxyURL+proLink,"#proLinkStatus","off","off");
             $("#barcode_paragraph")
-                .append(' <span id="devProPlatform" class="productLink">[<a href="' + proDevLink +
-                        '">.pro.off.dev</a>] (<span id="proDevLinkStatus"></span>)');
+                .append(' <span id="ProPlatform" class="productLink">[<a href="' + proLink +
+                        '">.pro.off.org</a>] (<span id="proLinkStatus"></span>)');
 
             // https://fr.openfoodfacts.org/etat/marques-a-completer/code/506036745xxxx&json=1
             var sameBrandProductsJSON = sameBrandProductsURL + "&json=1";
