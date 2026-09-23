@@ -719,9 +719,15 @@ textarea.monospace {
             //var proLink = 'https://off:off@world.pro.openfoodfacts.org/product/' + code;
             var proLink = 'https://world.pro.openfoodfacts.org/product/' + code;
             //productExists(corsProxyURL+proLink,"#proLinkStatus","off","off");
+            var $proPlatformSpan = $('<span>', { id: 'ProPlatform', class: 'productLink' });
+            $proPlatformSpan.append(document.createTextNode('['));
+            $proPlatformSpan.append($('<a>', { href: proLink, text: '.pro.off.org' }));
+            $proPlatformSpan.append(document.createTextNode('] ('));
+            $proPlatformSpan.append($('<span>', { id: 'proLinkStatus' }));
+            $proPlatformSpan.append(document.createTextNode(')'));
             $("#barcode_paragraph")
-                .append(' <span id="ProPlatform" class="productLink">[<a href="' + proLink +
-                        '">.pro.off.org</a>] (<span id="proLinkStatus"></span>)');
+                .append(' ')
+                .append($proPlatformSpan);
 
             // https://fr.openfoodfacts.org/etat/marques-a-completer/code/506036745xxxx&json=1
             var sameBrandProductsJSON = sameBrandProductsURL + "&json=1";
