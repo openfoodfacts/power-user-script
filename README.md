@@ -1,17 +1,20 @@
 # power-user-script
 User script for your browser, to empower [Open Food Facts](https://world.openfoodfacts.org/)  contribution. Power User Script is a kind of laboratory, to explore new features before they can get into Open Food Facts.
 
-Some features:
+## Features
 * keyboard shortcuts to different pages: product edition (e), product JSON (a), view mode (v), etc.
 * styling improvements via CSS: barcode highlighted, fields highlighted, etc.
 * show/hide barcode
 * show/hide helpers
 * sidebar quick links: page translation, category translation, Recent Changes, Hunger Game...
-* inline edit of ingredients
 * information enhancements beside barcode number: links to Google search, Open Beauty Facts, etc.
 * information enhancements in the confirmation page: product issues, going further, etc.
 * recent changes filter (filter as you type)
 * etc. See complete list in the "changelog" or directly in JS code
+
+### inline edit of ingredients, move to OBF/OPF/OPFF, show ingredient analysis
+<img width="1469" height="806" alt="image" src="https://github.com/user-attachments/assets/1d74629b-af39-4c32-aeb7-fb0e3d8b4cb5" />
+
 
 # Install
 To run userscripts it's best to have a script manager installed. Userscript managers are available as browser extensions:
