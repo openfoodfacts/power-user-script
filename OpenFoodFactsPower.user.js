@@ -1,8 +1,8 @@
-// ==UserScript==
+//// ==UserScript==
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2025-06-28T19:55
+// @version     2026-05-20T05:43
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -31,8 +31,11 @@
 // @exclude     https://*connect-test.openfoodfacts.org/*
 // @exclude     https://contents.openfoodfacts.org/*
 // @exclude     https://mirabelle.openfoodfacts.org/*
+// @exclude     https://nutripatrol.openfoodfacts.org/*
 // @exclude     https://prices.openfoodfacts.org/*
 // @exclude     https://search.openfoodfacts.org/*
+// @exclude     https://sql.openfoodfacts.org/*
+// @exclude     https://beta.openfoodfacts.org/*
 //
 // @icon        http://world.openfoodfacts.org/favicon.ico
 // @updateURL   https://github.com/openfoodfacts/power-user-script/raw/master/OpenFoodFactsPower.user.js
@@ -64,7 +67,7 @@
     var proPlatform = false;     // TODO: to be included in isPageType()
     const pageType = isPageType(); // test page type
     const corsProxyURL = "";
-    log("2025-06-28T19:55 - mode: " + pageType);
+    log("2026-05-20T05:43 - mode: " + pageType);
 
     // Disable extension if the page is an API result; https://world.openfoodfacts.org/api/v2/product/3222471092705.json
     if (pageType === "api") {
@@ -713,13 +716,19 @@ textarea.monospace {
                 .append(' <span id="pricesLink" class="productLink">[<a href="' + pricesLink +
                         '">prices</a>] (<span id="pricesLinkStatus"></span>)');
 
-            // Link to .pro.openfoodfacts.dev
-            //var proDevLink = 'https://off:off@world.pro.openfoodfacts.dev/product/' + code;
-            var proDevLink = 'https://world.pro.openfoodfacts.dev/product/' + code;
-            productExists(corsProxyURL+proDevLink,"#proDevLinkStatus","off","off");
+            // Link to .pro.openfoodfacts.org
+            //var proLink = 'https://off:off@world.pro.openfoodfacts.org/product/' + code;
+            var proLink = 'https://world.pro.openfoodfacts.org/product/' + code;
+            //productExists(corsProxyURL+proLink,"#proLinkStatus","off","off");
+            var $proPlatformSpan = $('<span>', { id: 'ProPlatform', class: 'productLink' });
+            $proPlatformSpan.append(document.createTextNode('['));
+            $proPlatformSpan.append($('<a>', { href: proLink, text: '.pro.off.org' }));
+            $proPlatformSpan.append(document.createTextNode('] ('));
+            $proPlatformSpan.append($('<span>', { id: 'proLinkStatus' }));
+            $proPlatformSpan.append(document.createTextNode(')'));
             $("#barcode_paragraph")
-                .append(' <span id="devProPlatform" class="productLink">[<a href="' + proDevLink +
-                        '">.pro.off.dev</a>] (<span id="proDevLinkStatus"></span>)');
+                .append(' ')
+                .append($proPlatformSpan);
 
             // https://fr.openfoodfacts.org/etat/marques-a-completer/code/506036745xxxx&json=1
             var sameBrandProductsJSON = sameBrandProductsURL + "&json=1";
@@ -753,11 +762,11 @@ textarea.monospace {
             "<li>(?) or (h): this present help</li>" +
             "<hr id='nav_keys'>" +
             ((pageType === "edit") ?
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-helpers" checked><label for="pus-helpers">Field helpers</label></li>' +
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-dist-free"><label for="pus-dist-free">Distraction free mode</label></li>':
+                appendPUSCheckbox('pus-helpers','Field helpers')+''+
+                appendPUSCheckbox('pus-dist-free','Distraction free mode'):
                "") +
             ((pageType === "edit" || pageType === "list") ?
-               '<li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>':
+                appendPUSCheckbox('pus-ingredients-font','Ingredients fixed-width font'):
                "") +
             ((pageType === "product view" || pageType === "edit") ?
                "<li>(Shift+b): show/hide <strong>barcode</strong></li>" +
@@ -769,7 +778,8 @@ textarea.monospace {
               "<li>(E): edit product in a new window</li>":
               "") +
             ((pageType === "product view" || pageType === "edit") ?
-              "<li id='api_product_page'>(a): <a href='" + apiProductURL + "'>API product page</a> (json)</li>":
+              "<li id='api_product_page'>(a): <a href='" + apiProductURL + "'>API product page</a> (json)</li>" +
+              "<li>(u): open in https://us.openfoodfacts.org to get standard US nutrition table</li>":
               "") +
             "<li><a href='https://google.com/search?&q="+ code + "'>Product code search on Google</a></li>" +
             "<li>Google Reverse Image search"+
@@ -857,10 +867,11 @@ textarea.monospace {
             log(event);
             // If the key is not pressed inside a input field (ex. search product field)
             if (
-                !$(event.target).is(':input')
-                && !$(event.target).is('span.tagify__input')
-                && !$(event.target).is('span.tagify__tag-text')
+                !event.target.matches('input, folksonomy-editor, textarea')
+                && !event.target.matches('span.tagify__input')
+                && !event.target.matches('span.tagify__tag-text')
             ) {
+                //log(event.target);
                 // (Shift + B): toggle show/hide barcode
                 if (event.key === 'B') {
                     toggleSingleBarcode(code);
@@ -890,6 +901,12 @@ textarea.monospace {
                 // (I): ingredients
                 if (pageType === "edit" && event.key === 'i') {
                     toggleIngredientsMode();
+                    return;
+                }
+                // (u): open in https://us.openfoodfacts.org to get all standard US nutrition table
+                if (pageType === "edit" && event.key === 'u') {
+                    var editUS = "https://us.openfoodfacts.org/cgi/product.pl?type=edit&code=" + code;
+                    window.open(editUS, "_blank"); // open a new window
                     return;
                 }
                 // (?): open help box
@@ -1037,7 +1054,7 @@ textarea.monospace {
         $("#labels_tagsinput").attr("accesskey","L");
         $("#ingredients_text_fr").attr("accesskey","I");
         $("#nutriment_energy").attr("accesskey","N");
-        $("#nutriment_fiber").attr("accesskey","F");
+        $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").attr("accesskey","F");
 
         // Toggle helpers based on previous selection if any
         toggleHelpers();
@@ -1068,27 +1085,32 @@ textarea.monospace {
         });
 
         // Check fibers' field
-        checkFiber($("#nutriment_fiber").attr("value"));
-        $("#nutriment_fiber").on("input", function() {
+        checkFiber($("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").attr("value"));
+        $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").on("input", function() {
             checkFiber($(this).val());
         });
 
         // Check energy (kJ and kcal) now and for any change
         checkKJ();
-        $("#nutriment_energy-kj").on("input", function() {
-            $("#nutriment_energy-kj").attr("value", $(this).val());
+        $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").on("input", function() {
+            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value", $(this).val());
             checkKJ();
         });
-        $("#nutriment_energy-kcal").on("input", function() {
-            $("#nutriment_energy-kcal").attr("value", $(this).val());
+        $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").on("input", function() {
+            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value", $(this).val());
             checkKJ();
         });
 
         // Compute and display energy in realtime, based on fat, carbs, fibers, proteins, polyols and alcohol
         const energySpan = '<span id="computed_kj" title="Energy computed from fat, carbs, fibers, proteins, polyols and alcohol" style="padding-left: 2em; color: #665;"></span>';
-        document.querySelector('[for="nutriment_energy-kj"]').insertAdjacentHTML('afterend', energySpan);
+        document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string').insertAdjacentHTML('afterend', energySpan);
         computeEnergy();
-        const ids = ["nutriment_fat", "nutriment_carbohydrates", "nutriment_proteins", "nutriment_polyols", "nutriment_fiber", "nutriment_alcohol"];
+        const ids = ["nutrition_input_sets_as_sold_100g_nutrients_fat_value_string",
+                     "nutrition_input_sets_as_sold_100g_nutrients_carbohydrates_value_string",
+                     "nutrition_input_sets_as_sold_100g_nutrients_proteins_value_string",
+                     "nutrition_input_sets_as_sold_100g_nutrients_polyols_value_string",
+                     "nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string",
+                     "nutrition_input_sets_as_sold_100g_nutrients_alcohol_value_string"];
         for (const id of ids) {
             const element = document.getElementById(id);
             element && element.addEventListener("input", computeEnergy);
@@ -1186,9 +1208,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         var listhelp = `<ul class="pus_menu">
             <li>(?) or (h): this present help</li>
             <hr>
-            <li><input class="pus-checkbox" type="checkbox" id="pus-ingredients-font"><label for="pus-ingredients-font">Ingredients fixed-width font</label></li>
-            <li><input class="pus-checkbox" type="checkbox" id="pus-always-show-barcode"><label for="pus-always-show-barcode">Always show barcodes</label></li>
-            <li><input class="pus-checkbox" type="checkbox" id="pus-rotation-hunger-games-buttons"><label for="pus-rotation-hunger-games-buttons">Image rotation and Hunger Games buttons</label></li>
+            ${appendPUSCheckbox('pus-ingredients-font','Ingredients fixed-width font')}
+            ${appendPUSCheckbox('pus-always-show-barcode','Always show barcodes')}
+            ${appendPUSCheckbox('pus-rotation-hunger-games-buttons','Image rotation and Hunger Games buttons')}
             <hr>
             <li>(Shift+L): List edit mode</li>
             <li>(Shift+b): Show/hide barcodes</li>
@@ -1258,6 +1280,27 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         });
 
     } // if list mode
+
+    /**
+     * Returns an HTML string for a checkbox with a label, used in the Power User Script UI.
+     * @param {string} checkboxId - The id attribute for the checkbox input and its label.
+     * @param {string} labelText - The text to display in the label.
+     * @returns {string} HTML string for a list item containing the checkbox and label.
+     */
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function appendPUSCheckbox(checkboxId, labelText){
+        const safeId = escapeHtml(checkboxId);
+        const safeLabel = escapeHtml(labelText);
+        return `<li><input class="pus-checkbox" type="checkbox" id="${safeId}"><label for="${safeId}">${safeLabel}</label></li>`;
+    }
 
     var langcodes_with_different_countrycodes = [ "af", "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
 
@@ -1748,6 +1791,20 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      // END OF Hide Text Fields
 
 
+    /**
+     * Hide most of the edit form to focus on ingredient entry.
+     *
+     * Hides: top bar, sidebar, image upload areas, product characteristics fields
+     * (quantity, packaging, brands, categories, labels, manufacturing places,
+     * traceability codes, link, expiration date, purchase places, stores,
+     * countries, environment impact level), common name, barcode fields,
+     * alert/licence boxes, image manager, revision history and footer.
+     *
+     * Intended to reduce visual noise when the only task is entering or
+     * correcting ingredients text.
+     *
+     * @returns {void}
+     */
     function toggleIngredientsMode() {
         //
         log("Ingredients mode");
@@ -1769,18 +1826,21 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
         // From "Product caracteristics until Ingredient
         $("#quantity, label[for='quantity']").hide();
-        $("div.fieldset:nth-child(16) > tags:nth-child(8), #packaging, label[for='packaging']").hide();
-        $("div.fieldset:nth-child(16) > tags:nth-child(13), #brands, label[for='brands']").hide();
-        $("div.fieldset:nth-child(16) > tags.tagify:nth-child(17), #categories, label[for='categories']").hide();
-        $("div.fieldset:nth-child(16) > tags.tagify:nth-child(22), #labels, label[for='labels']").hide();
-        $("div.fieldset:nth-child(16) > tags.tagify:nth-child(27), #manufacturing_places, label[for='manufacturing_places']").hide();
-        $("div.fieldset:nth-child(16) > tags.tagify:nth-child(31), #emb_codes, label[for='emb_codes']").hide();
+        $("label[for='packaging'] ~ tags, #packaging, label[for='packaging']").hide();
+        $("label[for='brands'] ~ tags, #brands, label[for='brands']").hide();
+        $("label[for='categories'] ~ tags, #categories, label[for='categories']").hide();
+        $("label[for='labels'] ~ tags, #labels, label[for='labels']").hide();
+        $("label[for='manufacturing_places'] ~ tags, #manufacturing_places, label[for='manufacturing_places']").hide();
+        $("label[for='emb_codes'] ~ tags, #emb_codes, label[for='emb_codes']").hide();
         $("#link, label[for='link']").hide();
         $("#expiration_date, label[for='expiration_date']").hide();
-        $("div.fieldset:nth-child(16) > tags.tagify:nth-child(41), #purchase_places, label[for='purchase_places']").hide();
-        $("div.fieldset:nth-child(16) > tags.tagify:nth-child(45), #stores, label[for='stores']").hide();
-        $("div.fieldset:nth-child(16) > tags.tagify:nth-child(49), #countries, label[for='countries']").hide();
-        $("div.fieldset:nth-child(16) > tags.tagify:nth-child(53), #environment_impact_level, label[for='environment_impact_level']").hide();
+        $("label[for='purchase_places'] ~ tags, #purchase_places, label[for='purchase_places']").hide();
+        $("label[for='stores'] ~ tags, #stores, label[for='stores']").hide();
+        $("label[for='countries'] ~ tags, #countries, label[for='countries']").hide();
+        $("label[for='environment_impact_level'] ~ tags, #environment_impact_level, label[for='environment_impact_level']").hide();
+        // Tagify re-applies its own display style, so !important is required to override it
+        $("label[for='packaging'] ~ tags, label[for='brands'] ~ tags, label[for='categories'] ~ tags, label[for='labels'] ~ tags, label[for='manufacturing_places'] ~ tags, label[for='emb_codes'] ~ tags, label[for='purchase_places'] ~ tags, label[for='stores'] ~ tags, label[for='countries'] ~ tags, label[for='environment_impact_level'] ~ tags")
+            .each(function() { this.style.setProperty('display', 'none', 'important'); });
 
         $("#check").hide();
 
@@ -2048,7 +2108,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             $(this).append('<a class="list_rotate_image_180" alt="Rotate at 180°" title="Rotate at 180°"><span class="material-icons">rotate_right</span></a>');
             $(this).append('<a class="list_rotate_image_90" alt="Rotate at 90°" title="Rotate at 90°"><span class="material-icons">redo</span></a>');
 
-            var image_reference = $(".list_product_img", $(this)); 
+            var image_reference = $(".list_product_img", $(this));
             $(".list_rotate_image_270",$(this)).on("click", function(){
                 getFrontImagesToRotate(270,barcode,languageCode);
                 image_reference.css('transform', 'rotate(270deg)');
@@ -2076,7 +2136,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     /*gets all the front_lc images available and then compares it to the subdomain.
-    For example if you are on ru.openfoodfacts and a product only has front_en then that picture will be rotated 
+    For example if you are on ru.openfoodfacts and a product only has front_en then that picture will be rotated
     instead of creating a new rotated front_ru */
     function getFrontImagesToRotate(angle,barcode,languageCode){
         var _productUrl = "/api/v2/product/" + barcode + ".json?fields=images";
@@ -2102,7 +2162,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                     //let angle = productImages[front_lc].angle;
                     rotateImage(angle,barcode,front_lc,image_id);
                 }
-                
+
             }
         });
     }
@@ -2656,12 +2716,12 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      */
     function computeEnergy() {
         //log("computeEnergy");
-        let fat = readAndNormalizeNutrient("nutriment_fat");
-        let carb = readAndNormalizeNutrient("nutriment_carbohydrates");
-        let proteins = readAndNormalizeNutrient("nutriment_proteins");
-        let polyols = readAndNormalizeNutrient("nutriment_polyols");
-        let fiber = readAndNormalizeNutrient("nutriment_fiber");
-        let alcohol = readAndNormalizeNutrient("nutriment_alcohol");
+        let fat = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_fat_value_string");
+        let carb = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_carbohydrates_value_string");
+        let proteins = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_proteins_value_string");
+        let polyols = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_polyols_value_string");
+        let fiber = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string");
+        let alcohol = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_alcohol_value_string");
         let computed_kj = ((carb - polyols)*17) + (polyols * 10) + (proteins * 17) + (fat * 37) + (fiber * 8) + (alcohol * 29);
         computed_kj = computed_kj % 1 !== 0 ? computed_kj.toFixed(2) : computed_kj.toString();
         // Display computed KJ near "Energy (kJ)*" label
@@ -2729,14 +2789,14 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         log("fiber val: " + f);
         if (f.length == 0) {
             log("fiber empty!");
-            $("#nutriment_fiber").css({"background-color": "orange"});
+            $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").css({"background-color": "orange"});
             if($('#fiber_help').length == 0) {
-                $("#nutriment_fiber").after('<strong id="fiber_help" href="#fiber_help" title="Put a hyphen (-) if no fibers are on the packaging"> (?) </strong>');
+                $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").after('<strong id="fiber_help" href="#fiber_help" title="Put a hyphen (-) if no fibers are on the packaging"> (?) </strong>');
                 $('#fiber_help').css('cursor', 'pointer');
             }
         }
         else {
-            $("#nutriment_fiber").css({"background-color": "LightYellow"});
+            $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").css({"background-color": "LightYellow"});
             if($('#fiber_help').length != 0) {
                 $("#fiber_help").remove();
             }
@@ -2753,11 +2813,11 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function reverseKJKcal() {
         log("reverseKJKcal()");
         // Read the values
-        let joules = document.getElementById('nutriment_energy-kj').value;
-        let calories = document.getElementById('nutriment_energy-kcal').value;
+        let joules = document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string').value;
+        let calories = document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string').value;
         // Change the values
-        document.getElementById("nutriment_energy-kj").value = calories;
-        document.getElementById("nutriment_energy-kcal").value = joules;
+        document.getElementById("nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").value = calories;
+        document.getElementById("nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").value = joules;
         // After change, check if kJ and Kcal are coherent
         checkKJ();
     }
@@ -2773,15 +2833,15 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         // If not already displayed, add the small icon to allow changing kJ to Kcal: ⇅
         if(!document.getElementById('kjtokcal')) {
             const reverseIcon = '<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>';
-            document.getElementById("nutriment_energy-kj").insertAdjacentHTML("afterend", reverseIcon);
+            document.getElementById("nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").insertAdjacentHTML("afterend", reverseIcon);
             document.getElementById('kjtokcal').style.setProperty("cursor", "pointer");
             document.getElementById("kjtokcal").addEventListener("click", function() {
             //document.getElementById('kjtokcal').click(function(){
                 reverseKJKcal();
             });
         }
-        const j = document.getElementById('nutriment_energy-kj').value;
-        const c = document.getElementById('nutriment_energy-kcal').value;
+        const j = document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string').value;
+        const c = document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string').value;
         log("checkKJ() - kJ: " + j + ", kcal: " + c);
         // If either KJ or Kcal does not exist: compute the missing value
         if (j == "" && c != "") {
@@ -2799,30 +2859,30 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 document.getElementById('kjtokcal').style.color = "red" : document.getElementById('kjtokcal').style.color = "black";
         }
         // CAREFUL: all of this might be false if values are per serving!!!!
-        /*
+
         if (parseInt(j) < parseInt(c)) {
             log("kj < kcal: " + j + " < " + c);
-            $("#nutriment_energy-kj").css({"background-color": "orange"});
-            $("#nutriment_energy-kcal").css({"background-color": "orange"});
-            /*if($('#kjtokcal').length == 0) {
-                $("#nutriment_energy-kj").after('<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>');
+            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").css({"background-color": "orange"});
+            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").css({"background-color": "orange"});
+            if($('#kjtokcal').length == 0) {
+                $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").after('<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>');
             }
             $('#kjtokcal').css('cursor', 'pointer');
             $("#kjtokcal").click(function(){
-                $("#nutriment_energy-kj").attr("value", c);
-                $("#nutriment_energy-kcal").attr("value", j);
-                kj   = $("#nutriment_energy-kj").attr("value");
-                kcal = $("#nutriment_energy-kcal").attr("value");
+                $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value", c);
+                $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value", j);
+                kj   = $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value");
+                kcal = $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value");
                 checkKJ(kj, kcal);
-            });/*
+            });/* */
         }
-        log(typeof $("#nutriment_energy-kcal").attr("value") + ", " + typeof $("#nutriment_energy-kj").attr("value"));
-        if ($("#nutriment_energy-kcal").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutriment_energy-kcal").attr("value") < 910)) {
+        log(typeof $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value") + ", " + typeof $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value"));
+        if ($("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value") < 910)) {
             log("ok");
-            $("#nutriment_energy-kcal").css({"background-color": "LightYellow"});
+            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").css({"background-color": "LightYellow"});
         }
-        if ($("#nutriment_energy-kj").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutriment_energy-kj").attr("value") < 3800)) {
-            $("#nutriment_energy-kj").css({"background-color": "LightYellow"});
+        if ($("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value") < 3800)) {
+            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").css({"background-color": "LightYellow"});
         }/**/
     }
 
