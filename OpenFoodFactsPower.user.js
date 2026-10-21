@@ -1969,7 +1969,7 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     }
 
     /**
-     * Reusable function loads checkbox value and then calls toggleFunctionToCall
+     * Reusable function that loads checkbox value and then calls toggleFunctionToCall
      */
     function loadCheckboxSettingFromStorage(checkboxId, toggleFunctionToCall){
         if(getLocalStorage(checkboxId) === "checked"){
