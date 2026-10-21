@@ -1255,8 +1255,19 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
     } // if list mode
 
+    function escapeHtml(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     function appendPUSCheckbox(checkboxId, labelText){
-        return `<li><input class="pus-checkbox" type="checkbox" id="${checkboxId}"><label for="${checkboxId}">${labelText}</label></li>`;
+        const safeId = escapeHtml(checkboxId);
+        const safeLabel = escapeHtml(labelText);
+        return `<li><input class="pus-checkbox" type="checkbox" id="${safeId}"><label for="${safeId}">${safeLabel}</label></li>`;
     }
 
     var langcodes_with_different_countrycodes = [ "af", "am", "ar", "bn", "cs", "da", "dv", "dz", "el", "et", "fa", "hy", "ja", "ka", "kl", "km", "ko", "lo", "ms", "my", "na", "nb", "ne", "ps", "si", "sl", "sq", "sr", "sv", "ta", "tk", "uk", "ur", "vi", "zh" ];
