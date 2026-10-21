@@ -1255,6 +1255,12 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
 
     } // if list mode
 
+    /**
+     * Returns an HTML string for a checkbox with a label, used in the Power User Script UI.
+     * @param {string} checkboxId - The id attribute for the checkbox input and its label.
+     * @param {string} labelText - The text to display in the label.
+     * @returns {string} HTML string for a list item containing the checkbox and label.
+     */
     function escapeHtml(str) {
         return String(str)
             .replace(/&/g, '&amp;')
