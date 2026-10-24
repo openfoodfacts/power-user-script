@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2026-05-20T05:43
+// @version     2026-10-24T12:08
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -1125,21 +1125,34 @@ textarea.monospace {
     var nbOfSameBrandProducts;
 
     if(pageType === "saved-product page") {
-        $("#main_column").append(
+        var powerUserScriptCard =
             '<section id="power_user_script" class="row">' +
+            '<div class="large-12 column">' +
+            '<div class="card">' +
             '<div class="card-section">' +
-            '<div id="product_issues" class="panel_card radius">' +
+            '<div id="product_issues" class="panel_card radius" style="margin-top:0.5rem;margin-bottom:1.5rem;">' +
             '<h2 class="panel_title_card text-medium">Power User Script</h2>' +
+            '<div class="content panel_content_card active">' +
             '<p><strong>Product issues:</strong></p>' +
-            '<ul id="issues" class="row" style="margin-bottom: 0.2rem; padding-left: 1rem;">' +
+            '<ul id="issues" style="margin-bottom: 0.2rem; padding-left: 1rem;">' +
             '</ul>' +
-            '<div id="furthermore" class="row" style="margin-top: 10px;"><strong>Going further:</strong></div>' +
-            '<ul id="going-further" class="row" style="padding-left: 1rem;">' +
+            '<div id="furthermore" style="margin-top: 10px;"><strong>Going further:</strong></div>' +
+            '<ul id="going-further" style="padding-left: 1rem;">' +
             '</ul>' +
             '</div>' +
             '</div>' +
-            '</section>'
-        );
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '</section>';
+
+        if ($("#contribution").length) {
+            $("#contribution").after(powerUserScriptCard);
+        } else if ($("#changes_saved").length) {
+            $("#changes_saved").after(powerUserScriptCard);
+        } else {
+            $("#main_column").append(powerUserScriptCard);
+        }
         isNbOfSimilarNamedProductsWithoutACategory();
         addQualityTags();
         addStateTags();
