@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2026-10-24T12:08
+// @version     2026-11-06T14:20
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -15,7 +15,7 @@
 // @include     http://*.openfoodfacts.localhost:8080/*
 // @include     http://*.openpetfoodfacts.localhost:*/*
 // @include     http://*.openproductsfacts.localhost:*/*
-// @include     http://*.openbeautyfacts.localhost:*/*
+// @include     http://*.openbeautyfacts.localhost:*/*as_sold
 // @exclude     https://analytics.openfoodfacts.org/*
 // @exclude     https://api.folksonomy.openfoodfacts.org/*
 // @exclude     https://*.wiki.openfoodfacts.org/*
@@ -1054,6 +1054,8 @@ textarea.monospace {
         $("#labels_tagsinput").attr("accesskey","L");
         $("#ingredients_text_fr").attr("accesskey","I");
         $("#nutriment_energy").attr("accesskey","N");
+        // TODO: Multiple column support
+        // Maybe watch for active column changes and assign the key dynamically to the fiber cell in the first column?
         $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").attr("accesskey","F");
 
         // Toggle helpers based on previous selection if any
@@ -1077,43 +1079,57 @@ textarea.monospace {
         });
         // //$("#display_ingredients_es img").clone().after("#ingredients_text_es");
 
+        var nutritionColumns = [
+            "as_sold_100g",
+            "as_sold_100ml",
+            "as_sold_1l",
+            "as_sold_serving",
+            "prepared_100g",
+            "prepared_100ml",
+            "prepared_1l",
+            "prepared_serving",
+        ];
 
-        // Check serving size field
-        checkServingSize(document.getElementById("serving_size").value);
-        document.getElementById("serving_size").addEventListener("input", function() {
-            checkServingSize(this.value);
-        });
+        for (const column of nutritionColumns) {
+            // Check serving size field
+            checkServingSize(document.getElementById("serving_size").value);
+            document.getElementById("serving_size").addEventListener("input", function() {
+                checkServingSize(this.value);
+            });
 
-        // Check fibers' field
-        checkFiber($("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").attr("value"));
-        $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").on("input", function() {
-            checkFiber($(this).val());
-        });
+            // Check fibers' field
+            checkFiber(column, $("#nutrition_input_sets_" + column + "_nutrients_fiber_value_string").attr("value"));
+            $("#nutrition_input_sets_" + column + "_nutrients_fiber_value_string").on("input", function() {
+                checkFiber(column, $(this).val());
+            });
 
-        // Check energy (kJ and kcal) now and for any change
-        checkKJ();
-        $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").on("input", function() {
-            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value", $(this).val());
-            checkKJ();
-        });
-        $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").on("input", function() {
-            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value", $(this).val());
-            checkKJ();
-        });
+            // Check energy (kJ and kcal) now and for any change
+            checkKJ(column);
+            $("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").on("input", function() {
+                $("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").attr("value", $(this).val());
+                checkKJ(column);
+            });
+            $("#nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").on("input", function() {
+                $("#nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").attr("value", $(this).val());
+                checkKJ(column);
+            });
 
-        // Compute and display energy in realtime, based on fat, carbs, fibers, proteins, polyols and alcohol
-        const energySpan = '<span id="computed_kj" title="Energy computed from fat, carbs, fibers, proteins, polyols and alcohol" style="padding-left: 2em; color: #665;"></span>';
-        document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string').insertAdjacentHTML('afterend', energySpan);
-        computeEnergy();
-        const ids = ["nutrition_input_sets_as_sold_100g_nutrients_fat_value_string",
-                     "nutrition_input_sets_as_sold_100g_nutrients_carbohydrates_value_string",
-                     "nutrition_input_sets_as_sold_100g_nutrients_proteins_value_string",
-                     "nutrition_input_sets_as_sold_100g_nutrients_polyols_value_string",
-                     "nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string",
-                     "nutrition_input_sets_as_sold_100g_nutrients_alcohol_value_string"];
-        for (const id of ids) {
-            const element = document.getElementById(id);
-            element && element.addEventListener("input", computeEnergy);
+            // Compute and display energy in realtime, based on fat, carbs, fibers, proteins, polyols and alcohol
+            const energySpan = '<span id="computed_kj_' + column + '" title="Energy computed from fat, carbs, fibers, proteins, polyols and alcohol" style="padding-left: 2em; color: #665;"></span>';
+            document.getElementById('nutrition_input_sets_' + column + '_nutrients_energy-kj_value_string').insertAdjacentHTML('afterend', energySpan);
+            computeEnergy(column);
+            const ids = ["nutrition_input_sets_" + column + "_nutrients_fat_value_string",
+                        "nutrition_input_sets_" + column + "_nutrients_carbohydrates_value_string",
+                        "nutrition_input_sets_" + column + "_nutrients_proteins_value_string",
+                        "nutrition_input_sets_" + column + "_nutrients_polyols_value_string",
+                        "nutrition_input_sets_" + column + "_nutrients_fiber_value_string",
+                        "nutrition_input_sets_" + column + "_nutrients_alcohol_value_string"];
+            for (const id of ids) {
+                const element = document.getElementById(id);
+                element && element.addEventListener("input", function() {
+                    computeEnergy(column);
+                });
+            }
         }
     }
 
@@ -2697,21 +2713,21 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      *                The formula is: ((carb - polyols)*17) + (polyols * 10) + (proteins * 17) + (fat * 37) + (fiber * 8) + (alcohol * 29)
      *                or: ((carb - polyols)*4) + (polyols * 2.4) + (proteins * 4) + (fat * 9) + (fiber * 2) + (alcohol * 7)
      *
-     * @param {string} servingSize: value of the servingSize
+     * @param {string} column
      * @returns: none
      */
-    function computeEnergy() {
+    function computeEnergy(column) {
         //log("computeEnergy");
-        let fat = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_fat_value_string");
-        let carb = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_carbohydrates_value_string");
-        let proteins = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_proteins_value_string");
-        let polyols = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_polyols_value_string");
-        let fiber = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string");
-        let alcohol = readAndNormalizeNutrient("nutrition_input_sets_as_sold_100g_nutrients_alcohol_value_string");
+        let fat = readAndNormalizeNutrient("nutrition_input_sets_" + column + "_nutrients_fat_value_string");
+        let carb = readAndNormalizeNutrient("nutrition_input_sets_" + column + "_nutrients_carbohydrates_value_string");
+        let proteins = readAndNormalizeNutrient("nutrition_input_sets_" + column + "_nutrients_proteins_value_string");
+        let polyols = readAndNormalizeNutrient("nutrition_input_sets_" + column + "_nutrients_polyols_value_string");
+        let fiber = readAndNormalizeNutrient("nutrition_input_sets_" + column + "_nutrients_fiber_value_string");
+        let alcohol = readAndNormalizeNutrient("nutrition_input_sets_" + column + "_nutrients_alcohol_value_string");
         let computed_kj = ((carb - polyols)*17) + (polyols * 10) + (proteins * 17) + (fat * 37) + (fiber * 8) + (alcohol * 29);
-        computed_kj = computed_kj % 1 !== 0 ? computed_kj.toFixed(2) : computed_kj.toString();
+        let computed_kj_str = computed_kj % 1 !== 0 ? computed_kj.toFixed(2) : computed_kj.toString();
         // Display computed KJ near "Energy (kJ)*" label
-        document.getElementById("computed_kj").innerText = "["+computed_kj+"]";
+        document.getElementById("computed_kj_" + column).innerText = "["+computed_kj_str+"]";
     }
 
 
@@ -2768,23 +2784,24 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     /***
      * checkFiber
      *
+     * @param {string} column
      * @param {string} f: value of fiber
      * @returns: none
      */
-    function checkFiber(f) {
+    function checkFiber(column, f) {
         log("fiber val: " + f);
         if (f.length == 0) {
             log("fiber empty!");
-            $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").css({"background-color": "orange"});
-            if($('#fiber_help').length == 0) {
-                $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").after('<strong id="fiber_help" href="#fiber_help" title="Put a hyphen (-) if no fibers are on the packaging"> (?) </strong>');
-                $('#fiber_help').css('cursor', 'pointer');
+            $("#nutrition_input_sets_" + column + "_nutrients_fiber_value_string").css({"background-color": "orange"});
+            if($('#fiber_help' + column).length == 0) {
+                $("#nutrition_input_sets_" + column + "_nutrients_fiber_value_string").after('<strong id="fiber_help' + column + '" href="#fiber_help' + column + '" title="Put a hyphen (-) if no fibers are on the packaging"> (?) </strong>');
+                $('#fiber_help' + column).css('cursor', 'pointer');
             }
         }
         else {
-            $("#nutrition_input_sets_as_sold_100g_nutrients_fiber_value_string").css({"background-color": "LightYellow"});
-            if($('#fiber_help').length != 0) {
-                $("#fiber_help").remove();
+            $("#nutrition_input_sets_" + column + "_nutrients_fiber_value_string").css({"background-color": "LightYellow"});
+            if($('#fiber_help' + column).length != 0) {
+                $("#fiber_help" + column).remove();
             }
         }
     }
@@ -2794,18 +2811,19 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     /***
      * reverseKJKcal
      *
+     * @param {string} column
      * @returns  none
      */
-    function reverseKJKcal() {
+    function reverseKJKcal(column) {
         log("reverseKJKcal()");
         // Read the values
-        let joules = document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string').value;
-        let calories = document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string').value;
+        let joules = document.getElementById('nutrition_input_sets_' + column + '_nutrients_energy-kj_value_string').value;
+        let calories = document.getElementById('nutrition_input_sets_' + column + '_nutrients_energy-kcal_value_string').value;
         // Change the values
-        document.getElementById("nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").value = calories;
-        document.getElementById("nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").value = joules;
+        document.getElementById("nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").value = calories;
+        document.getElementById("nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").value = joules;
         // After change, check if kJ and Kcal are coherent
-        checkKJ();
+        checkKJ(column);
     }
 
 
@@ -2813,62 +2831,63 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     /***
      * checkKJ
      *
+     * @param {string} column
      * @returns  none
      */
-    function checkKJ() {
+    function checkKJ(column) {
         // If not already displayed, add the small icon to allow changing kJ to Kcal: ⇅
-        if(!document.getElementById('kjtokcal')) {
-            const reverseIcon = '<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>';
-            document.getElementById("nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").insertAdjacentHTML("afterend", reverseIcon);
-            document.getElementById('kjtokcal').style.setProperty("cursor", "pointer");
-            document.getElementById("kjtokcal").addEventListener("click", function() {
-            //document.getElementById('kjtokcal').click(function(){
-                reverseKJKcal();
+        if(!document.getElementById('kjtokcal_' + column)) {
+            const reverseIcon = '<strong id="kjtokcal_' + column + '" href="#kjtokcal_' + column + '" title="Reverse the kj/kcal values"> ⇅ </strong>';
+            document.getElementById("nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").insertAdjacentHTML("afterend", reverseIcon);
+            document.getElementById('kjtokcal_' + column).style.setProperty("cursor", "pointer");
+            document.getElementById("kjtokcal_" + column).addEventListener("click", function() {
+            //document.getElementById('kjtokcal_').click(function(){
+                reverseKJKcal(column);
             });
         }
-        const j = document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string').value;
-        const c = document.getElementById('nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string').value;
+        const j = document.getElementById('nutrition_input_sets_' + column + '_nutrients_energy-kj_value_string').value;
+        const c = document.getElementById('nutrition_input_sets_' + column + '_nutrients_energy-kcal_value_string').value;
         log("checkKJ() - kJ: " + j + ", kcal: " + c);
         // If either KJ or Kcal does not exist: compute the missing value
         if (j == "" && c != "") {
-            const cj = (c * 4.2).toFixed();
-            document.getElementById('kjtokcal').title = "Reverse the kj/kcal values -- kcal: " + c + "; computed kJ: ~" + cj;
+            const cj = +(c * 4.2).toFixed();
+            document.getElementById('kjtokcal_' + column).title = "Reverse the kj/kcal values -- kcal: " + c + "; computed kJ: ~" + cj;
         }
         if (c == "" && j != "") {
-            const cc = (j / 4.2).toFixed();
-            document.getElementById('kjtokcal').title = "Reverse the kj/kcal values -- kJ: " + j + "; computed kcal: ~" + cc;
+            const cc = +(j / 4.2).toFixed();
+            document.getElementById('kjtokcal_' + column).title = "Reverse the kj/kcal values -- kJ: " + j + "; computed kcal: ~" + cc;
         }
         if (c != "" && j != "") {
-            const ratio = (j / c).toFixed(1);
-            document.getElementById("kjtokcal").title = "Reverse the kj/kcal values -- ratio Kj/kcal (should be 4.2): " + ratio;
+            const ratio = +(j / c).toFixed(1);
+            document.getElementById("kjtokcal_" + column).title = "Reverse the kj/kcal values -- ratio Kj/kcal (should be 4.2): " + ratio;
             (ratio >= 4.6 || ratio <= 4.0) ?
-                document.getElementById('kjtokcal').style.color = "red" : document.getElementById('kjtokcal').style.color = "black";
+                document.getElementById('kjtokcal_' + column).style.color = "red" : document.getElementById('kjtokcal_' + column).style.color = "black";
         }
         // CAREFUL: all of this might be false if values are per serving!!!!
 
         if (parseInt(j) < parseInt(c)) {
             log("kj < kcal: " + j + " < " + c);
-            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").css({"background-color": "orange"});
-            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").css({"background-color": "orange"});
-            if($('#kjtokcal').length == 0) {
-                $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").after('<strong id="kjtokcal" href="#kjtokcal" title="Reverse the kj/kcal values"> ⇅ </strong>');
+            $("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").css({"background-color": "orange"});
+            $("#nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").css({"background-color": "orange"});
+            if($('#kjtokcal_' + column).length == 0) {
+                $("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").after('<strong id="kjtokcal_' + column + '" href="#kjtokcal_' + column + '" title="Reverse the kj/kcal values"> ⇅ </strong>');
             }
-            $('#kjtokcal').css('cursor', 'pointer');
-            $("#kjtokcal").click(function(){
-                $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value", c);
-                $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value", j);
-                kj   = $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value");
-                kcal = $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value");
-                checkKJ(kj, kcal);
+            $('#kjtokcal_' + column).css('cursor', 'pointer');
+            $("#kjtokcal_" + column).click(function(){
+                $("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").attr("value", c);
+                $("#nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").attr("value", j);
+                kj   = $("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").attr("value");
+                kcal = $("#nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").attr("value");
+                checkKJ(column);
             });/* */
         }
-        log(typeof $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value") + ", " + typeof $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value"));
-        if ($("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").attr("value") < 910)) {
+        log(typeof $("#nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").attr("value") + ", " + typeof $("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").attr("value"));
+        if ($("#nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").attr("value") < 910)) {
             log("ok");
-            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kcal_value_string").css({"background-color": "LightYellow"});
+            $("#nutrition_input_sets_" + column + "_nutrients_energy-kcal_value_string").css({"background-color": "LightYellow"});
         }
-        if ($("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").attr("value") < 3800)) {
-            $("#nutrition_input_sets_as_sold_100g_nutrients_energy-kj_value_string").css({"background-color": "LightYellow"});
+        if ($("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").attr("value") === "" || (parseInt(j) > parseInt(c) && $("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").attr("value") < 3800)) {
+            $("#nutrition_input_sets_" + column + "_nutrients_energy-kj_value_string").css({"background-color": "LightYellow"});
         }/**/
     }
 
