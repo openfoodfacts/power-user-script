@@ -36,6 +36,7 @@
 // @exclude     https://search.openfoodfacts.org/*
 // @exclude     https://sql.openfoodfacts.org/*
 // @exclude     https://beta.openfoodfacts.org/*
+// @exclude     https://beta.openfoodfacts.net/*
 // @exclude     https://auth.openfoodfacts.org/*
 // @exclude     https://auth.openfoodfacts.net/*
 // @exclude     https://auth.openfoodfacts.localhost/*
