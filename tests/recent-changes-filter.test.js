@@ -6,7 +6,9 @@ const assert = require("assert");
 
 const src = fs.readFileSync(path.join(__dirname, "..", "OpenFoodFactsPower.user.js"), "utf8");
 const m = src.match(/\/\/ BEGIN recentChangesFilterMatch\r?\n([\s\S]*?)\/\/ END recentChangesFilterMatch/);
-if (!m) throw new Error("recentChangesFilterMatch not found in OpenFoodFactsPower.user.js");
+if (!m) {
+    throw new Error("recentChangesFilterMatch not found in OpenFoodFactsPower.user.js");
+}
 const match = new Function(m[1] + "\nreturn recentChangesFilterMatch;")();
 
 const cases = [
