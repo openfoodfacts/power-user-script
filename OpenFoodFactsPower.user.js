@@ -1260,9 +1260,18 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
             toggleAlwaysShowBarcodes();
         });
 
-        // detect product codes and add them as attributes
-        addCodesToProductList();
-        showListButtons();
+        function refreshListButtons() {
+            addCodesToProductList();
+            showListButtons();
+        }
+
+        refreshListButtons();
+        // Product Opener replaces the children of this container when it ranks the list again.
+        const searchResults = document.getElementById("search_results");
+        if (searchResults) {
+            const observer = new MutationObserver(refreshListButtons);
+            observer.observe(searchResults, { childList: true });
+        }
         loadAlwaysShowBarcodesFromStorage();
 
         // Show an easier to read number of products
@@ -2107,7 +2116,8 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
     function showListButtons(){
         let languageCode = getSubdomainLanguageCode();
 
-        $("ul[id^='products_'].search_results li[data-code]").each(function(index, element) {
+        $("ul[id^='products_'].search_results li[data-code]").each(function() {
+            if ($(this).children("a.list_hunger_games_logo_search").length) { return; }
             let barcode = $(this).attr('data-code');
             $(this).append('<a class="list_hunger_games_logo_search" alt="Hunger games logo search" title="Hunger games logo search" href="https://hunger.openfoodfacts.org/logos/search?barcode='+barcode+'"><span class="material-icons">image_search</span></a>');
             $(this).append('<a class="list_rotate_image_270" alt="Rotate at -90°" title="Rotate at -90°"><span class="material-icons"  style="transform: scaleX(-1);">redo</span></a>');
@@ -2186,9 +2196,9 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
      */
     function addCodesToProductList() {
         //log("in addCodesToProductList()");
-        $("ul[id^='products_'].search_results li").each(function() {
-            //log(this);
+        $("ul[id^='products_'].search_results > li").each(function() {
             let product_url = $("a.list_product_a", this).attr('href'); // find URL within "this"
+            if (!product_url) { return; }
             let product_code = product_url.match(/\/([0-9]+)(\/|$)/); // find a number surrounded by slashes
             if (product_code && product_code[1]) {
                 $(this).attr('data-code', product_code[1]);
