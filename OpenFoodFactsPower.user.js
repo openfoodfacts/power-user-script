@@ -1454,7 +1454,14 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
         // https://world.dev.openfoodfacts.org/quality/ingredients-100-percent-unknown
         // https://fr.openfoodfacts.org/quality/ingredients-100-percent-unknown/quality/ingredients-ingredient-tag-length-greater-than-50/200 (
         var ingr = "";
-        $.getJSON( urlList + "&json=1&page_size=100", function(data) {
+        const requestUrl = new URL(urlList);
+        requestUrl.searchParams.set("json", "1");
+        // Product Opener uses 50 rows for a web list and 20 for JSON by default.
+        // Keep the web page size so a later page starts at the same product.
+        if (!requestUrl.searchParams.has("page_size")) {
+            requestUrl.searchParams.set("page_size", "50");
+        }
+        $.getJSON(requestUrl.toString(), function(data) {
             log("getJSONList(urlList) > Data from products' page: " + urlList);
             log(data);
 
