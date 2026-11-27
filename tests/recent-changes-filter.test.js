@@ -6,10 +6,7 @@ const assert = require("assert");
 
 const src = fs.readFileSync(path.join(__dirname, "..", "OpenFoodFactsPower.user.js"), "utf8");
 const m = src.match(/\/\/ BEGIN recentChangesFilterMatch\r?\n([\s\S]*?)\/\/ END recentChangesFilterMatch/);
-if (!m) {
-    console.error("FAIL: recentChangesFilterMatch not found in OpenFoodFactsPower.user.js");
-    process.exit(1);
-}
+if (!m) throw new Error("recentChangesFilterMatch not found in OpenFoodFactsPower.user.js");
 const match = new Function(m[1] + "\nreturn recentChangesFilterMatch;")();
 
 const cases = [
@@ -35,16 +32,8 @@ const cases = [
     ["a  b", "a b", false],
 ];
 
-let failed = 0;
 for (const [filter, text, expected] of cases) {
-    try {
-        assert.strictEqual(match(filter, text), expected);
-    } catch (e) {
-        failed++;
-        console.error(`FAIL: filter=${JSON.stringify(filter)} text=${JSON.stringify(text)} expected=${expected}`);
-    }
+    assert.strictEqual(match(filter, text), expected,
+        `filter=${JSON.stringify(filter)} text=${JSON.stringify(text)}`);
 }
-if (failed) {
-    process.exit(1);
-}
-console.log(`OK: ${cases.length} recent changes filter cases passed`);
+process.stdout.write(`OK: ${cases.length} recent changes filter cases passed\n`);
