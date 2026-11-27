@@ -2,7 +2,7 @@
 // @name        Open Food Facts power user script
 // @description Helps power users in their day to day work. Key "?" shows help. This extension is a kind of sandbox to experiment features that could be added to Open Food Facts website.
 // @namespace   openfoodfacts.org
-// @version     2026-11-06T14:20
+// @version     2026-11-26T12:40
 // @include     https://*.openfoodfacts.org/*
 // @include     https://*.openproductsfacts.org/*
 // @include     https://*.openbeautyfacts.org/*
@@ -1497,6 +1497,14 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                                  ' id="p_actions_sav_'+local_code+'" value="'+local_code+'">'+
                                  'Save'+
                                  '</button>'+
+                                 '<button title="Replace ingredients with a new OCR from the ingredients image" '+
+                                 ' id="p_actions_ocr_'+local_code+'" value="'+local_code+'">'+
+                                 'OCR'+
+                                 '</button>'+
+                                 '<button title="Assign the current ingredient list to another language" '+
+                                 ' id="p_actions_lang_'+local_code+'" value="'+local_code+'">'+
+                                 '->Lang'+
+                                 '</button>'+
                                  "<button title=\"Edit in a new window\" "+
                                  "onclick=\"window.open('"+editIngUrl+"','_blank');\">"+
                                  'Edit [↗]'+
@@ -1539,9 +1547,81 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 $("#p_actions_analysis_"+local_code).click(function(){
                     //log("analyse");
                     var _code = $(this).attr("value");
+                    var currentLang = $("#i" + _code).attr("lang") || _lang;
 
-                    CopyListData(_code, _lang);
+                    CopyListData(_code, currentLang);
                     submitToPopup(analyse_form);
+                });
+
+                // Replace ingredients with a new OCR from the ingredients image
+                $("#p_actions_ocr_"+local_code).click(function(){
+                    var _code = $(this).attr("value");
+                    var $textarea = $("#i" + _code);
+                    if (!$textarea.length) {
+                        return;
+                    }
+                    var currentLang = $textarea.attr("lang") || _lang;
+                    var ocrUrl = window.location.origin +
+                                 "/cgi/ingredients.pl?code=" + encodeURIComponent(_code) +
+                                 "&id=ingredients_" + encodeURIComponent(currentLang) +
+                                 "&process_image=1&ocr_engine=google_cloud_vision";
+                    log("getJSONList(urlList) > OCR: " + ocrUrl);
+                    $("body").append('<div id="timed_alert_ocr_' + _code + '" class="timed_alert">OCR...</div>');
+                    $.getJSON(ocrUrl)
+                        .done(function(json) {
+                            log("getJSONList(urlList) > OCR result", json);
+                            if (json && json.ingredients_text_from_image) {
+                                $textarea.val(json.ingredients_text_from_image).trigger("change");
+                                $("#timed_alert_ocr_" + _code).html('OCR done!');
+                            } else {
+                                $("#timed_alert_ocr_" + _code).html('No OCR text').addClass('failed');
+                            }
+                            $("#timed_alert_ocr_" + _code).fadeOut(3000, function () { $(this).remove(); });
+                        })
+                        .fail(function() {
+                            log("getJSONList(urlList) > OCR fail");
+                            $("#timed_alert_ocr_" + _code).html('OCR failed!').addClass('failed');
+                            $("#timed_alert_ocr_" + _code).fadeOut(3000, function () { $(this).remove(); });
+                        });
+                });
+
+                // Assign the current ingredient list to another language
+                $("#p_actions_lang_"+local_code).click(function(){
+                    var _code = $(this).attr("value");
+                    var $textarea = $("#i" + _code);
+                    if (!$textarea.length) {
+                        return;
+                    }
+                    var currentLang = $textarea.attr("lang") || _lang;
+                    var targetLang = window.prompt("Assign ingredients to language code (e.g. en, fr, es, de):", currentLang);
+                    if (targetLang === null) {
+                        return;
+                    }
+                    targetLang = targetLang.trim().toLowerCase();
+                    if (!/^[a-z]{2,3}(-[a-z]{2,4})?$/.test(targetLang) || targetLang === currentLang) {
+                        return;
+                    }
+                    var _url = window.location.origin +
+                               "/cgi/product_jqm2.pl?code=" + encodeURIComponent(_code) +
+                               "&ingredients_text_" + encodeURIComponent(targetLang) + "=" + encodeURIComponent($textarea.val()) +
+                               "&ingredients_text_" + encodeURIComponent(currentLang) + "=";
+                    log("getJSONList(urlList) > Assign lang: " + _url);
+                    $("body").append('<div id="timed_alert_lang_' + _code + '" class="timed_alert">Saving</div>');
+                    $.getJSON(_url)
+                        .done(function(jqm2) {
+                            log(jqm2.status_verbose);
+                            log(jqm2);
+                            $textarea.attr("lang", targetLang);
+                            $textarea.siblings("._lang").text(targetLang);
+                            $("#p_actions_sav_" + _code).removeClass("save_needs_clicking");
+                            $("#timed_alert_lang_" + _code).html('Saved (' + targetLang + ')!');
+                            $("#timed_alert_lang_" + _code).fadeOut(3000, function () { $(this).remove(); });
+                        })
+                        .fail(function() {
+                            log("getJSONList(urlList) > Assign lang fail");
+                            $("#timed_alert_lang_" + _code).html('Failed!').addClass('failed');
+                            $("#timed_alert_lang_" + _code).fadeOut(3000, function () { $(this).remove(); });
+                        });
                 });
 
                 //Move product to OBF
@@ -1563,9 +1643,10 @@ ul#products_match_all > li > a > span { display: table-cell; width:   70%;  vert
                 $("#p_actions_sav_"+local_code).click(function(){
                     //saveProductField(productCode, field);
                     var _code = $(this).attr("value");
+                    var currentLang = $("#i" + _code).attr("lang") || _lang;
                     var _url = document.location.protocol + "//" + encodeURIComponent(document.location.host) +
                                          "/cgi/product_jqm2.pl?code=" + encodeURIComponent(_code) +
-                                         "&ingredients_text_" + encodeURIComponent(_lang) +
+                                         "&ingredients_text_" + encodeURIComponent(currentLang) +
                                          "=" + encodeURIComponent($("#i" + _code).val());
                     log("getJSONList(urlList) > "+_url);
                     $("body").append('<div id="timed_alert_save_' + _code + '" class="timed_alert">Saving</div>');

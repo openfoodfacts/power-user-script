@@ -29,6 +29,8 @@ Once your script manager is installed you can go to https://github.com/openfoodf
 Just click on the Raw button and your script manager will ask you if you want to install the script.
 
 # Changelog
+### 2026-11-26T12:40
+* Expanded list view (`Shift+L`): add `OCR` button to replace the ingredients field with a fresh OCR from the OFF API, and `->Lang` button to reassign the current ingredient list to another language.
 ### 2026-04-22T11:40
 * Fix some regressions due to nutrients refactor
 * Fix bug #118 (Pressing the 'i' key breaks the product edit page layout)
