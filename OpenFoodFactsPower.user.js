@@ -1183,14 +1183,32 @@ textarea.monospace {
     // ***
     // * Recent Changes page
     // *
+    // BEGIN recentChangesFilterMatch
+    // Returns true if an item's text matches the filter. A word starting with "-" followed by a
+    // non-digit excludes items containing it (ex: "image -hunger"). Anything else (including
+    // "-200" or double spaces) is matched literally, as before.
+    function recentChangesFilterMatch(raw, text) {
+        raw = raw.toLowerCase();
+        text = text.toLowerCase();
+        var isExcluded = function(w) { return /^-[^\d\s]/.test(w); };
+        var words = raw.split(/\s+/);
+        if (!words.some(isExcluded)) {
+            return text.indexOf(raw) > -1;
+        }
+        var excluded = words.filter(isExcluded).map(function(w) { return w.slice(1); });
+        var value = words.filter(function(w) { return !isExcluded(w); }).join(" ");
+        return text.indexOf(value) > -1 && !excluded.some(function(e) { return text.indexOf(e) > -1; });
+    }
+    // END recentChangesFilterMatch
+
     if (pageType === "recent changes") {
         $("#main_column h1").after('<input id="filter" type="text" placeholder="Filter...">');
         $("#filter").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
+            var raw = $(this).val();
             $("#main_column li").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                $(this).toggle(recentChangesFilterMatch(raw, $(this).text()));
             });
-            value == "" ? $("#main_column details").show() : $("#main_column details").hide();
+            raw == "" ? $("#main_column details").show() : $("#main_column details").hide();
         });
     }
 
