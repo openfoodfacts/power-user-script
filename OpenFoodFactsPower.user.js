@@ -1001,16 +1001,37 @@ textarea.monospace {
             '</p>' : ""));
 
 
-        // For each different brand, if any, add a deep link to Hunger Game
-        // TODO: make this a parameter which can be saved from a session to another; something like:
-        //       readParameter(isLinkToHungerGameForEachBrand)
-        let isLinkToHungerGameForEachBrand = true;
-        if(isLinkToHungerGameForEachBrand) {
-            $('[itemprop="brand"]').each(function() {
-                const brand = normalizeTagName($(this).text());
-                $(this).after(' <sup>[<a href="https://hunger.openfoodfacts.org/questions?value_tag=' + brand + '&type=brand" title="Hunger Game">Hunger Game</a>]</sup>');
+        // Add a Hunger Game link for each brand and show the available question count.
+        const publicFoodSite = window.location.protocol === "https:" &&
+            /^(?:world|[a-z]{2})(?:-[a-z]{2,3})?\.openfoodfacts\.org$/.test(window.location.hostname);
+        const brandLanguage = document.documentElement.lang.split("-")[0] || "en";
+        const brandCounts = new Map();
+        $('[itemprop="brand"]').each(function() {
+            const brand = normalizeTagName($(this).text().trim());
+            if (!brand) return;
+            const gameURL = new URL("https://hunger.openfoodfacts.org/questions");
+            gameURL.search = new URLSearchParams({value_tag: brand, type: "brand"});
+            const link = $('<a>', {href: gameURL.href, title: "Hunger Game", text: "Hunger Game"});
+            $(this).after($('<sup>').append(" [", link, "]"));
+
+            // Avoid sending brands from private, local or non-food sites to Robotoff.
+            if (!publicFoodSite) return;
+            if (!brandCounts.has(brand)) {
+                const apiURL = new URL("https://robotoff.openfoodfacts.org/api/v1/questions/random");
+                apiURL.search = new URLSearchParams({
+                    count: 1, lang: brandLanguage, insight_types: "brand", value_tag: brand,
+                });
+                brandCounts.set(brand, fetch(apiURL, {credentials: "omit", referrerPolicy: "no-referrer"})
+                    .then(response => response.ok ? response.json() : null)
+                    .then(data => data && Number.isSafeInteger(data.count) && data.count >= 0 ? data.count : null)
+                    .catch(() => null));
+            }
+            brandCounts.get(brand).then(count => {
+                // Robotoff caps this count at 100.
+                const label = count === 100 ? "100+" : (count ?? "–");
+                link.text("Hunger Game (" + label + ")");
             });
-        }
+        });
 
 
         // If ingredients are already entered, show results of the OCR
