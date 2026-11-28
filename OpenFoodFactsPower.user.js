@@ -598,6 +598,10 @@ textarea.monospace {
         log("code: "+ code);
         // build API product link; example: https://world.openfoodfacts.org/api/v2/product/737628064502.json
         var apiProductURL = "/api/v2/product/" + code + ".json";
+        const revision = new URLSearchParams(window.location.search).get("rev");
+        var apiProductPageURL = pageType === "product view" && revision && /^[1-9]\d*$/.test(revision)
+            ? apiProductURL + "?rev=" + revision
+            : apiProductURL;
         log("API: " + apiProductURL);
         // build edit url
         var editURL = document.location.protocol + "//" + document.location.host + "/cgi/product.pl?type=edit&code=" + code;
@@ -782,7 +786,7 @@ textarea.monospace {
               "<li>(E): edit product in a new window</li>":
               "") +
             ((pageType === "product view" || pageType === "edit") ?
-              "<li id='api_product_page'>(a): <a href='" + apiProductURL + "'>API product page</a> (json)</li>" +
+              "<li id='api_product_page'>(a): <a href='" + apiProductPageURL + "'>API product page</a> (json)</li>" +
               "<li>(u): open in https://us.openfoodfacts.org to get standard US nutrition table</li>":
               "") +
             "<li><a href='https://google.com/search?&q="+ code + "'>Product code search on Google</a></li>" +
@@ -883,7 +887,7 @@ textarea.monospace {
                 }
                 // (a): api page in a new window
                 if ((pageType === "product view" || pageType == "edit") && event.key === 'a') {
-                    window.open(apiProductURL, "_blank"); // open in an other window
+                    window.open(apiProductPageURL, "_blank"); // open in an other window
                     return;
                 }
                 // (e): edit current product in current window
